@@ -1,0 +1,11 @@
+//actions for users
+export const LOADING_REVENUE = "LOADING_REVENUE";
+export const CREATE_REVENUE = "CREATE_REVENUE";
+export const UPDATE_REVENUE = "UPDATE_REVENUE";
+export const DELETE_REVENUE = "DELETE_REVENUE";
+export const SEARCH_REVENUE = "SEARCH_REVENUE";
+export const GET_REVENUE = "GET_REVENUE";
+export const GET_SEARCH_REVENUE = "GET_ALL_REVENUE";
+export const GET_ALL_REVENUE = "GET_ALL_REVENUE";
+export const NO_DATA_REVENUE = "NO_DATA";
+export const ERROR_REVENUE = "ERROR_REVENUE";

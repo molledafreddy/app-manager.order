@@ -1,0 +1,10 @@
+//actions for users
+export const LOADING_ACCOUNT = "LOADING_ACCOUNT";
+export const CREATE_ACCOUNT = "CREATE_ACCOUNT";
+export const UPDATE_ACCOUNT = "UPDATE_ACCOUNT";
+export const DELETE_ACCOUNT = "DELETE_ACCOUNT";
+export const SEARCH_ACCOUNT = "SEARCH_ACCOUNT";
+export const GET_ACCOUNT = "GET_ACCOUNT";
+export const GET_ALL_ACCOUNT = "GET_ALL_ACCOUNT";
+export const NO_DATA_ACCOUNT = "ACCOUNT";
+export const ERROR_ACCOUNT = "ERROR_ACCOUNT";
