@@ -198,7 +198,7 @@ const OperationBillIndex = (props) => {
                         </Table>
                     </Card.Body>
                     <Row>
-                        <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                        <Col xs={12}  sm={{ span: 8, offset: 2 }} md={{ span: 6, offset: 1 }} lg={12}>
                             <Pagination size="sm" class="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}

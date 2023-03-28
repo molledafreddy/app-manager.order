@@ -12,8 +12,6 @@ import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 
 
-
-// class ProviderIndex extends Component {
 const RevenueIndex = (props) => {
     const revenues = useSelector(state => state.revenues.docs)
     let totalPages = useSelector(state => state.revenues.totalPages)
@@ -32,7 +30,6 @@ const RevenueIndex = (props) => {
     const dispatch = useDispatch()
     let pages = [];
     let pagesPait = [];
-    // let searchClass = ['main-search'];
     
     const [body, setBody] = useState({
         startDate: null, 
@@ -74,7 +71,7 @@ const RevenueIndex = (props) => {
         setActive(number);
         validDateSearch();
         console.log('body', body.startDate)
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, number, body.startDate, body.endDate));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, number, body.startDate, body.endDate, 'closure'));
     }
 
     function paginationPait(number) {
@@ -99,7 +96,7 @@ const RevenueIndex = (props) => {
         setActive(1);
         setActivePait(1)
         validDateSearch();
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate, 'closure'));
         dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 5, 1, 'paid_out', body.startDate, body.endDate));
         createItem()
         createItemPait()
@@ -108,7 +105,7 @@ const RevenueIndex = (props) => {
     useEffect(() => {
         if (active === 1) {
             validDateSearch()
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate));
+            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate, 'closure'));
             createItem()
         }
 
@@ -197,7 +194,7 @@ const RevenueIndex = (props) => {
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
                                         <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                                            ${sumRevenue}
+                                        { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue)}
                                         </h3>
                                     </div>
 
@@ -219,7 +216,7 @@ const RevenueIndex = (props) => {
                                     <div className="col-9">
                                         <h3 className="f-w-300 d-flex align-items-center m-b-0">
                                             {/* <i className="feather icon-arrow-up text-c-green f-30 m-r-5"/>  */}
-                                            ${sumOrderPaitOut}
+                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumOrderPaitOut)}
                                         </h3>
                                     </div>
 
@@ -257,13 +254,13 @@ const RevenueIndex = (props) => {
                                     {revenues?.map(revenue =>
                                         <tr key={revenue?._id}>
                                         <td>{revenue?.users[0]?.name}</td>
-                                        <td>{revenue?.amountSistem}</td>
-                                        <td>{revenue?.totalAmount}</td>
-                                        <td>{revenue?.amountPos}</td>
-                                        <td>{revenue?.amountCash}</td>
-                                        <td>{revenue?.amountTransfer}</td>
-                                        <td>{revenue?.amountOther}</td>
-                                        <td>{revenue?.cashFund}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountSistem)} </td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountPos)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountCash)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountTransfer)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountOther)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.cashFund)}</td>
                                         <td>
                                             <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
                                                 <i className="feather icon-edit-1" />
@@ -279,7 +276,7 @@ const RevenueIndex = (props) => {
                                 </Table>
                                 <Row>
                                     <Col sm={{ span: 1, offset: 4 }} md={{ span: 6, offset: 5 }}>
-                                        <Pagination size="sm" class="row justify-content-center">
+                                        <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (active > 1) {pagination(1);}}}
                                             />
@@ -313,7 +310,7 @@ const RevenueIndex = (props) => {
                                     <tbody>
                                         {orderPaitOuts?.map(order =>
                                             <tr key={order?._id}>
-                                            <td>$ {order?.egress[0]?.amount}</td>
+                                            <td>$ { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.egress[0]?.amount)}</td>
                                             <td>{order?.status}</td>
                                             <td>{order?.providers[0]?.businessName}</td>
                                             <td>{order?.paymentMethod}</td>
@@ -326,7 +323,7 @@ const RevenueIndex = (props) => {
                                 </Table>
                                 <Row>
                                     <Col sm={{ span: 1, offset: 4 }} md={{ span: 6, offset: 5 }}>
-                                        <Pagination size="sm" class="row justify-content-center">
+                                        <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (activePait > 1) {paginationPait(1);}}}
                                             />

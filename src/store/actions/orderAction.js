@@ -1,5 +1,6 @@
 import  orderService  from "../../services/orderService";
 import { actionCreator } from "template-redux-helpers";
+import Swal from 'sweetalert2';
 import  { LOADING_ORDER, 
           GET_ORDER, 
           ERROR_ORDER, 
@@ -65,10 +66,24 @@ export const getOrders = (dispatch, extens) => {
         OrderService.getOperationBills(extens).then(data => {
             dispatch(actionCreator(GET_ALL_ORDER, "payload")(data))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
+            Swal.fire({
+                position: 'top',
+                icon: 'success',
+                text: 'Proceso realizado con exito',
+                showConfirmButton: false,
+                timer: 3500
+            })
         })
         .catch(error => {
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
+            Swal.fire({
+                position: 'top',
+                icon: 'error',
+                text: 'Error al procesar la orden',
+                showConfirmButton: false,
+                timer: 3500
+            })
         })
     }
 }

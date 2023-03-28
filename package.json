@@ -2,12 +2,13 @@
   "name": "datta-able-rv18.0.4",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://lite.codedthemes.com/datta-able/react/default/",
+  "homepage": "",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
     "axios": "^1.2.2",
     "bootstrap": "^4.3.1",
     "env-cmd": "^10.1.0",
+    "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "google-maps-react": "^2.0.2",
     "jquery": "^3.4.0",
@@ -19,7 +20,7 @@
     "react-datepicker": "^4.10.0",
     "react-dom": "^18.3.0-next-0f4a83596-20230110",
     "react-full-screen": "^0.2.4",
-    "react-hook-form": "^7.43.2",
+    "react-hook-form": "^7.43.6",
     "react-input-mask": "^2.0.4",
     "react-loadable": "^5.5.0",
     "react-moment": "^1.1.3",
@@ -35,6 +36,7 @@
     "redux-form": "^8.3.9",
     "redux-form-input-masks": "^2.0.2",
     "redux-thunk": "^2.4.2",
+    "sweetalert2": "^11.7.3",
     "template-redux-helpers": "^1.2.0"
   },
   "scripts": {

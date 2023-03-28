@@ -156,9 +156,9 @@ const TurnIndex = (props) => {
                                         <Form.Group controlId="form.ControlType">
                                             <Form.Label>Tipo Turno</Form.Label>
                                             <Form.Control as="select" name="type" value={body?.type} onChange={handlerChangeSearch}>
-                                                <option  value="">todos</option>
+                                                <option key={`type_`}  value="">todos</option>
                                                 {typeTurns.map(turn =>
-                                                    <option key={turn?._id} value={turn?.type}>{turn?.type}</option>
+                                                    <option key={`type_`+turn?.id} value={turn?.type}>{turn?.type}</option>
                                                 )}
                                             </Form.Control>
                                         </Form.Group>
@@ -168,9 +168,9 @@ const TurnIndex = (props) => {
                                         <Form.Group controlId="form.ControlStatus">
                                             <Form.Label>Estatus</Form.Label>
                                             <Form.Control as="select" name="status" value={body?.status} onChange={handlerChangeSearch}>
-                                                <option  value="">todos</option>
+                                                <option key={`status_`}  value="">todos</option>
                                                 {typeStatus.map(status =>
-                                                    <option key={status?._id} value={status?.type}>{status?.type}</option>
+                                                    <option key={`status_`+status?.id} value={status?.type}>{status?.type}</option>
                                                 )}
                                             </Form.Control>
                                         </Form.Group>
@@ -222,7 +222,7 @@ const TurnIndex = (props) => {
                     </Card.Body>
                     <Row>
                         <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                            <Pagination size="sm" class="row justify-content-center">
+                            <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}
                                 />
