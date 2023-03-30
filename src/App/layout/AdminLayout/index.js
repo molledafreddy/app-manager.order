@@ -15,7 +15,6 @@ import * as actionTypes from "../../../store/actions";
 import './app.scss';
 
 class AdminLayout extends Component {
-
     fullScreenExitHandler = () => {
         if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
             this.props.onFullScreenExit();
@@ -40,7 +39,7 @@ class AdminLayout extends Component {
         document.addEventListener('webkitfullscreenchange', this.fullScreenExitHandler);
         document.addEventListener('mozfullscreenchange', this.fullScreenExitHandler);
         document.addEventListener('MSFullscreenChange', this.fullScreenExitHandler);
-
+        
         const menu = routes.map((route, index) => {
             return (route.component) ? (
                 <Route

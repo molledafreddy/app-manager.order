@@ -11,9 +11,6 @@ import moment from 'moment';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-
-
-// class ProviderIndex extends Component {
 const RevenueOtherIndex = (props) => {
     const revenues = useSelector(state => state.revenues.docs)
     let totalPages = useSelector(state => state.revenues.totalPages)
@@ -76,7 +73,6 @@ const RevenueOtherIndex = (props) => {
         
     }, [dispatch, createItem()]);
 
-    // providers
     
     const driverSubmit =e=> {
         e.preventDefault();
@@ -117,13 +113,13 @@ const RevenueOtherIndex = (props) => {
                         <Container>
                             <Row>
                                 <Col>
-                                    <Card.Title as="h5">Cierre de Caja</Card.Title>
+                                    <Card.Title as="h5">Ingresos Extras</Card.Title>
                                 </Col>
                             </Row>
                             <Form onSubmit={driverSubmit}> 
                                 <Row>
-                                    <Col className="mt-2" md={{ span: 4, offset: 0 }}> 
-                                        <Form.Label>Rango Fecha Cierre</Form.Label>
+                                    <Col className="mt-2" md={{ span: 4, offset: 5 }}> 
+                                        <Form.Label>Rango Fecha Ingreso</Form.Label>
                                         <DatePicker
                                             className="form-control input_width"
                                             selectsRange={true}
@@ -135,10 +131,10 @@ const RevenueOtherIndex = (props) => {
                                             isClearable={true}
                                         />
                                     </Col>
-                                    <Col md={{ span: 1, offset: 0 }} sm={6}> 
+                                    <Col className="mt-4"  md={{ span: 1, offset: 0 }} sm={6}> 
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col md={{ span: 1, offset: 0 }}> 
+                                    <Col className="mt-4"  md={{ span: 1, offset: 1 }}> 
                                         <Button variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col> 
                                 </Row>
@@ -146,42 +142,42 @@ const RevenueOtherIndex = (props) => {
                         </Container>
                     </Card.Header>
                     <Card.Body>
-                    <Table responsive hover>
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Monto Ingreso</th>
-                                <th>Descripcion</th>
-                                <th>Fecha Creacion</th>
-                                <th>Fecha Actualizacion</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {revenues?.map(revenue =>
-                            <tr key={revenue?._id}>
-                            <td>{revenue?.users[0]?.name}</td>
-                            <td>{revenue?.totalAmount}</td>
-                            <td>{revenue?.description}</td>
-                            <td>{moment(revenue?.createdAt).format("YYYY-MM-DD")}</td>
-                            <td>{moment(revenue?.updateAt).format("YYYY-MM-DD")}</td>
-                            
-                            <td>
-                                <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
-                                    <i className="feather icon-edit-1" />
-                                </Button>
-                                {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(revenue._id)}>
-                                    <i className="feather icon-delete" />
-                                </Button> */}
+                        <Table responsive hover>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Monto Ingreso</th>
+                                    <th>Descripcion</th>
+                                    <th>Fecha Creacion</th>
+                                    <th>Fecha Actualizacion</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {revenues?.map(revenue =>
+                                <tr key={revenue?._id}>
+                                <td>{revenue?.users[0]?.name}</td>
+                                <td>{revenue?.totalAmount}</td>
+                                <td>{revenue?.description}</td>
+                                <td>{moment(revenue?.createdAt).format("YYYY-MM-DD")}</td>
+                                <td>{moment(revenue?.updateAt).format("YYYY-MM-DD")}</td>
                                 
-                            </td>
-                            </tr>
-                        )}
-                        </tbody>
-                    </Table>
+                                <td>
+                                    <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
+                                        <i className="feather icon-edit-1" />
+                                    </Button>
+                                    {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(revenue._id)}>
+                                        <i className="feather icon-delete" />
+                                    </Button> */}
+                                    
+                                </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </Table>
                     <Row>
-                        <Col sm={{ span: 1, offset: 4 }} md={{ span: 6, offset: 5 }}>
-                            <Pagination size="sm" class="row justify-content-center">
+                        <Col sm={{ span: 6, offset: 3 }} md={{ span: 6, offset: 5 }} lg={{ span: 6, offset: 3 }}>
+                            <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}
                                 />

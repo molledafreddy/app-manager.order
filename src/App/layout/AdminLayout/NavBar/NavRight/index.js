@@ -8,14 +8,34 @@ import DEMO from "../../../../../store/constant";
 import Avatar1 from '../../../../../assets/images/user/avatar-1.jpg';
 import Avatar2 from '../../../../../assets/images/user/avatar-2.jpg';
 import Avatar3 from '../../../../../assets/images/user/avatar-3.jpg';
+// import Avatar3 from '../../../../../assets/';
+// import  LOCAL  from "../../../../../../env-cmdrc";
 
 class NavRight extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = { count: 0 };
+      }
+      
     state = {
-        listOpen: false
+        listOpen: false,
+        
     };
+    logout(){
+        localStorage.removeItem('name');
+        localStorage.removeItem('role');
+        localStorage.removeItem('token');
+        window.location.replace(`${process.env.REACT_APP_API_BASE}/auth/signin`);
+    }
+    // 
+
+    
 
     render() {
-
+        let userName =  localStorage.getItem('name');
+        
+        // function 
         return (
             <Aux>
                 <ul className="navbar-nav ml-auto">
@@ -40,7 +60,7 @@ class NavRight extends Component {
                                         <div className="media">
                                             <img className="img-radius" src={Avatar1} alt="Generic placeholder"/>
                                             <div className="media-body">
-                                                <p><strong>John Doe</strong><span className="n-time text-muted"><i
+                                                <p><strong>{userName}</strong><span className="n-time text-muted"><i
                                                     className="icon feather icon-clock m-r-10"/>30 min</span></p>
                                                 <p>New ticket Added</p>
                                             </div>
@@ -87,17 +107,17 @@ class NavRight extends Component {
                             <Dropdown.Menu alignRight className="profile-notification">
                                 <div className="pro-head">
                                     <img src={Avatar1} className="img-radius" alt="User Profile"/>
-                                    <span>John Doe</span>
-                                    <a href={DEMO.BLANK_LINK} className="dud-logout" title="Logout">
+                                    <span>{userName}</span>
+                                    <a onClick={() => this.logout()} href={DEMO.BLANK_LINK} className="dud-logout" title="Logout">
                                         <i className="feather icon-log-out"/>
                                     </a>
                                 </div>
-                                <ul className="pro-body">
+                                {/* <ul className="pro-body">
                                     <li><a href={DEMO.BLANK_LINK} className="dropdown-item"><i className="feather icon-settings"/> Settings</a></li>
                                     <li><a href={DEMO.BLANK_LINK} className="dropdown-item"><i className="feather icon-user"/> Profile</a></li>
                                     <li><a href={DEMO.BLANK_LINK} className="dropdown-item"><i className="feather icon-mail"/> My Messages</a></li>
                                     <li><a href={DEMO.BLANK_LINK} className="dropdown-item"><i className="feather icon-lock"/> Lock Screen</a></li>
-                                </ul>
+                                </ul> */}
                             </Dropdown.Menu>
                         </Dropdown>
                     </li>

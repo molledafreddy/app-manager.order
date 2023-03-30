@@ -2,7 +2,8 @@ import axios from "axios";
 
 export default class paymentTypeService {
     constructor(){
-        this.url = 'http://localhost:3002';
+        this.url = process.env.REACT_APP_API_BASE;
+        this.token = localStorage.getItem('token');
     }
 
     async getPaymentType(extend, limit, page, search) {

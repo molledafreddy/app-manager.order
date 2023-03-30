@@ -1,7 +1,6 @@
 import axios from "axios";
-import moment from 'moment';
 
-export default class orderService {
+export default class egressService {
     constructor(){
         this.url = process.env.REACT_APP_API_BASE;
         this.token = localStorage.getItem('token');
@@ -18,10 +17,15 @@ export default class orderService {
         }
     }
 
-    async getSearchOrder(extend, payload) {
+    async getSearchEgress(extend, payload) {
         try {
             console.log('payload', payload)
-            return await axios.post(`${this.url}/${extend}`, payload);
+            let  headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
+            }
+            return await axios.post(`${this.url}/${extend}`, payload,
+                                    { headers: headers });
         } catch (error) {
             throw error;
         }
@@ -30,6 +34,7 @@ export default class orderService {
     async getSearchOrderPaitOut(extend, limit, page, status, startDate = '', endDate = '') {
         try {
             // console.log('payload', payload)
+            // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3ODQ2NzEyMCwiZXhwIjoxNjc4NDc0MzIwfQ.mbNv3a4fXe0VQaVq_pgSvZbWEL75dIN_OPVFx-OOO0Q';
             console.log('getSearchOrderPaitOut startDate', startDate)
             console.log('endDate', endDate)
             let  headers = {
@@ -69,7 +74,8 @@ export default class orderService {
 
     async createOrder(extend, payload) {
         try {
-            // console.log('payload', payload)
+            // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3ODQ2NzEyMCwiZXhwIjoxNjc4NDc0MzIwfQ.mbNv3a4fXe0VQaVq_pgSvZbWEL75dIN_OPVFx-OOO0Q';
+            console.log('payload', payload)
             const dataA = new FormData();
             const data = JSON.stringify({
                 amount: payload.amount,
@@ -78,7 +84,7 @@ export default class orderService {
                 paymentMethod: payload.paymentMethod,
                 providers: payload.providers,
                 status: payload.status,
-                estimateReceptionDate: payload?.estimateReceptionDate,
+                estimateReceptionDate: payload.estimateReceptionDate,
                 orderDate: payload.orderDate,
                 paymentDate: payload.paymentDate,
                 receptionDate: payload.receptionDate,
@@ -90,9 +96,9 @@ export default class orderService {
             dataA.append("data",data);
             dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
             // dataA.append("files", payload.files);
-            console.log(' payload',  payload.paymentHasEgress)
-            for (let i = 0; i < payload.files.files.length; i++) {
-                dataA.append("files", payload.files.files[i].file);
+            console.log(' payload.files',  payload.files)
+            for (let i = 0; i < payload.files.length; i++) {
+                dataA.append("files", payload.files[i].file);
             }
 
 
@@ -113,7 +119,6 @@ export default class orderService {
         try {
             // console.log('payload?.idEgress', payload?._idEgress)
             const dataA = new FormData();
-            
             const data = JSON.stringify({
                 _id: payload?._id,
                 _idEgress: payload?._idEgress,
@@ -135,25 +140,26 @@ export default class orderService {
             let dataFiles = [];
             dataA.append("data",data);
             dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
-            dataA.append("files", payload.files);
-            // console.log('payload',payload)
-            console.log('payload?.paymentHasEgress',payload?.paymentHasEgress)
-            for (let i = 0; i < payload.files.files.length; i++) {
-                if (!payload.files.files[i]?.flag) {
-                    dataA.append("files", payload.files.files[i].file)
+            // dataA.append("files", payload.files);
+            console.log('payload',payload)
+            console.log('data',data)
+            for (let i = 0; i < payload?.files.length; i++) {
+                if (!payload?.files[i]?.flag) {
+                    dataA.append("files", payload.files[i].file)
                 } else {
                     dataFiles.push({
-                        filename: payload.files.files[i].filename,
-                        file: payload.files.files[i].file,
-                        path: payload.files.files[i].path,
-                        size: payload.files.files[i].size,
-                        mimetype: payload.files.files[i].mimetype
+                        filename: payload.files[i].filename,
+                        file: payload.files[i].file,
+                        path: payload.files[i].path,
+                        size: payload.files[i].size,
+                        mimetype: payload.files[i].mimetype
                     })
                 }
                 
             }
-            // console.log('files',dataFiles)
+            console.log('files',dataFiles)
             dataA.append("dataFiles",JSON.stringify(dataFiles));
+            // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3ODQ2NzEyMCwiZXhwIjoxNjc4NDc0MzIwfQ.mbNv3a4fXe0VQaVq_pgSvZbWEL75dIN_OPVFx-OOO0Q';
             const response = await fetch(`${this.url}/${extend}`, 
                 { 
                     method: "POST", 
@@ -173,5 +179,4 @@ export default class orderService {
             throw error;
         }
     }
-
 }

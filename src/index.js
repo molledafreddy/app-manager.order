@@ -10,21 +10,28 @@ import * as serviceWorker from './serviceWorker';
 // import reducer from './store/reducers/index';
 import store from './store';
 import config from './config';
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
 // import { ApiProvider } from "@reduxjs/toolkit/query/react";
 // import { apiSlice } from "./api/apiSlice";
 
+
 // const store = createStore(reducer);
 
+const persistor = persistStore(store);
+
 const app = (
-    <Provider store={store}>
-    {/* <ApiProvider api={apiSlice}> */}
-        <BrowserRouter basename={config.basename}>
-            {/* basename="/datta-able" */}
-            
-            <App />
-        </BrowserRouter>
-    {/* </ApiProvider> */}
-    </Provider>
+    // <PersistGate persistStore={persistor}>
+        <Provider store={store}>
+        {/* <ApiProvider api={apiSlice}> */}
+            <BrowserRouter basename={config.basename}>
+                {/* basename="/datta-able" */}
+                
+                <App />
+            </BrowserRouter>
+        {/* </ApiProvider> */}
+        </Provider>
+    // </PersistGate>
 );
 
 ReactDOM.render(app, document.getElementById('root'));

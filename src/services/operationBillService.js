@@ -2,14 +2,23 @@ import axios from "axios";
 
 export default class providerService {
     constructor(){
-        this.url = 'http://localhost:3002';
+        this.url = process.env.REACT_APP_API_BASE;
+        this.token = localStorage.getItem('token');
     }
 
     async getOperationBill(extend, limit, page, search, startDate = '', endDate = '') {
         try {
-            const data = await axios.get(`${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`);
-        //    console.log('data servicio', data)
-            return data;
+            let  headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
+            }
+            console.log('url enviada',  `${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`)
+            const datas = await axios.get(
+                            `${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
+                            { headers: headers }
+                        );
+           console.log('data servicio', datas)
+            return datas;
             // return await axios.get(`${this.url}/${extend}`);
         } catch (error) {
             throw error;
@@ -39,20 +48,22 @@ export default class providerService {
             const data = JSON.stringify({
                 amount: payload.amount,
                 description: payload.description,
-                invoiceNumber: payload.invoiceNumber,
+                invoiceNumber: payload?.invoiceNumber,
                 type: payload.type,
             })
+            console.log(' payload',  payload)
             dataA.append("data",data);
-            dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
+            dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
             dataA.append("files", payload.files);
             console.log(' payload.files',  payload.files)
-            for (let i = 0; i < payload.files.length; i++) {
-                dataA.append("files", payload.files[i].file);
+            for (let i = 0; i < payload?.files?.files?.length; i++) {
+                dataA.append("files", payload?.files?.files[i].file);
             }
 
             const response = await fetch(`${this.url}/${extend}`, 
                 { 
                     method: "POST", 
+                    headers: {'Authorization': `Bearer ${this.token}`},
                     body: dataA 
             }).then((res) => res.json())
             return response;
@@ -76,33 +87,38 @@ export default class providerService {
             })
             let dataFiles = [];
             dataA.append("data",data);
-            dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
-            dataA.append("files", payload.files);
-            console.log('payload',payload.files)
-            for (let i = 0; i < payload.files.length; i++) {
-                if (!payload.files[i].flag) {
-                    dataA.append("files", payload.files[i].file)
-                } else {
-                    dataFiles.push({
-                        filename: payload.files[i].filename,
-                        file: payload.files[i].file,
-                        path: payload.files[i].path,
-                        size: payload.files[i].size,
-                        mimetype: payload.files[i].mimetype
-                    })
+            dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
+            // dataA.append("files", payload.files);
+            console.log('payload',payload)
+            if (payload?.files.length > 0) {
+                for (let i = 0; i < payload?.files?.files.length; i++) {
+                    if (!payload?.files?.files[i].flag) {
+                        dataA.append("files", payload?.files?.files[i].file)
+                    } else {
+                        dataFiles.push({
+                            filename: payload.files.files[i].filename,
+                            file: payload?.files?.files[i].file,
+                            path: payload?.files?.files[i].path,
+                            size: payload?.files?.files[i].size,
+                            mimetype: payload?.files?.files[i].mimetype
+                        })
+                    }
                 }
                 
             }
-            console.log('files',dataFiles)
             dataA.append("dataFiles",JSON.stringify(dataFiles));
+            console.log('files',dataFiles)
+            
             
             const response = await fetch(`${this.url}/${extend}`, 
                 { 
                     method: "POST", 
+                    headers: {'Authorization': `Bearer ${this.token}`},
                     body: dataA 
             }).then((res) => res.json())
             return response;
         } catch (error) {
+            console.log('error', error)
             throw error;
         }
     }

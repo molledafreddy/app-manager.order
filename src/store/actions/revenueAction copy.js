@@ -1,6 +1,5 @@
 import  revenueService  from "../../services/revenueService";
 import { actionCreator } from "template-redux-helpers";
-import Swal from 'sweetalert2';
 import  { LOADING_REVENUE, 
           GET_REVENUE, 
           ERROR_REVENUE, 
@@ -60,25 +59,12 @@ export const createRevenues = (dispatch, extens, payload) => {
     return dispat => {
         dispatch(actionCreator(LOADING_REVENUE, "payload")(true))
         RevenueService.createRevenue(extens, payload).then(data => {
-            if (data?.codeHttp === '400') {
-                dispatch(actionCreator(ERROR_REVENUE, "payload")(data));
-            } else {
-                dispatch(actionCreator(CREATE_REVENUE, "payload")(data));
-            }
-            dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
+            dispatch(actionCreator(CREATE_REVENUE, "payload")(data))
+            dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            // console.log('datos revenue', error)
-            // Swal.fire({
-            //     position: 'top',
-            //     icon: icon,
-            //     title: title,
-            //     text: text,
-            //     showConfirmButton: false,
-            //     timer: timer
-            // })
-            dispatch(actionCreator(ERROR_REVENUE, "payload")(error));
-            dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
+            dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
+            dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
     }
 }

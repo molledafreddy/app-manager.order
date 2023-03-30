@@ -2,12 +2,13 @@ import axios from "axios";
 
 export default class providerService {
     constructor(){
-        this.url = 'http://localhost:3002';
+        this.url = process.env.REACT_APP_API_BASE;
+        this.token = localStorage.getItem('token');
     }
 
     async getAccount(extend, limit, page, search) {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3NzcwMTYwMCwiZXhwIjoxNjc3NzA4ODAwfQ.7DkEjvINTPdcr-HEtD7J4RNXKTwquCqIAezg5-E1AaI';
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3OTkyODE2NywiZXhwIjoxNjc5OTM1MzY3fQ.iBKq07FZnjeV3WGdITRxZoeiWJDFQdu2sXaqKejn8lw';
             return await axios.get(`${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}`,
                                     { headers: {"Authorization" : `Bearer ${token}`} });
         } catch (error) {

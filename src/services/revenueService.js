@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export default class providerService {
+export default class revenueService {
     constructor(){
-        this.url = 'http://localhost:3002';
-        this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3ODQ4MTYwNiwiZXhwIjoxNjc4NDg4ODA2fQ.kUacGOumyiI9DEfJJ-gOJB25z5fH8U_RDpHirN82RAs'
+        this.url = process.env.REACT_APP_API_BASE;
+        this.token = localStorage.getItem('token');
     }
 
     async getRevenue(extend, limit, page, startDate = '', endDate = '', type = '') {
@@ -47,27 +47,30 @@ export default class providerService {
     async createRevenue(extend, payload) {
         try {
             const dataA = new FormData();
-       
+            const amountPos = payload?.amountPos === undefined ? 0 : payload?.amountPos.toString().replace(/[$,]/g,'');
+            const amountTransfer = payload?.amountTransfer === undefined ? 0 : payload?.amountTransfer.toString().replace(/[$,]/g,'');
+            const amountCash = payload?.amountCash === undefined ? 0 : payload?.amountCash.toString().replace(/[$,]/g,'');
+            const amountOther = payload?.amountOther === undefined ? 0 : payload?.amountOther.toString().replace(/[$,]/g,'');
+            
+            const totalAmount = (Number(amountPos) + Number(amountTransfer) + Number(amountCash) + Number(amountOther));
+            
             const data = JSON.stringify({
-                amountSistem: payload?.amountSistem,
-                amountPos: payload?.amountPos,
-                amountTransfer: payload?.amountTransfer,
-                amountCash: payload?.amountCash,
-                amountOther: payload?.amountOther,
+                amountSistem: payload?.amountSistem === undefined ? null : payload?.amountSistem.toString().replace(/[$,]/g,''),
+                amountPos: amountPos,
+                amountTransfer: amountTransfer,
+                amountCash: amountCash,
+                amountOther: amountOther,
                 description: payload?.description,
-                cashFund: payload?.cashFund,
+                cashFund: payload?.cashFund === undefined ? null : payload?.cashFund.toString().replace(/[$,]/g,''),
                 type: payload?.type,
-                totalAmount: payload?.totalAmount
+                totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount
             })
-            console.log('data',data )
             dataA.append("data",data);
-            // dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
-            // dataA.append("files", payload.files);
-            console.log(' payload.files',  payload.files)
-            for (let i = 0; i < payload.files.length; i++) {
-                dataA.append("files", payload.files[i].file);
+            // console.log('data',  data)
+            for (let i = 0; i < payload?.files?.files?.length; i++) {
+                dataA.append("files", payload?.files?.files[i].file);
             }
-
+            // console.log(' payload.files',  payload?.files)
             const response = await fetch(`${this.url}/${extend}`, 
                 { 
                     method: "POST",
@@ -76,50 +79,55 @@ export default class providerService {
             }).then((res) => res.json());
             return response;
         } catch (error) {
+            // console.log('error', error)
             throw error;
         }
     }
 
     async updateRevenue(extend, payload, id) {
         try {
-            // console.log('payload?.idEgress', payload?._idEgress)
-            // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3ODQ2NzEyMCwiZXhwIjoxNjc4NDc0MzIwfQ.mbNv3a4fXe0VQaVq_pgSvZbWEL75dIN_OPVFx-OOO0Q';
+            const amountPos = payload?.amountPos === undefined ? 0 : payload?.amountPos.toString().replace(/[$,]/g,'');
+            const amountTransfer = payload?.amountTransfer === undefined ? 0 : payload?.amountTransfer.toString().replace(/[$,]/g,'');
+            const amountCash = payload?.amountCash === undefined ? 0 : payload?.amountCash.toString().replace(/[$,]/g,'');
+            const amountOther = payload?.amountOther === undefined ? 0 : payload?.amountOther.toString().replace(/[$,]/g,'');
+            
             const dataA = new FormData();
+            const totalAmount = (Number(amountPos) + Number(amountTransfer) + Number(amountCash) + Number(amountOther));
             const data = JSON.stringify({
                 _id: payload._id,
-                amountSistem: payload.amountSistem,
-                amountPos: payload.amountPos,
-                amountTransfer: payload.amountTransfer,
-                amountCash: payload.amountCash,
-                amountOther: payload.amountOther,
-                description: payload.description,
-                cashFund: payload.cashFund,
+                amountSistem: payload?.amountSistem === undefined ? null : payload?.amountSistem.toString().replace(/[$,]/g,''),
+                amountPos: amountPos,
+                amountTransfer: amountTransfer,
+                amountCash: amountCash,
+                amountOther: amountOther,
+                description: payload?.description,
+                cashFund: payload?.cashFund === undefined ? null : payload?.cashFund.toString().replace(/[$,]/g,''),
                 type: payload?.type,
-                totalAmount: payload.totalAmount
+                totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount
             })
             console.log('data', data)
             let dataFiles = [];
             dataA.append("data",data);
             // dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
             // dataA.append("files", payload.files);
-            console.log('payload',payload.files)
-            for (let i = 0; i < payload.files.length; i++) {
-                if (!payload.files[i].flag) {
-                    dataA.append("files", payload.files[i].file)
+            
+            for (let i = 0; i < payload?.files?.files.length; i++) {
+                if (!payload?.files?.files[i].flag) {
+                    dataA.append("files", payload?.files?.files[i].file)
                 } else {
                     dataFiles.push({
-                        filename: payload.files[i].filename,
-                        file: payload.files[i].file,
-                        path: payload.files[i].path,
-                        size: payload.files[i].size,
-                        mimetype: payload.files[i].mimetype
+                        filename: payload?.files?.files[i].filename,
+                        file: payload?.files?.files[i].file,
+                        path: payload?.files?.files[i].path,
+                        size: payload?.files?.files[i].size,
+                        mimetype: payload?.files?.files[i].mimetype
                     })
                 }
                 
             }
             console.log('files',dataFiles)
             dataA.append("dataFiles",JSON.stringify(dataFiles));
-            
+            console.log('payload',payload)
             const response = await fetch(`${this.url}/${extend}`, 
                 { 
                     method: "POST",

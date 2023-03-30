@@ -15,6 +15,60 @@ export default {
                 }
             ]
         },
+
+        {
+            id: 'ui-app',
+            title: 'Forms & Tables',
+            type: 'group',
+            icon: 'icon-group',
+            children: [
+                {
+                    id: 'turn',
+                    title: 'Turno',
+                    type: 'item',
+                    url: '/turn',
+                    icon: 'feather icon-file-text'
+                },
+                {
+                    id: 'revenue',
+                    title: 'Cierre Turno',
+                    type: 'item',
+                    icon: 'feather icon-server',
+                    url: '/revenue'
+                },
+                {
+                    id: 'order',
+                    title: 'Ordenes',
+                    type: 'item',
+                    icon: 'feather icon-server',
+                    url: '/order'
+                },
+                {
+                    id: 'revenue-other',
+                    title: 'Ingresos Extras',
+                    type: 'item',
+                    icon: 'feather icon-server',
+                    url: '/revenue-other'
+                },
+                {
+                    id: 'egress',
+                    title: 'Egresos',
+                    type: 'item',
+                    icon: 'feather icon-server',
+                    url: '/operation-bill'
+                },
+                {
+                    id: 'statistics',
+                    title: 'Estadisticas',
+                    type: 'item',
+                    icon: 'feather trending-up',
+                    url: '/statistics'
+                }
+            ]
+        },
+
+
+
         {
             id: 'ui-element',
             title: 'UI ELEMENT',

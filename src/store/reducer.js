@@ -1,7 +1,10 @@
 import * as actionTypes from './actions';
 import config from './../config';
 import { LOADING_PROVIDER, ERROR_PROVIDER, GET_SEARCH_PROVIDER } from "./types/provider";
-
+import storage from "redux-persist/lib/storage";
+import { combinereducers } from "@reduxjs/toolkit";
+import { persistreducer } from "redux-persist";
+import { thunk } from "redux-thunk";
 import {  
     CREATE_ACCOUNT,
     GET_ACCOUNT,
@@ -44,6 +47,8 @@ import {
 
 import { GET_ALL_BANK  } from "./types/bank";
 
+import { GET_SEARCH_EGRESS, LOADING_EGRESS, ERROR_EGRESS  } from "./types/egress";
+
 import { GET_ALL_PAYMENTTYPE, GET_SEARCH_PAYMENTTYPE, GET_PAYMENTHASEGRESS  } from "./types/paymentType";
 
 import {  
@@ -57,11 +62,25 @@ import {
     GET_SEARCH_TURN,
     GET_TURN_FOR_USER  } from "./types/turn";
 
+    import { GET_AUTH, LOADING_AUTH, ERROR_AUTH  } from "./types/auth";
+
+
+
+// const persistConfig = {
+//     key: 'root',
+//     storage,
+//     whitelist: ['auth']
+// }
+
+// const rootreducer = combinereducers({
+
+// })
 
 const initialState = {
     isOpen: [], //for active default menu
     users: [1,2], // manejo usuarios
     auth: [], // manejo sesion
+    isLoadingAuth: false,
     provider: [],
     nextPageProvider:0,
     prevPageProvider: 0,
@@ -93,7 +112,7 @@ const initialState = {
     isLoadingOrder: false,
 
     revenues: [],
-    errorRevenue: '',
+    errorRevenue: [],
     statusCodeRevenue: '',
     isLoadingRevenue: false,
     sumRevenue: null,
@@ -103,6 +122,12 @@ const initialState = {
     errorTurn: '',
     statusCodeTurn: '',
     isLoadingTurn: false,
+
+    egress: [],
+    errorEgress: '',
+    statusCodeEgress: '',
+    isLoadingEgress: false,
+    sumEgress: null,
 
     isTrigger: [], //for active default menu, set blank for horizontal
     ...config,
@@ -186,6 +211,24 @@ const reducer = (state = initialState, action) => {
                 layout: action.layout
             };
 
+        case GET_AUTH:
+            return {
+                ...state,
+                authToken: action.payload.data
+            }
+        case LOADING_AUTH:
+            return {
+                ...state,
+                isLoadingAuth: action.payload
+            }
+
+        case ERROR_AUTH:
+            // console.log('ERROR_AUTH', action.payload.status)
+            return {
+                ...state,
+                statusCodeAuth: action.payload.status,
+                errorAuth: action.payload.message
+            }
         //reducers para usuaris
         case actionTypes.REGISTER_USER:
             return [...state, payload];
@@ -537,9 +580,12 @@ const reducer = (state = initialState, action) => {
                 revenues: action.payload.data,
             }
         case CREATE_REVENUE:
-            
+            console.log('action.payload.data CREATE_REVENUE', action.payload)
             state.revenues.push(payload);
-        // break;
+            return {
+                ...state,
+                statusCodeRevenue: '200',
+            }
         case UPDATE_REVENUE:
             
             const {_idRevenue} = action.payload;
@@ -573,10 +619,28 @@ const reducer = (state = initialState, action) => {
                 isLoadingRevenue: action.payload
             }
         case ERROR_REVENUE:
+            console.log('datos ERROR_REVENUE', action.payload)
             return {
                 ...state,
                 statusCode: action.payload.status,
-                errorRevenue: action.payload.message
+                errorRevenue: action.payload,
+                statusCodeRevenue: '400',
+            }
+        case GET_SEARCH_EGRESS:
+            return {
+                ...state,
+                egress: action.payload.data,
+            }
+        case LOADING_EGRESS:
+            return {
+                ...state,
+                isLoadingEgress: action.payload
+            }
+        case ERROR_EGRESS:
+            return {
+                ...state,
+                statusCode: action.payload.status,
+                errorEgress: action.payload.message
             }
         
         default:
