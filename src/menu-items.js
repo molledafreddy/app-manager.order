@@ -61,7 +61,7 @@ export default {
                     id: 'statistics',
                     title: 'Estadisticas',
                     type: 'item',
-                    icon: 'feather icon-server',
+                    icon: 'feather trending-up',
                     url: '/statistics'
                 }
             ]
