@@ -44,7 +44,7 @@ const SignUp = (props) => {
         // console.log('statusCodeAuth valuedata', valuedata)
         
         // let url = ApiAuth + "auth";
-        let url = "http://localhost:3002/auth/login";
+        let url = `${process.env.REACT_APP_API_BASE}/auth/login`;
         axios.post(url, {email:body.email, password:body.password})
         .then( res => {
             if (res.status && res.data !== "NOT_FOUND_USER") {

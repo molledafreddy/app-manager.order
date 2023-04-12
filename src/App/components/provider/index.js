@@ -1,30 +1,19 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
-// import UcFirst from "../../../App/components/UcFirst";
+import {Row, Col, Card, Table, Button, Form, Container, Pagination,InputGroup, FormControl} from 'react-bootstrap';
 import UcFirst from "../../components/UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-// import * as actionTypes from "../../../store/actions";
-import * as actionTypes from "../../../store/actions";
-import { getProviders, deleteProviders, getSearchProviders } from '../../../store/actions/providerAction';
-// import DEMO from "../../../../../../store/constant";
-import DEMO from "../../../store/constant";
+import { deleteProviders, getSearchProviders } from '../../../store/actions/providerAction';
 
 
-
-
-// class ProviderIndex extends Component {
 const ProviderIndex = (props) => {
     const providers = useSelector(state => state.provider.docs)
-    let isOpen = useSelector(state => state.isOpen)
-    let searchString = useSelector(state => state.searchString)
     let totalPages = useSelector(state => state.provider.totalPages)
     let [active, setActive] = useState(1);
 
     const dispatch = useDispatch()
     let pages = [];
-    let searchClass = ['main-search'];
     
     const [body, setBody] = useState({
         email: "", 
@@ -64,13 +53,8 @@ const ProviderIndex = (props) => {
             dispatch(getSearchProviders(dispatch,'provider/search', 3, 1, ''));
             createItem()
         }
-        
-        if (isOpen) {
-            searchClass = [...searchClass, 'open'];
-        }
     }, [dispatch, createItem()]);
 
-    // providers
     
     const driverSubmit =e=> {
         e.preventDefault();

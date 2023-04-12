@@ -1,12 +1,9 @@
-import React, {Component, useState, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form} from 'react-bootstrap';
-// import UcFirst from "../../../App/components/UcFirst";
-import UcFirst from "../../components/UcFirst";
+import {Row, Col, Card, Button, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import * as actionTypes from "../../../store/actions";
-import { getProviders, createProviders, updateProviders, getProvider } from '../../../store/actions/providerAction';
+import { createProviders, updateProviders, getProvider } from '../../../store/actions/providerAction';
 
 const ProviderCreate = (props) => {
    

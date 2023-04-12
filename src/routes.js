@@ -7,24 +7,24 @@ global.jQuery = $;
 
 const DashboardDefault = React.lazy(() => import('./Demo/Dashboard/Default'));
 
-const UIBasicButton = React.lazy(() => import('./Demo/UIElements/Basic/Button'));
-const UIBasicBadges = React.lazy(() => import('./Demo/UIElements/Basic/Badges'));
-const UIBasicBreadcrumbPagination = React.lazy(() => import('./Demo/UIElements/Basic/BreadcrumbPagination'));
+// const UIBasicButton = React.lazy(() => import('./Demo/UIElements/Basic/Button'));
+// const UIBasicBadges = React.lazy(() => import('./Demo/UIElements/Basic/Badges'));
+// const UIBasicBreadcrumbPagination = React.lazy(() => import('./Demo/UIElements/Basic/BreadcrumbPagination'));
 
-const UIBasicCollapse = React.lazy(() => import('./Demo/UIElements/Basic/Collapse'));
-const UIBasicTabsPills = React.lazy(() => import('./Demo/UIElements/Basic/TabsPills'));
-const UIBasicBasicTypography = React.lazy(() => import('./Demo/UIElements/Basic/Typography'));
+// const UIBasicCollapse = React.lazy(() => import('./Demo/UIElements/Basic/Collapse'));
+// const UIBasicTabsPills = React.lazy(() => import('./Demo/UIElements/Basic/TabsPills'));
+// const UIBasicBasicTypography = React.lazy(() => import('./Demo/UIElements/Basic/Typography'));
 
-const FormsElements = React.lazy(() => import('./Demo/Forms/FormsElements'));
+// const FormsElements = React.lazy(() => import('./Demo/Forms/FormsElements'));
 
-const BootstrapTable = React.lazy(() => import('./Demo/Tables/BootstrapTable'));
+// const BootstrapTable = React.lazy(() => import('./Demo/Tables/BootstrapTable'));
 
 const Nvd3Chart = React.lazy(() => import('./Demo/Charts/Nvd3Chart/index'));
 
-const GoogleMap = React.lazy(() => import('./Demo/Maps/GoogleMap/index'));
+// const GoogleMap = React.lazy(() => import('./Demo/Maps/GoogleMap/index'));
 
-const OtherSamplePage = React.lazy(() => import('./Demo/Other/SamplePage'));
-const OtherDocs = React.lazy(() => import('./Demo/Other/Docs'));
+// const OtherSamplePage = React.lazy(() => import('./Demo/Other/SamplePage'));
+// const OtherDocs = React.lazy(() => import('./Demo/Other/Docs'));
 
 //provider
 const indexProvider = React.lazy(() => import('./App/components/provider/index'));
@@ -59,17 +59,17 @@ const indexStatistics = React.lazy(() => import('./App/components/statistics/ind
 
 const routes = [
     { path: '/dashboard/default', exact: true, name: 'Default', component: DashboardDefault },
-    { path: '/basic/button', exact: true, name: 'Basic Button', component: UIBasicButton },
-    { path: '/basic/badges', exact: true, name: 'Basic Badges', component: UIBasicBadges },
-    { path: '/basic/breadcrumb-paging', exact: true, name: 'Basic Breadcrumb Pagination', component: UIBasicBreadcrumbPagination },
-    { path: '/basic/collapse', exact: true, name: 'Basic Collapse', component: UIBasicCollapse },
-    { path: '/basic/tabs-pills', exact: true, name: 'Basic Tabs & Pills', component: UIBasicTabsPills },
-    { path: '/basic/typography', exact: true, name: 'Basic Typography', component: UIBasicBasicTypography },
-    { path: '/forms/form-basic', exact: true, name: 'Forms Elements', component: FormsElements },
-    { path: '/tables/bootstrap', exact: true, name: 'Bootstrap Table', component: BootstrapTable },
+    // { path: '/basic/button', exact: true, name: 'Basic Button', component: UIBasicButton },
+    // { path: '/basic/badges', exact: true, name: 'Basic Badges', component: UIBasicBadges },
+    // { path: '/basic/breadcrumb-paging', exact: true, name: 'Basic Breadcrumb Pagination', component: UIBasicBreadcrumbPagination },
+    // { path: '/basic/collapse', exact: true, name: 'Basic Collapse', component: UIBasicCollapse },
+    // { path: '/basic/tabs-pills', exact: true, name: 'Basic Tabs & Pills', component: UIBasicTabsPills },
+    // { path: '/basic/typography', exact: true, name: 'Basic Typography', component: UIBasicBasicTypography },
+    // { path: '/forms/form-basic', exact: true, name: 'Forms Elements', component: FormsElements },
+    // { path: '/tables/bootstrap', exact: true, name: 'Bootstrap Table', component: BootstrapTable },
     { path: '/charts/nvd3', exact: true, name: 'Nvd3 Chart', component: Nvd3Chart },
-    { path: '/maps/google-map', exact: true, name: 'Google Map', component: GoogleMap },
-    { path: '/sample-page', exact: true, name: 'Sample Page', component: OtherSamplePage },
+    // { path: '/maps/google-map', exact: true, name: 'Google Map', component: GoogleMap },
+    // { path: '/sample-page', exact: true, name: 'Sample Page', component: OtherSamplePage },
     
     { path: '/provider', exact: true, name: 'provider', component: indexProvider },
     { path: '/provider/create', exact: true, name: 'providerCreate', component: createProvider },
@@ -101,7 +101,7 @@ const routes = [
 
     { path: '/statistics', exact: true, name: 'statistics', component: indexStatistics },
     
-    { path: '/docs', exact: true, name: 'Documentation', component: OtherDocs },
+    // { path: '/docs', exact: true, name: 'Documentation', component: OtherDocs },
 ];
 
 export default routes;

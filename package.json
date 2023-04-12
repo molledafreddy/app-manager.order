@@ -2,7 +2,7 @@
   "name": "datta-able-rv18.0.4",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://minimarketlosmedanos.github.io/app-manager.order",
+  "homepage": "",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
     "axios": "^1.2.2",
@@ -35,6 +35,7 @@
     "redux": "^4.0.1",
     "redux-form": "^8.3.9",
     "redux-form-input-masks": "^2.0.2",
+    "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
     "sweetalert2": "^11.7.3",
     "template-redux-helpers": "^1.2.0"

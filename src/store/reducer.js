@@ -526,7 +526,6 @@ const reducer = (state = initialState, action) => {
         // break;
         case UPDATE_TURN:
             
-            const {_idTurn} = action.payload;
             
             const turn = state.turns.find((turn) => turn._id === _idOperation);
             if (turn) {
@@ -540,9 +539,8 @@ const reducer = (state = initialState, action) => {
                 turn.paymentDate = action.payload.paymentDate
                 provider.workingDay = action.payload.workingDay
             }
-        // eslint-disable-next-line no-fallthrough
         case DELETE_TURN:
-            const turnFound = state.turns.find(turn => turn._id === action.payload._id);
+            // const turnFound = state.turns.find(turn => turn._id === action.payload._id);
             if (operationFound) {
                 state.turns.splice(state.turns.indexOf(operationFound), 1)
             }

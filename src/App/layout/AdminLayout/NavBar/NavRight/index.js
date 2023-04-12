@@ -26,16 +26,11 @@ class NavRight extends Component {
         localStorage.removeItem('name');
         localStorage.removeItem('role');
         localStorage.removeItem('token');
-        window.location.replace(`${process.env.REACT_APP_API_BASE}/auth/signin`);
+        window.location.replace(`${window.location.origin}/auth/signin`);
     }
-    // 
-
-    
 
     render() {
         let userName =  localStorage.getItem('name');
-        
-        // function 
         return (
             <Aux>
                 <ul className="navbar-nav ml-auto">

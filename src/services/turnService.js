@@ -3,7 +3,7 @@ import moment from 'moment';
 
 export default class providerService {
     constructor(){
-        this.url = 'http://localhost:3002';
+        this.url = process.env.REACT_APP_API_BASE;
         this.dataToken = localStorage.getItem('token')
         // console.log('data', data)
     }
