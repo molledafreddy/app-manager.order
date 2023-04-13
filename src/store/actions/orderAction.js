@@ -1,6 +1,7 @@
 import  orderService  from "../../services/orderService";
 import { actionCreator } from "template-redux-helpers";
 import Swal from 'sweetalert2';
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import  { LOADING_ORDER, 
           GET_ORDER, 
           ERROR_ORDER, 
@@ -21,6 +22,7 @@ export const getOrder = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -31,11 +33,13 @@ export const getSearchOrder = (dispatch, extens, data) => {
     return dispat => {
         dispatch(actionCreator(LOADING_ORDER, "payload")(true))
         OrderService.getSearchOrder(extens, data).then(data => {
-            // console.log('OperationBillService', data)
+            console.log('OperationBillService', data)
             dispatch(actionCreator(GET_ALL_ORDER, "payload")(data))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
+            console.log('getSearchOrder error', error)
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -53,6 +57,8 @@ export const getSearchOrderPaitOut = (dispatch, extend, limit, page, status, sta
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
+            console.log('error.response.data', error)
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -75,6 +81,7 @@ export const getOrders = (dispatch, extens) => {
             })
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
             Swal.fire({
@@ -96,6 +103,7 @@ export const createOrder= (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -110,6 +118,7 @@ export const updateOrder = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -125,6 +134,7 @@ export const deleteOrder = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })

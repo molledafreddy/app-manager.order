@@ -476,7 +476,7 @@ const OperationBillCreate = (props) => {
     }
 
     const validImages = async (e) => {
-        var maxSize = 2048;
+        var maxSize = 4048;
 
         var file = e.target.files[0];
         var imageType = file.type;
@@ -562,6 +562,30 @@ const OperationBillCreate = (props) => {
         })
     }
 
+    const download = async (originalImage, flag) => {
+        let imageBlog = null;
+        let  duplicateName = '';
+        console.log('flag', flag)
+        if (flag) {
+        const image = await fetch(originalImage);
+        const nameSplit=originalImage.split("/");
+            duplicateName=nameSplit.pop();
+
+            imageBlog = await image.blob()
+       } else {
+            imageBlog = originalImage
+            duplicateName = 'image'
+       }
+        
+        const imageURL = URL.createObjectURL(imageBlog)
+        const link = document.createElement('a')
+        link.href = imageURL;
+        link.download = ""+duplicateName+"";
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    };
+
     return (
         <Aux>
             <Row>
@@ -583,10 +607,6 @@ const OperationBillCreate = (props) => {
                                 <Col md={6}>
                                     <Form.Group controlId="form.ControIinvoiceNumber">
                                         <Form.Label>Numero factura</Form.Label>
-                                        {/* <Form.Control type="text" 
-                                        placeholder="Numero Factura" 
-                                        name="invoiceNumber" 
-                                        value={body?.invoiceNumber} onChange={handlerChange} /> */}
                                         <Form.Control 
                                             type="text" 
                                             placeholder="Numero Factura" 
@@ -594,7 +614,6 @@ const OperationBillCreate = (props) => {
                                             {...register("invoiceNumber")}
                                         />
                                     </Form.Group>
-                                    {/* value={body?.description} onChange={handlerChange} */}
                                     <Form.Group controlId="form.ControlDescrption">
                                         <Form.Label>Descripcion</Form.Label>
                                         <Form.Control 
@@ -612,7 +631,6 @@ const OperationBillCreate = (props) => {
                                     
                                 </Col>
                                 <Col md={6}>
-                                {/* value={body?.type} onChange={handlerChange} */}
                                     <Form.Group controlId="form.ControlType">
                                         <Form.Label>Tipo Operacion</Form.Label>
                                         <Form.Control 
@@ -707,13 +725,16 @@ const OperationBillCreate = (props) => {
                                                     <Col>
                                                         <Card
                                                         key={file.name}
-                                                        style={{ width: '15rem' }}
+                                                        style={{ width: '15rem', height: '15rem' }}
                                                         border="warning">
                                                             <Card.Title className='title_card'>
                                                                 {file?.filename}
+                                                                <Badge key={'card_badge_d'+file.filename} variant='primary' className='badge_position ml-5' onClick={() => download(file?.file, file?.flag)}>
+                                                                    <i className="fa fa-download" />
+                                                                </Badge>
                                                                 <Badge variant='danger' className='badge_position ml-5' onClick={() => deleteImg(file?.id)}>X</Badge>
                                                             </Card.Title>
-                                                            <Card.Img variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
+                                                            <Card.Img style={{ width: '15rem', height:'12rem' }} variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
                                                         </Card>
                                                     </Col>
                                                 )}
@@ -723,7 +744,6 @@ const OperationBillCreate = (props) => {
                                     </Row>
                                 </Col>
                                 <Col md={6}>
-                                {/* onClick={driverButtomSave} */}
                                     <Button type='submit' variant="primary" >{titleButtom}</Button>                  
                                 </Col>
                             </Row>

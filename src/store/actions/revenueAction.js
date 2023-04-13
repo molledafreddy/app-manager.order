@@ -1,5 +1,6 @@
 import  revenueService  from "../../services/revenueService";
 import { actionCreator } from "template-redux-helpers";
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import Swal from 'sweetalert2';
 import  { LOADING_REVENUE, 
           GET_REVENUE, 
@@ -20,6 +21,7 @@ export const getRevenue = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -28,12 +30,14 @@ export const getRevenue = (dispatch, extens, _id) => {
 
 export const getSearchRevenues = (dispatch, extens, limit, page, startDate = '', endDate = '', type = '') => {
     return dispat => {
+        
         dispatch(actionCreator(LOADING_REVENUE, "payload")(true))
         RevenueService.getRevenue(extens, limit, page, startDate, endDate, type).then(data => {
             dispatch(actionCreator(GET_SEARCH_REVENUE, "payload")(data))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -50,6 +54,7 @@ export const getRevenues = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -77,6 +82,7 @@ export const createRevenues = (dispatch, extens, payload) => {
             //     showConfirmButton: false,
             //     timer: timer
             // })
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error));
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
         })
@@ -92,6 +98,7 @@ export const updateRevenues = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -107,6 +114,7 @@ export const deleteRevenues = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })

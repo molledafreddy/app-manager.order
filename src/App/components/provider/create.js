@@ -36,7 +36,7 @@ const ProviderCreate = (props) => {
             if ( providers === undefined || providers?.length === 0) {
                 dispatch(getProvider(dispatch,'provider', props.match.params._id));
             } 
-            if (providers != undefined || providers?.length > 0) {
+            if (providers !== undefined || providers?.length > 0) {
                 setBody(providers.find(prov => prov._id === props.match.params._id));
             }
         }

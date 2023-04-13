@@ -8,22 +8,22 @@ import  AlertComponent  from "../../../../helpers/alert/alert";
 import axios from 'axios';
 import { useSelector, useDispatch } from "react-redux";
 // import { getOrder, createOrder, updateOrder } from '../../../store/actions/';
-import { getAuthToken } from '../../../../store/actions/authAction';
+// import { getAuthToken } from '../../../../store/actions/authAction';
 import Swal from 'sweetalert2';
 
 
 
 const SignUp = (props) => {
-    const valuedata = useSelector(state => state.auth)
-    let statusCodeAuth = useSelector(state => state.statusCodeAuth)
+    // const dispatch = useDispatch()
+    // const valuedata = useSelector(state => state.auth)
+    // let statusCodeAuth = useSelector(state => state.statusCodeAuth)
+    // const [isLogged, setIsLogged] = useState (false)
     const [body, setBody] = useState({
         email: "", 
         password: "",
         error: false,
         errorMsg: ""
     })
-
-    const dispatch = useDispatch()
    
     const driverSubmit =e=> {
         e.preventDefault();
@@ -38,32 +38,16 @@ const SignUp = (props) => {
 
     const driverButtom = async (e) => {
 
-        // const data = await dispatch(getAuthToken(dispatch,'auth/login', {email:body.email, password:body.password}));
-       
-        // console.log('statusCodeAuth login', statusCodeAuth)
-        // console.log('statusCodeAuth valuedata', valuedata)
-        
-        // let url = ApiAuth + "auth";
         let url = `${process.env.REACT_APP_API_BASE}/auth/login`;
         axios.post(url, {email:body.email, password:body.password})
         .then( res => {
             if (res.status && res.data !== "NOT_FOUND_USER") {
-                // console.log('datos', res.data)
                 localStorage.setItem('token', res.data.token)
                 localStorage.setItem('role', res.data.user.role)
                 localStorage.setItem('name', res.data.user.name)
-                console.log('token', localStorage.getItem('token'))
                 props.history.push("/dashboard/default");
             } else {
                 setBody({error: true})
-                // Swal.fire({
-                //     position: 'top',
-                //     icon: "error",
-                //     title: "Error Login",
-                //     text: "Usuario o Contraseña incorrecta",
-                //     showConfirmButton: false,
-                //     timer: 3000
-                // })
             }
             console.log(res)
         }).catch(error => {

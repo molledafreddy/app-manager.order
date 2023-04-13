@@ -1,5 +1,6 @@
 import  bankService  from "../../services/bankService";
 import { actionCreator } from "template-redux-helpers";
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import  { LOADING_BANK,BANK_PROVIDER, 
           ERROR_BANK, 
           CREATE_BANK, 
@@ -19,6 +20,7 @@ export const getBank = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_BANK, "payload")(error))
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
@@ -33,7 +35,7 @@ export const getSearchBankrs = (dispatch, extens, limit, page, search) => {
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
         .catch(error => {
-            console.log('datos error',error )
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_BANK, "payload")(error))
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
@@ -50,6 +52,7 @@ export const getBanks = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_BANK, "payload")(error))
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
@@ -64,6 +67,7 @@ export const createBanks = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_BANK, "payload")(error))
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
@@ -79,6 +83,7 @@ export const updateBanks = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_BANK, "payload")(error))
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
@@ -94,6 +99,7 @@ export const deleteBanks = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_BANK, "payload")(error))
             dispatch(actionCreator(LOADING_BANK, "payload")(false))
         })

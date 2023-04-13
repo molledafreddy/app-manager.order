@@ -1,4 +1,5 @@
 import  turnService  from "../../services/turnService";
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import { actionCreator } from "template-redux-helpers";
 import  { LOADING_TURN, 
           GET_TURN, 
@@ -20,6 +21,7 @@ export const getTurn = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -35,6 +37,7 @@ export const getSearchTurns = (dispatch, extens, limit, page, type, paymentType,
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -45,11 +48,11 @@ export const getTurnForUser = (dispatch, extens, limit, page, type, paymentType,
     return dispat => {
         dispatch(actionCreator(LOADING_TURN, "payload")(true))
         TurnService.getTurnForUser(extens, limit, page, type, paymentType, status, data.startDate || '', data.endDate || '').then(data => {
-            // console.log('OperationBillService', data)
             dispatch(actionCreator(GET_TURN_FOR_USER, "payload")(data))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -64,6 +67,7 @@ export const getTurns = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -78,6 +82,7 @@ export const createTurn = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -93,6 +98,7 @@ export const updateTurn = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -108,6 +114,7 @@ export const deleteTurn = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })

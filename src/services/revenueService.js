@@ -8,8 +8,6 @@ export default class revenueService {
 
     async getRevenue(extend, limit, page, startDate = '', endDate = '', type = '') {
         try {
-            console.log('llego por ael getRevenue', extend)
-              
             let  headers = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token

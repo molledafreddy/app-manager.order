@@ -1,5 +1,6 @@
 import  providerService  from "../../services/providerService";
 import { actionCreator } from "template-redux-helpers";
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import  { LOADING_PROVIDER, 
           GET_PROVIDER, 
           ERROR_PROVIDER, 
@@ -19,6 +20,7 @@ export const getProvider = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -33,7 +35,7 @@ export const getSearchProviders = (dispatch, extens, limit, page, search) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            console.log('datos error',error )
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -50,6 +52,7 @@ export const getProviders = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -64,6 +67,7 @@ export const createProviders = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -79,6 +83,7 @@ export const updateProviders = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -94,6 +99,7 @@ export const deleteProviders = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })

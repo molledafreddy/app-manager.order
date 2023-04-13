@@ -1,5 +1,6 @@
 import  operationBillService  from "../../services/operationBillService";
 import { actionCreator } from "template-redux-helpers";
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import  { LOADING_OPERATIONBILL, 
           GET_OPERATIONBILL, 
           ERROR_OPERATIONBILL, 
@@ -19,6 +20,7 @@ export const getOperationBill = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
@@ -34,6 +36,7 @@ export const getSearchOperationBills = (dispatch, extens, limit, page, search, d
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
@@ -50,6 +53,7 @@ export const getOperationBills = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
@@ -64,6 +68,7 @@ export const createOperationBills = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
@@ -79,6 +84,7 @@ export const updateOperationBills = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
@@ -94,6 +100,7 @@ export const deleteOperationBills = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })

@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-ENV REACT_APP_API_BASE=/
+ENV REACT_APP_API_BASE=https://api-manager-o3iu9.ondigitalocean.app
 
 RUN npm install
 

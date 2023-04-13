@@ -5,7 +5,6 @@ export default class providerService {
     constructor(){
         this.url = process.env.REACT_APP_API_BASE;
         this.dataToken = localStorage.getItem('token')
-        // console.log('data', data)
     }
 
     async getTurn(extend, limit, page, search, startDate = '', endDate = '') {

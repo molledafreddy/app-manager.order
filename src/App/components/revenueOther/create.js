@@ -256,7 +256,7 @@ const RevenueOtherCreate = (props) => {
     }
 
     const validImages = async (e) => {
-        var maxSize = 2048;
+        var maxSize = 4048;
 
         var file = e.target.files[0];
         var imageType = file.type;
@@ -358,6 +358,30 @@ const RevenueOtherCreate = (props) => {
         })
     }
 
+    const download = async (originalImage, flag) => {
+        let imageBlog = null;
+        let  duplicateName = '';
+        console.log('flag', flag)
+        if (flag) {
+        const image = await fetch(originalImage);
+        const nameSplit=originalImage.split("/");
+            duplicateName=nameSplit.pop();
+
+            imageBlog = await image.blob()
+       } else {
+            imageBlog = originalImage
+            duplicateName = 'image'
+       }
+        
+        const imageURL = URL.createObjectURL(imageBlog)
+        const link = document.createElement('a')
+        link.href = imageURL;
+        link.download = ""+duplicateName+"";
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    };
+
     return (
         <Aux>
             <Row>
@@ -434,10 +458,13 @@ const RevenueOtherCreate = (props) => {
                                                             style={{ width: '15rem' }}
                                                             border="warning">
                                                             <Card.Title key={'card_title_'+file.filename} className='title_card'>
-                                                                {file?.filename}
+                                                                {file?.filename }
+                                                                <Badge key={'card_badge_d'+file.filename} variant='primary' className='badge_position ml-5' onClick={() => download(file?.file, file?.flag)}>
+                                                                    <i className="fa fa-download" />
+                                                                </Badge>
                                                                 <Badge key={'card_badge_'+file.filename} variant='danger' className='badge_position ml-5' onClick={() => deleteImg(file?.id)}>X</Badge>
                                                             </Card.Title>
-                                                            <Card.Img key={'card_img_'+file.filename} variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
+                                                            <Card.Img style={{ width: '15rem', height:'12rem' }} key={'card_img_'+file.filename} variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
                                                         </Card>
                                                     )}
                                                 </Col>

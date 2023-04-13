@@ -30,8 +30,8 @@ export default class orderService {
     async getSearchOrderPaitOut(extend, limit, page, status, startDate = '', endDate = '') {
         try {
             // console.log('payload', payload)
-            console.log('getSearchOrderPaitOut startDate', startDate)
-            console.log('endDate', endDate)
+            // console.log('getSearchOrderPaitOut startDate', startDate)
+            // console.log('endDate', endDate)
             let  headers = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token

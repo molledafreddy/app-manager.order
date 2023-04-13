@@ -1,5 +1,6 @@
 import  egressService  from "../../services/egressService";
 import { actionCreator } from "template-redux-helpers";
+import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 import  { LOADING_EGRESS, 
           GET_SEARCH_EGRESS, 
           ERROR_EGRESS,
@@ -30,6 +31,7 @@ export const getSearchEgress = (dispatch, extens, data) => {
             dispatch(actionCreator(LOADING_EGRESS, "payload")(false))
         })
         .catch(error => {
+            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_EGRESS, "payload")(error))
             dispatch(actionCreator(LOADING_EGRESS, "payload")(false))
         })
