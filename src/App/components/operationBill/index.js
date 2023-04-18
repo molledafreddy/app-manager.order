@@ -52,12 +52,12 @@ const OperationBillIndex = (props) => {
     function pagination(number) {
         setActive(number);
         const date = validDateSearch();
-        dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 5, number, body.search, date))
+        dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 10, number, body.search, date))
     }
 
     const searchHandler = () => {
        const date = validDateSearch();
-        dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 5, 1, body.search, date));
+        dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 10, 1, body.search, date));
         createItem()
     }
 
@@ -76,7 +76,7 @@ const OperationBillIndex = (props) => {
     useEffect(() => {
         if (active === 1) {
             const date = validDateSearch();
-            dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 5, 1, '', date));
+            dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 10, 1, '', date));
             createItem()
         }
     }, [dispatch, createItem()]);
@@ -127,6 +127,7 @@ const OperationBillIndex = (props) => {
                             </Row>
                             <Row>
                                 <Col md={{ span: 4, offset: 0 }}> 
+                                    <Form.Label>Fecha Registro</Form.Label>
                                     <DatePicker
                                         className="form-control input_width"
                                         selectsRange={true}
@@ -140,6 +141,7 @@ const OperationBillIndex = (props) => {
                                 </Col>
                                 <Col md={{ span: 5, offset: 1 }}> 
                                     <Form onSubmit={driverSubmit}>  
+                                    <Form.Label>busqueda</Form.Label>
                                         <InputGroup className="mb-3">
                                             <FormControl
                                                 placeholder="Ingresar informacion"
@@ -179,7 +181,7 @@ const OperationBillIndex = (props) => {
                                 <tr key={operation._id}>
                                 <td>{operation?.type}</td>
                                 <td>{operation?.egress[0]?.invoiceNumber}</td>
-                                <td>{ operation?.egress[0]?.amount}</td>
+                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(operation?.egress[0]?.amount === undefined ? 0: operation?.egress[0]?.amount)}</td>
                                 <td>{operation?.description}</td>
                                 <td>{moment(operation?.createdAt).format("YYYY-MM-DD")}</td>
                                 <td>{moment(operation?.updatedAt).format("YYYY-MM-DD")}</td>
@@ -196,26 +198,27 @@ const OperationBillIndex = (props) => {
                             )}
                             </tbody>
                         </Table>
+                        <Row>
+                            <Col xs={12}  sm={{ span: 8, offset: 2 }} md={{ span: 6, offset: 1 }} lg={12}>
+                                <Pagination size="sm" className="row justify-content-center">
+                                    <Pagination.First
+                                        onClick={() => {if (active > 1) {pagination(1);}}}
+                                    />
+                                    <Pagination.Prev
+                                        onClick={() => {if (active > 1) {pagination(active - 1);}}}
+                                    />
+                                    {pages}
+                                    <Pagination.Next
+                                        onClick={() => {if (active < totalPages) {pagination(totalPages);}}}
+                                    />
+                                    <Pagination.Last 
+                                        onClick={() => { if (active < totalPages) {pagination(totalPages);}}}
+                                    />
+                                </Pagination>
+                            </Col>
+                        </Row>
                     </Card.Body>
-                    <Row>
-                        <Col xs={12}  sm={{ span: 8, offset: 2 }} md={{ span: 6, offset: 1 }} lg={12}>
-                            <Pagination size="sm" className="row justify-content-center">
-                                <Pagination.First
-                                    onClick={() => {if (active > 1) {pagination(1);}}}
-                                />
-                                <Pagination.Prev
-                                    onClick={() => {if (active > 1) {pagination(active - 1);}}}
-                                />
-                                {pages}
-                                <Pagination.Next
-                                    onClick={() => {if (active < totalPages) {pagination(totalPages);}}}
-                                />
-                                <Pagination.Last 
-                                    onClick={() => { if (active < totalPages) {pagination(totalPages);}}}
-                                />
-                            </Pagination>
-                        </Col>
-                    </Row>
+                    
                 </Card>
                 </Col>
             </Row>

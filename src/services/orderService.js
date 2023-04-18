@@ -72,27 +72,29 @@ export default class orderService {
             // console.log('payload', payload)
             const dataA = new FormData();
             const data = JSON.stringify({
-                amount: payload.amount,
-                invoiceNumber: payload.invoiceNumber,
-                estimatedAmount: payload.estimatedAmount,
-                paymentMethod: payload.paymentMethod,
-                providers: payload.providers,
-                status: payload.status,
+                amount: payload?.amount,
+                invoiceNumber: payload?.invoiceNumber,
+                estimatedAmount: payload?.estimatedAmount,
+                paymentMethod: payload?.paymentMethod,
+                providers: payload?.providers,
+                status: payload?.status,
                 estimateReceptionDate: payload?.estimateReceptionDate,
-                orderDate: payload.orderDate,
-                paymentDate: payload.paymentDate,
-                receptionDate: payload.receptionDate,
-                creditPaymentDate:payload.creditPaymentDate,
-                descriptionOrder: payload.descriptionOrder,
-                descriptionPayment: payload.descriptionPayment,
-                descriptionLogistic: payload.descriptionLogistic,
+                orderDate: payload?.orderDate,
+                paymentDate: payload?.paymentDate,
+                receptionDate: payload?.receptionDate,
+                creditPaymentDate:payload?.creditPaymentDate,
+                descriptionOrder: payload?.descriptionOrder,
+                descriptionPayment: payload?.descriptionPayment,
+                descriptionLogistic: payload?.descriptionLogistic,
             })
             dataA.append("data",data);
-            dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
+            dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
             // dataA.append("files", payload.files);
-            console.log(' payload',  payload.paymentHasEgress)
-            for (let i = 0; i < payload.files.files.length; i++) {
-                dataA.append("files", payload.files.files[i].file);
+            console.log(' payload', payload)
+            if (payload?.files?.files.length > 0) {
+                for (let i = 0; i < payload?.files?.files.length; i++) {
+                    dataA.append("files", payload?.files?.files[i].file);
+                }
             }
 
 
@@ -101,7 +103,7 @@ export default class orderService {
                     method: "POST",
                     headers: {'Authorization': `Bearer ${this.token}`}, 
                     body: dataA 
-            }).then((res) => res.json())
+            }).then((res) => res)
             return response;
         } catch (error) {
             throw error;
@@ -137,20 +139,22 @@ export default class orderService {
             dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
             dataA.append("files", payload.files);
             // console.log('payload',payload)
-            console.log('payload?.paymentHasEgress',payload?.paymentHasEgress)
-            for (let i = 0; i < payload.files.files.length; i++) {
-                if (!payload.files.files[i]?.flag) {
-                    dataA.append("files", payload.files.files[i].file)
-                } else {
-                    dataFiles.push({
-                        filename: payload.files.files[i].filename,
-                        file: payload.files.files[i].file,
-                        path: payload.files.files[i].path,
-                        size: payload.files.files[i].size,
-                        mimetype: payload.files.files[i].mimetype
-                    })
+            // console.log('payload?.paymentHasEgress',payload?.paymentHasEgress)
+            if (payload?.files?.files?.length > 0) {
+                for (let i = 0; i < payload?.files?.files.length; i++) {
+                    if (!payload.files.files[i]?.flag) {
+                        dataA.append("files", payload?.files?.files[i].file)
+                    } else {
+                        dataFiles.push({
+                            filename: payload?.files?.files[i].filename,
+                            file: payload?.files?.files[i].file,
+                            path: payload?.files?.files[i].path,
+                            size: payload?.files?.files[i].size,
+                            mimetype: payload?.files?.files[i].mimetype
+                        })
+                    }
+                    
                 }
-                
             }
             // console.log('files',dataFiles)
             dataA.append("dataFiles",JSON.stringify(dataFiles));
@@ -159,9 +163,11 @@ export default class orderService {
                     method: "POST", 
                     headers: {'Authorization': `Bearer ${this.token}`},
                     body: dataA 
-            }).then((res) => res.json())
+            }).then((res) => res)
+            // console.log('response', await response.json())
             return response;
         } catch (error) {
+            console.log('error', error)
             throw error;
         }
     }

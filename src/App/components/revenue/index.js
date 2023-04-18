@@ -71,7 +71,7 @@ const RevenueIndex = (props) => {
         setActive(number);
         validDateSearch();
         console.log('body', body.startDate)
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, number, body.startDate, body.endDate, 'closure'));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, number, body.startDate, body.endDate, 'closure'));
     }
 
     function paginationPait(number) {
@@ -80,7 +80,7 @@ const RevenueIndex = (props) => {
         console.log('activePait', activePait)
         validDateSearch();
         console.log('body', body.startDate)
-        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 5, number, 'paid_out', body.startDate, body.endDate));
+        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, number, 'paid_out', body.startDate, body.endDate));
         
     }
 
@@ -96,8 +96,8 @@ const RevenueIndex = (props) => {
         setActive(1);
         setActivePait(1)
         validDateSearch();
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate, 'closure'));
-        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 5, 1, 'paid_out', body.startDate, body.endDate));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
+        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
         createItem()
         createItemPait()
     }
@@ -105,13 +105,13 @@ const RevenueIndex = (props) => {
     useEffect(() => {
         if (active === 1) {
             validDateSearch()
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate, 'closure'));
+            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
             createItem()
         }
 
         if (activePait === 1) {
             validDateSearch()
-            dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 5, 1, 'paid_out', body.startDate, body.endDate));
+            dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
             createItemPait()
         }
     }, [dispatch, createItem(), createItemPait()]);
@@ -194,7 +194,7 @@ const RevenueIndex = (props) => {
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
                                         <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                                        { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue)}
+                                        { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue === undefined ? 0 : sumRevenue)}
                                         </h3>
                                     </div>
 
@@ -216,7 +216,7 @@ const RevenueIndex = (props) => {
                                     <div className="col-9">
                                         <h3 className="f-w-300 d-flex align-items-center m-b-0">
                                             {/* <i className="feather icon-arrow-up text-c-green f-30 m-r-5"/>  */}
-                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumOrderPaitOut)}
+                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumOrderPaitOut === undefined ? 0 :sumOrderPaitOut)}
                                         </h3>
                                     </div>
 

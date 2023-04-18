@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef} from 'react';
 import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Form, Badge, ListGroup} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { getOperationBill, createOperationBills, updateOperationBills } from '../../../store/actions/operationBillAction';
+import { getOperationBill, createOperationBills, updateOperationBills, updateCodeError } from '../../../store/actions/operationBillAction';
 import { getPaymentTypes, getPaymentHasEgress } from '../../../store/actions/paymentTypeAction';
 import Swal from 'sweetalert2';
 import { useForm } from 'react-hook-form';
@@ -17,6 +17,11 @@ const OperationBillCreate = (props) => {
     const paymentHasEgressR = useSelector(state => state.paymentHasEgress)
     const [validPaimentHas, setValidPaimentHas] = useState(true);
     let [titleButtom, setTitleButtom] = useState('Crear');
+
+    const errorOperationBill = useSelector(state => state.errorOperationBill);
+    const statusCodeOperationBill = useSelector(state => state.statusCodeOperationBill);
+
+    let [validProcess, setValidProcess] = useState(false);
 
     const [body, setBody] = useState({
         _id: null,
@@ -50,6 +55,20 @@ const OperationBillCreate = (props) => {
 
     useEffect( () => {
         titleButt()
+        console.log('errorOrder', errorOperationBill?.length)
+        if (errorOperationBill?.length > 0  && !validProcess) {
+            // console.log('ingreso if errorOrder', errorOperationBill)
+            showAlert("Error en el proceso", errorOperationBill?.message, "error",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+        }
+        console.log('statusCodeOrder', statusCodeOperationBill)
+        if (statusCodeOperationBill === '200' && errorOperationBill.length === 0) {
+            console.log('ingreso al redirect', statusCodeOperationBill)
+            validRedirect()
+        }
         if (props.match.params._id) {
             if ( operationBills === undefined || operationBills?.length === 0) {
                 formatDataUpdate();
@@ -67,7 +86,14 @@ const OperationBillCreate = (props) => {
             formatPaymentContainer();
         }
         
-    }, [dispatch, operationBills, paymentTypes, paymentHasEgressR, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, operationBills, paymentTypes, paymentHasEgressR, statusCodeOperationBill, errorOperationBill, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+
+    const validRedirect = () => {
+        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        dispatch(updateCodeError(dispatch));
+        props.history.push("/operation-bill");
+        return;
+    }
 
     const formatPaymentContainer = async () => {
         let dataPayment = [];
@@ -274,10 +300,6 @@ const OperationBillCreate = (props) => {
         { id:16, type: "innovation" },
         { id:17, type: "other" },
     ];
-    
-    const driverSubmit =e=> {
-        e.preventDefault();
-    }
 
     const handlerChange = async e => {
         setBody({
@@ -448,18 +470,6 @@ const OperationBillCreate = (props) => {
         setDataFile({...dataFile});
     }
 
-    const validIdTypePayment = async () => {
-        for (let index = 0; index < paymentContainer.length; index++) {
-            const element = paymentContainer[index];
-            for (let index = 0; index < paymentTypes.length; index++) {
-                const type = paymentTypes[index];
-                if (type.name === element.payments) {
-                    element.payments = type._id;
-                }
-            }
-        }
-    }
-
     const handlerUploadImages = async (e)  => {
         const resultValid = await validImages(e);
         if (resultValid) {
@@ -476,7 +486,7 @@ const OperationBillCreate = (props) => {
     }
 
     const validImages = async (e) => {
-        var maxSize = 4048;
+        var maxSize = 9048;
 
         var file = e.target.files[0];
         var imageType = file.type;
@@ -529,26 +539,12 @@ const OperationBillCreate = (props) => {
     
         const watchAmount = watch("amount");
     const onSubmit = (dataInfo) => {
-        console.log('datos', dataInfo)
-        // setValue("paymentHasEgress", paymentContainer);
         if (props.match.params._id) {
-            // dispatch(updateOperationBills(dispatch,'operation-bills', dataInfo, props.match.params._id))
-            showAlert(
-                false, 
-                "Se realizo la transacion con exito", 
-                "success",
-                3000);
+            dispatch(updateOperationBills(dispatch,'operation-bills', dataInfo, props.match.params._id))
         } else {
             console.log('inbgreso la else')
-            dispatch(createOperationBills(dispatch,'operation-bills', dataInfo))
-            showAlert(
-                false, 
-                "Se realizo la transacion con exito", 
-                "success",
-                3000);
+            dispatch(createOperationBills(dispatch,'operation-bills', dataInfo));
         }
-        // props.history.push("/operation-bill");
-        // return;
     };
 
     const showAlert = (title, text, icon, timer) => {
@@ -653,42 +649,40 @@ const OperationBillCreate = (props) => {
                                     <hr/>
                                     <Row>
                                         <Col md={6}>
-                                            <Form onSubmit={driverSubmit}>
-                                                <Form.Group controlId="form.ControlPayments">
-                                                    <Form.Label>Tipo Pago</Form.Label>
-                                                    <Form.Control 
-                                                        as="select" 
-                                                        name="payments" 
-                                                        value={paymentHasEgress?.payments} 
-                                                        onChange={handlerAmount}>
-                                                        <option key="-1" value="" >selecciona...</option>
-                                                        { paymentTypes.map(payment =>
-                                                            <option key={payment?._id} value={payment?.name}>{payment?.name}</option>
-                                                        )}
-                                                    </Form.Control>
-                                                </Form.Group>
-                                                <Form.Group controlId="form2.ControlPaymentAmount">
-                                                    <Form.Label>Monto</Form.Label>
-                                                    <Form.Control type="tel" autoComplete='off' placeholder="Monto Pago" name="paymentAmount" value={paymentHasEgress?.paymentAmount} onChange={handlerAmount} />
-                                                </Form.Group>
-                                                <Form.Group controlId="form.ControlAmount">
-                                                    <Form.Label>Monto Total</Form.Label>
-                                                    <Form.Control 
-                                                        disabled
-                                                        type="text" 
-                                                        name="amount"
-                                                        value={ watchAmount}
-                                                    />
-                                                </Form.Group>
-                                                <Form.Group>
-                                                    <Button disabled={buttomAmount} onClick={addAmount}  className="mb-0">Agregar</Button>
-                                                </Form.Group>
-                                            </Form>
+                                            <Form.Group controlId="form.ControlPayments">
+                                                <Form.Label>Tipo Pago</Form.Label>
+                                                <Form.Control 
+                                                    as="select" 
+                                                    name="payments" 
+                                                    value={paymentHasEgress?.payments} 
+                                                    onChange={handlerAmount}>
+                                                    <option key="-1" value="" >selecciona...</option>
+                                                    { paymentTypes.map(payment =>
+                                                        <option key={payment?._id} value={payment?.name}>{payment?.name}</option>
+                                                    )}
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="form2.ControlPaymentAmount">
+                                                <Form.Label>Monto</Form.Label>
+                                                <Form.Control type="tel" autoComplete='off' placeholder="Monto Pago" name="paymentAmount" value={paymentHasEgress?.paymentAmount} onChange={handlerAmount} />
+                                            </Form.Group>
+                                            <Form.Group controlId="form.ControlAmount">
+                                                <Form.Label>Monto Total</Form.Label>
+                                                <Form.Control 
+                                                    disabled
+                                                    type="text" 
+                                                    name="amount"
+                                                    value={ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(watchAmount)}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Button disabled={buttomAmount} onClick={addAmount}  className="mb-0">Agregar</Button>
+                                            </Form.Group>
                                         </Col>
                                         <Col className="mt-4" md={6}>
                                             <ListGroup as="ol" numbered>
                                                 { paymentContainer?.map(payment =>
-                                                    <ListGroup.Item key={payment?.id} as="li" className="d-flex justify-content-between align-items-start">
+                                                    <ListGroup.Item key={'cardd_'+payment?.id} as="li" className="d-flex justify-content-between align-items-start">
                                                         <div className="ms-2 me-auto">
                                                             <div className="fw-bold">{payment.payments}</div>
                                                             { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(payment.paymentAmount)}
@@ -705,7 +699,7 @@ const OperationBillCreate = (props) => {
                                         <Col md={12}>
                                         <h5 className="mt-5">Archivos</h5>
                                         <hr/>
-                                            <Form onSubmit={driverSubmit} inline>
+                                            {/* <Form onSubmit={driverSubmit} inline> */}
                                                 <Form.Group as={Row}>
                                                     <Form.File
                                                         type="file"
@@ -717,14 +711,14 @@ const OperationBillCreate = (props) => {
                                                         multiple
                                                     />
                                                 </Form.Group>
-                                            </Form> 
+                                            {/* </Form>  */}
                                         </Col>
                                         <Col className="mt-4" md={12}>
                                             <Row xs={1} sm={2} md={3} lg={4} className="g-4">
                                                 {dataFile?.files?.map((file) => 
                                                     <Col>
                                                         <Card
-                                                        key={file.name}
+                                                        key={'cardd_'+file.filename}
                                                         style={{ width: '15rem', height: '15rem' }}
                                                         border="warning">
                                                             <Card.Title className='title_card'>
@@ -734,7 +728,7 @@ const OperationBillCreate = (props) => {
                                                                 </Badge>
                                                                 <Badge variant='danger' className='badge_position ml-5' onClick={() => deleteImg(file?.id)}>X</Badge>
                                                             </Card.Title>
-                                                            <Card.Img style={{ width: '15rem', height:'12rem' }} variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
+                                                            <Card.Img key={'cardi_'+file.filename} style={{ width: '15rem', height:'12rem' }} variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
                                                         </Card>
                                                     </Col>
                                                 )}

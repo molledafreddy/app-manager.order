@@ -1,19 +1,17 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect} from 'react';
 
 import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Form, Badge, ListGroup} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { getOrder, createOrder, updateOrder } from '../../../store/actions/orderAction';
+import { getOrder, createOrder, updateOrder, updateCodeError } from '../../../store/actions/orderAction';
 import { getPaymentTypes, getPaymentHasEgress } from '../../../store/actions/paymentTypeAction';
 import { getProviders } from '../../../store/actions/providerAction';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import "../../../../src/styles/datepiker.css";
 
-// import { normalizePhoneNumber, normalizeCnpjNumber, normalizeCepNumber } from '../../masks/masks'
 import {Controller, useForm} from 'react-hook-form';
 
-// import { IMaskInput } from 'react-imask';
 import InputMask from 'react-input-mask';
 import "./styles.css";
 import Swal from 'sweetalert2';
@@ -21,10 +19,15 @@ import Swal from 'sweetalert2';
 const OrderCreate = (props) => {
    
     const dispatch = useDispatch()
-    const providers = useSelector(state => state.provider)
-    const orders = useSelector(state => state.orders.docs)
-    const paymentTypes = useSelector(state => state.paymentTypes)
-    const paymentHasEgressR = useSelector(state => state.paymentHasEgress)
+
+    const providers = useSelector(state => state.provider);
+    const orders = useSelector(state => state.orders.docs);
+    const paymentTypes = useSelector(state => state.paymentTypes);
+    const paymentHasEgressR = useSelector(state => state.paymentHasEgress);
+    const errorOrder = useSelector(state => state.errorOrder);
+    const statusCodeOrder = useSelector(state => state.statusCodeOrder);
+
+    let [validProcess, setValidProcess] = useState(false);
     let [titleButtom, setTitleButtom] = useState('Crear');
   
     const [body, setBody] = useState({
@@ -70,7 +73,20 @@ const OrderCreate = (props) => {
     })
 
     useEffect( () => {
-        // setValue("phone", normalizePhoneNumber(phoneValue))
+        console.log('errorOrder', errorOrder)
+        if (errorOrder?.code !== undefined  && !validProcess) {
+            console.log('ingreso if errorOrder', errorOrder)
+            showAlert("Error en el proceso", errorOrder?.message, "error",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+        }
+        // console.log('statusCodeOrder', statusCodeOrder)
+        if (statusCodeOrder === '200' && errorOrder.length === 0) {
+            console.log('ingreso al redirect', statusCodeOrder)
+            validRedirect()
+        }
         titleButt()
         if (providers === undefined || providers?.length === 0 ) {
             dispatch(getProviders(dispatch,'provider'));
@@ -92,7 +108,15 @@ const OrderCreate = (props) => {
             formatPaymentContainer();
         }
         
-    }, [dispatch, orders, paymentTypes, paymentHasEgressR, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, orders, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+
+    const validRedirect = () => {
+        console.log('validRedirect')
+        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        dispatch(updateCodeError(dispatch));
+        props.history.push("/order");
+        return;
+    }
 
     const formatPaymentContainer = async () => {
         let dataPayment = [];
@@ -108,7 +132,7 @@ const OrderCreate = (props) => {
     }
 
     const formatDataUpdate = async () => {
-        
+        console.log('llego por aca formatDataUpdate')
         dispatch(getOrder(dispatch,'order', props.match.params._id));
         if ((orders !== undefined || orders?.length > 0)) {
             console.log('formatDataUpdate', orders)
@@ -160,8 +184,10 @@ const OrderCreate = (props) => {
     }
 
     const formatData = async () => {
-        const data = await orders.find(prov => prov._id === props.match.params._id)
+        const data = await orders.find(prov => prov._id === props.match.params._id);
+        
         if (data._id !== undefined ) {
+            console.log('llego por aca formatDataUpdate', data.paymentDate)
             // validDateFront(data);
             let filesD = [];
             reset(formValues => ({
@@ -169,11 +195,11 @@ const OrderCreate = (props) => {
                 _id: data?._id,
                 estimatedAmount: data?.estimatedAmount,
                 paymentMethod: data?.paymentMethod,
-                estimateReceptionDate: new Date(data.EstimateReceptionDate),
-                orderDate: new Date(data.orderDate),
-                paymentDate: new Date(data.paymentDate),
-                receptionDate: new Date(data.receptionDate),
-                creditPaymentDate: new Date(data.creditPaymentDate),
+                estimateReceptionDate: data.EstimateReceptionDate === undefined ? undefined : new Date(data.EstimateReceptionDate),
+                orderDate: data.paymentDate === undefined ? undefined : new Date(data.orderDate),
+                paymentDate: data.paymentDate === undefined ? undefined : new Date(data.paymentDate),
+                receptionDate: data.receptionDate === undefined ? undefined : new Date(data.receptionDate),
+                creditPaymentDate: data.creditPaymentDate === undefined ? undefined : new Date(data.creditPaymentDate),
                 status: data?.status,
                 descriptionOrder: data?.descriptionOrder,
                 amount: data?.egress[0]?.amount,
@@ -509,7 +535,7 @@ const OrderCreate = (props) => {
     }
 
     const validImages = async (e) => {
-        var maxSize = 2048;
+        var maxSize = 9048;
 
         var file = e.target.files[0];
         var imageType = file.type;
@@ -622,22 +648,22 @@ const OrderCreate = (props) => {
         
         if (props.match.params._id) {
             dispatch(updateOrder(dispatch,'order', dataInfo, props.match.params._id));
-            showAlert(
-                false, 
-                "Se realizo la transacion con exito", 
-                "success",
-                3000);
+            // showAlert(
+            //     false, 
+            //     "Se realizo la transacion con exito", 
+            //     "success",
+            //     3000);
         } else {
-            const data = dispatch(createOrder(dispatch,'order', dataInfo));
-            console.log('result', data)
-            showAlert(
-                false, 
-                "Se realizo la transacion con exito", 
-                "success",
-                3000);
+            dispatch(createOrder(dispatch,'order', dataInfo));
+            // console.log('result', data)
+            // showAlert(
+            //     false, 
+            //     "Se realizo la transacion con exito", 
+            //     "success",
+            //     3000);
         }
-        props.history.push("/order");
-        return;
+        // props.history.push("/order");
+        // return;
     };
 
     const showAlert = (title, text, icon, timer) => {
@@ -940,15 +966,18 @@ const OrderCreate = (props) => {
                                                         {dataFile?.files?.map((file) => 
                                                                 <Card
                                                                 className="mt-3"
-                                                                key={file.name}
+                                                                key={'card_'+file.filename}
                                                                 style={{ width: '15rem' }}
                                                                 border="warning">
                                                                     <Card.Title className='title_card'>
                                                                         {file?.filename}
-                                                                        <a href="#" download onClick={() => download(file?.file, file?.flag)} >
+                                                                        {/* <a href="#" download onClick={() => download(file?.file, file?.flag)} >
                                                                             <i className="fa fa-download" />
                                                                             d
-                                                                        </a>
+                                                                        </a> */}
+                                                                        <Badge key={'card_badge_d'+file.filename} variant='primary' className='badge_position ml-5' onClick={() => download(file?.file, file?.flag)}>
+                                                                            <i className="fa fa-download" />
+                                                                        </Badge>
                                                                         <Badge variant='danger' className='badge_position ml-5' onClick={() => deleteImg(file?.id)}>X</Badge>
                                                                     </Card.Title>
                                                                     <Card.Img variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />

@@ -12,14 +12,11 @@ export default class providerService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
             }
-            console.log('url enviada',  `${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`)
             const datas = await axios.get(
                             `${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
                             { headers: headers }
                         );
-           console.log('data servicio', datas)
             return datas;
-            // return await axios.get(`${this.url}/${extend}`);
         } catch (error) {
             throw error;
         }
@@ -65,7 +62,7 @@ export default class providerService {
                     method: "POST", 
                     headers: {'Authorization': `Bearer ${this.token}`},
                     body: dataA 
-            }).then((res) => res.json())
+            }).then((res) => res)
             return response;
         } catch (error) {
             throw error;
@@ -77,6 +74,7 @@ export default class providerService {
         try {
             // console.log('payload?.idEgress', payload?._idEgress)
             const dataA = new FormData();
+            // console.log('payload',payload)
             const data = JSON.stringify({
                 _id: id,
                 _idEgress: payload?._idEgress,
@@ -89,25 +87,25 @@ export default class providerService {
             dataA.append("data",data);
             dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
             // dataA.append("files", payload.files);
-            console.log('payload',payload)
-            if (payload?.files.length > 0) {
-                for (let i = 0; i < payload?.files?.files.length; i++) {
+            // console.log('payload',payload?.files)
+            if (payload?.length > 0) {
+                for (let i = 0; i < payload?.files.length; i++) {
                     if (!payload?.files?.files[i].flag) {
-                        dataA.append("files", payload?.files?.files[i].file)
+                        dataA.append("files", payload?.files[i].file)
                     } else {
                         dataFiles.push({
-                            filename: payload.files.files[i].filename,
-                            file: payload?.files?.files[i].file,
-                            path: payload?.files?.files[i].path,
-                            size: payload?.files?.files[i].size,
-                            mimetype: payload?.files?.files[i].mimetype
+                            filename: payload.files[i].filename,
+                            file: payload?.files[i].file,
+                            path: payload?.files[i].path,
+                            size: payload?.files[i].size,
+                            mimetype: payload?.files[i].mimetype
                         })
                     }
                 }
                 
             }
             dataA.append("dataFiles",JSON.stringify(dataFiles));
-            console.log('files',dataFiles)
+            // console.log('files',dataFiles)
             
             
             const response = await fetch(`${this.url}/${extend}`, 
@@ -115,10 +113,11 @@ export default class providerService {
                     method: "POST", 
                     headers: {'Authorization': `Bearer ${this.token}`},
                     body: dataA 
-            }).then((res) => res.json())
+            }).then((res) => res);
+            // console.log('resultado', response)
             return response;
         } catch (error) {
-            console.log('error', error)
+            console.log('error service', error)
             throw error;
         }
     }

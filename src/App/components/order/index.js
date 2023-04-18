@@ -1,7 +1,7 @@
 import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Pagination} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
 import { getSearchOrder, deleteOrder } from '../../../store/actions/orderAction';
@@ -40,7 +40,7 @@ const OrderIndex = (props) => {
         providers: "",
         status: "",
         paymentMethod: "",
-        limit: 5,
+        limit: 10,
         page:1,
         date: [{
                 estimateReceptionDate: { firstDate: null,endDate: null}
@@ -137,7 +137,7 @@ const OrderIndex = (props) => {
             dispatch(getSearchOrder(dispatch,'order/search/detail', body));
             createItem()
         }
-    }, [dispatch, createItem()]);
+    }, [dispatch, createItem(), providers]);
 
     
     const driverSubmit =e=> {
@@ -261,7 +261,7 @@ const OrderIndex = (props) => {
                                             <Form.Label>Proveedor</Form.Label>
                                             <Form.Control as="select" name="providers" value={body?.providers} onChange={handlerChangeSearch}>
                                                 <option  value="">todos</option>
-                                                {providers.map(provider =>
+                                                {providers?.map(provider =>
                                                     <option key={provider?._id} value={provider?._id}>{provider?.businessName}</option>
                                                 )}
                                             </Form.Control>
@@ -307,6 +307,7 @@ const OrderIndex = (props) => {
                             <thead>
                             <tr>
                                 <th>Monto Estimado</th>
+                                <th>Monto Pagado</th>
                                 <th>Estado</th>
                                 <th>Proveedor</th>
                                 <th>Metodo Pago</th>
@@ -320,7 +321,9 @@ const OrderIndex = (props) => {
                             <tbody>
                             {orders?.map(order =>
                                 <tr key={order._id}>
-                                <td>{order?.estimatedAmount}</td>
+                                
+                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.estimatedAmount === undefined ? 0: order?.estimatedAmount)}</td>
+                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.amountPaid === undefined ? 0: order?.amountPaid)}</td>
                                 <td>{order?.status}</td>
                                 <td>{ order?.providers[0]?.businessName}</td>
                                 <td>{ order?.paymentMethod}</td>
@@ -344,7 +347,7 @@ const OrderIndex = (props) => {
                     </Card.Body>
                     <Row>
                         <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                            <Pagination size="sm" class="row justify-content-center">
+                            <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}
                                 />

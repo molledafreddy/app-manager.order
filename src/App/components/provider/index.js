@@ -159,7 +159,7 @@ const ProviderIndex = (props) => {
                     </Card.Body>
                     <Row>
                         <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                            <Pagination size="sm" class="row justify-content-center">
+                            <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}
                                 />

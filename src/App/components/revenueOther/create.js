@@ -1,11 +1,11 @@
 import React, { useState, useEffect} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Badge, Form} from 'react-bootstrap';
+import {Row, Col, Card, Button, Badge, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { createRevenues, updateRevenues, getRevenue } from '../../../store/actions/revenueAction';
+import { createRevenues, updateRevenues, getRevenue, updateCodeErrorRevenue } from '../../../store/actions/revenueAction';
 import Swal from 'sweetalert2';
-import { Controller, useForm} from 'react-hook-form';
+import { useForm} from 'react-hook-form';
 import "./styles.css";
 
 
@@ -13,6 +13,10 @@ const RevenueOtherCreate = (props) => {
    
     const dispatch = useDispatch()
     const revenues = useSelector(state => state.revenues.docs)
+    const errorRevenue = useSelector(state => state.errorRevenue);
+    const statusCodeRevenue = useSelector(state => state.statusCodeRevenue);
+
+    let [validProcess, setValidProcess] = useState(false);
     let [titleButtom, setTitleButtom] = useState('Crear');
    
     const [body, setBody] = useState({
@@ -28,12 +32,34 @@ const RevenueOtherCreate = (props) => {
         files: []
     });
 
-    const [addFile, setAddFile] = useState({
-        file: null
-    })
+    // const [addFile, setAddFile] = useState({
+    //     file: null
+    // })
 
     useEffect( () => {
         titleButt()
+        // console.log('errorRevenue', errorRevenue)
+        if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' ) {
+            showAlert("Error en el proceso", errorRevenue?.message, "error",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+            // updateCodeError(dispatch);
+        }
+
+        if (errorRevenue?.code !== undefined && validProcess === false ) {
+            showAlert("Error en el proceso", 'Error al realizar la transaccion', "error",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+            // updateCodeError(dispatch);
+        }
+        // console.log('statusCodeRevenue', statusCodeRevenue)
+        if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
+            validRedirect()
+        }
         if (props.match.params._id) {
             if ( revenues === undefined || revenues?.length === 0) {
                 dispatch(getRevenue(dispatch,'revenue', props.match.params._id));
@@ -46,7 +72,16 @@ const RevenueOtherCreate = (props) => {
                 addFiles(dataRevenue)
             }
         }
-    }, [dispatch, revenues, titleButt])
+    }, [dispatch, updateCodeErrorRevenue, validRedirect, errorRevenue, statusCodeRevenue, revenues, titleButt])
+
+    const validRedirect = () => {
+        // console.log('llego al redirect revenue-other')
+        updateCodeErrorRevenue(dispatch);
+        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        // console.log('datos validRedirect', errorRevenue)
+        props.history.push("/revenue-other");
+        return;
+    }
 
     const setValuesRevenueOther = async (data) => {
         reset(formValues => ({
@@ -58,7 +93,7 @@ const RevenueOtherCreate = (props) => {
 
     const addFiles = async (data) => {
         let filesD = [];
-        console.log('body?.files', body?.files)
+        // console.log('body?.files', body?.files)
         if (data?.files.length > 0) {
             data.files.forEach((element, index) => {
                 filesD.push({
@@ -161,7 +196,6 @@ const RevenueOtherCreate = (props) => {
         //first filtering of invalid characters
         //the thousands delimeters are eliminated in this filter process
         strNumber = strNumber.replace(filterNumber1, "");
-        console.log('strNumber', strNumber)
         if (strNumber.length>0) {
             //============================================================ S E C O N D
             //If the minusSigned parameter is false, then this symbol is not allowed
@@ -229,7 +263,6 @@ const RevenueOtherCreate = (props) => {
         //check if the minus symbol is allowed so that if it exists add it to the final
         //result before being returned
         resultado = (minusSigned && hasminusSymbol)? "-"+resultado: resultado;
-        console.log('resultado', resultado)
         return resultado;
     }
 
@@ -256,7 +289,7 @@ const RevenueOtherCreate = (props) => {
     }
 
     const validImages = async (e) => {
-        var maxSize = 4048;
+        var maxSize = 9048;
 
         var file = e.target.files[0];
         var imageType = file.type;
@@ -297,12 +330,6 @@ const RevenueOtherCreate = (props) => {
         phone: "Debes introducir un número correcto"
     };
 
-    const patterns = {
-        name: /^[A-Za-z]/gi,
-        mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-        phone: /^[0-9]+$/i,
-    };
-
     const defaultValues = {
         _id: null,
         description: "",
@@ -317,34 +344,19 @@ const RevenueOtherCreate = (props) => {
         handleSubmit, 
         formState: { errors }, 
         setValue, 
-        getValues,
         watch, 
-        reset,
-        control } = useForm({defaultValues, mode:  "all", reValidateMode: "onChange"});
+        reset, } = useForm({defaultValues, mode:  "all", reValidateMode: "onChange"});
     
     const watchTotalAmount = watch("totalAmount");
 
     const onSubmit = (dataInfo) => {
-        console.log('dataInfo', dataInfo)
+        // console.log('dataInfo', dataInfo)
 
         if (props.match.params._id) {
-            dispatch(updateRevenues(dispatch,'revenue/other', dataInfo, props.match.params._id))
-            showAlert(
-                false, 
-                "Se realizo la transacion con exito", 
-                "success",
-                3000);
+            dispatch(updateRevenues(dispatch,'revenue/other', dataInfo, props.match.params._id));
         } else {
-            dispatch(createRevenues(dispatch,'revenue/other', dataInfo))
-            showAlert(
-            false, 
-            "Se realizo la transacion con exito", 
-            "success",
-            3000);
+            dispatch(createRevenues(dispatch,'revenue/other', dataInfo));
         }
-        
-        // props.history.push("/revenue");
-        // return;
     }
     
     const showAlert = (title, text, icon, timer) => {
@@ -361,7 +373,6 @@ const RevenueOtherCreate = (props) => {
     const download = async (originalImage, flag) => {
         let imageBlog = null;
         let  duplicateName = '';
-        console.log('flag', flag)
         if (flag) {
         const image = await fetch(originalImage);
         const nameSplit=originalImage.split("/");

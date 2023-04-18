@@ -18,7 +18,7 @@ export default {
 
         {
             id: 'ui-app',
-            title: 'Forms & Tables',
+            title: 'Modulos',
             type: 'group',
             icon: 'icon-group',
             children: [
@@ -31,37 +31,51 @@ export default {
                 },
                 {
                     id: 'revenue',
-                    title: 'Cierre Turno',
+                    title: 'Cierre Caja',
                     type: 'item',
-                    icon: 'feather icon-server',
+                    icon: 'feather icon-clock',
                     url: '/revenue'
                 },
                 {
                     id: 'order',
                     title: 'Ordenes',
                     type: 'item',
-                    icon: 'feather icon-server',
+                    icon: 'feather icon-bookmark',
                     url: '/order'
                 },
                 {
                     id: 'revenue-other',
                     title: 'Ingresos Extras',
                     type: 'item',
-                    icon: 'feather icon-server',
+                    icon: 'feather icon-plus',
                     url: '/revenue-other'
                 },
                 {
                     id: 'egress',
                     title: 'Egresos',
                     type: 'item',
-                    icon: 'feather icon-server',
+                    icon: 'feather icon-trending-down',
                     url: '/operation-bill'
+                },
+                {
+                    id: 'provider',
+                    title: 'Proveedores',
+                    type: 'item',
+                    icon: 'feather icon-server',
+                    url: '/provider'
+                },
+                {
+                    id: 'account',
+                    title: 'Cuestas proveedores',
+                    type: 'item',
+                    icon: 'feather icon-copy',
+                    url: '/account'
                 },
                 {
                     id: 'statistics',
                     title: 'Estadisticas',
                     type: 'item',
-                    icon: 'feather trending-up',
+                    icon: 'feather icon-filter',
                     url: '/statistics'
                 }
             ]

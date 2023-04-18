@@ -61,9 +61,10 @@ export default class providerService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.dataToken}` //the token is a variable which holds the token
             }
-            payload.startDate = moment(payload.startDate).format('MM/DD/YYYY HH:mm:ss');
-            payload.endDate = moment(payload.endDate).format('MM/DD/YYYY HH:mm:ss');
-            console.log('payload', payload.startDate)
+            
+            payload.startDate = payload.startDate === undefined ? undefined : moment(payload.startDate).format('MM/DD/YYYY HH:mm:ss');
+            payload.endDate = payload.endDate === undefined ? undefined : moment(payload.endDate).format('MM/DD/YYYY HH:mm:ss');
+            console.log('payload', payload)
             return await axios.post(
                 `${this.url}/${extend}`, 
                 payload,

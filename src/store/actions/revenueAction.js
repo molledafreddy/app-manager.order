@@ -1,7 +1,6 @@
 import  revenueService  from "../../services/revenueService";
 import { actionCreator } from "template-redux-helpers";
 import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
-import Swal from 'sweetalert2';
 import  { LOADING_REVENUE, 
           GET_REVENUE, 
           ERROR_REVENUE, 
@@ -9,7 +8,8 @@ import  { LOADING_REVENUE,
           UPDATE_REVENUE,
           DELETE_REVENUE,
           GET_ALL_REVENUE,
-          GET_SEARCH_REVENUE } from "../types/revenue";
+          GET_SEARCH_REVENUE,
+          UPDATE_CODE_ERROR_REVENUES } from "../types/revenue";
 
 const RevenueService = new revenueService();
 
@@ -32,19 +32,20 @@ export const getSearchRevenues = (dispatch, extens, limit, page, startDate = '',
     return dispat => {
         
         dispatch(actionCreator(LOADING_REVENUE, "payload")(true))
+        
         RevenueService.getRevenue(extens, limit, page, startDate, endDate, type).then(data => {
+            
             dispatch(actionCreator(GET_SEARCH_REVENUE, "payload")(data))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('llego por aca getSearchRevenues', error.response.data[0])
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
     }
 }
-
-
 
 export const getRevenues = (dispatch, extens) => {
     return dispat => {
@@ -54,7 +55,7 @@ export const getRevenues = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0]=== 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -65,9 +66,12 @@ export const createRevenues = (dispatch, extens, payload) => {
     return dispat => {
         dispatch(actionCreator(LOADING_REVENUE, "payload")(true))
         RevenueService.createRevenue(extens, payload).then(data => {
+            // console.log('datos acccion', data)
             if (data?.codeHttp === '400') {
                 dispatch(actionCreator(ERROR_REVENUE, "payload")(data));
-            } else {
+            } else if (data?.status === '400') {
+                dispatch(actionCreator(ERROR_REVENUE, "payload")(data));
+            }  else {
                 dispatch(actionCreator(CREATE_REVENUE, "payload")(data));
             }
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
@@ -82,7 +86,7 @@ export const createRevenues = (dispatch, extens, payload) => {
             //     showConfirmButton: false,
             //     timer: timer
             // })
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error));
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
         })
@@ -92,18 +96,43 @@ export const createRevenues = (dispatch, extens, payload) => {
 export const updateRevenues = (dispatch, extens, payload, id) => {
     // console.log('llego la data', payload)
     return dispat => {
+        console.log('lelgo por aca updateRevenues antes de la peticios')
         dispatch(actionCreator(LOADING_REVENUE, "payload")(true))
         RevenueService.updateRevenue(extens, payload, id).then(data => {
-            dispatch(actionCreator(UPDATE_REVENUE, "payload")(data))
-            dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
+            // dispatch(actionCreator(UPDATE_REVENUE, "payload")(data))
+            // dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
+            console.log('lelgo por aca updateRevenues', data)
+            if (data?.codeHttp === '400') {
+                dispatch(actionCreator(ERROR_REVENUE, "payload")(data));
+            } else if (data?.status === '400') {
+                dispatch(actionCreator(ERROR_REVENUE, "payload")(data));
+            }  else {
+                dispatch(actionCreator(UPDATE_REVENUE, "payload")(data));
+            }
+            dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('error', error)
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
     }
 }
+
+export const updateCodeError = (dispatch) => {
+    return dispat => {
+        console.log('updateCodeError UPDATE_CODE_ERROR_REVENUE')
+        dispatch(actionCreator(UPDATE_CODE_ERROR_REVENUES, "payload")(''));
+    }
+}
+
+export const updateCodeErrorRevenue = (dispatch) => {
+    console.log('updateCodeError UPDATE_CODE_ERROR_REVENUE')
+    dispatch(actionCreator(UPDATE_CODE_ERROR_REVENUES, "payload")(''));
+}
+
+
 
 export const deleteRevenues = (dispatch, extens, id) => {
     return dispat => {
@@ -114,7 +143,7 @@ export const deleteRevenues = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })

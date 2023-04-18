@@ -1,9 +1,9 @@
 import React, { useState, useEffect} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Badge, Form} from 'react-bootstrap';
+import {Row, Col, Card, Button, Badge, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { createRevenues, updateRevenues, getRevenue } from '../../../store/actions/revenueAction';
+import { createRevenues, updateRevenues, getRevenue, updateCodeError } from '../../../store/actions/revenueAction';
 import Swal from 'sweetalert2';
 import { Controller, useForm} from 'react-hook-form';
 import "./styles.css";
@@ -12,8 +12,8 @@ const RevenueCreate = (props) => {
    
     const dispatch = useDispatch()
     const revenues = useSelector(state => state.revenues.docs);
-    const errorRevenue = useSelector(state => state.errorRevenue);
     const isLoadingRevenue = useSelector(state => state.isLoadingRevenue);
+    const errorRevenue = useSelector(state => state.errorRevenue);
     const statusCodeRevenue = useSelector(state => state.statusCodeRevenue);
 
     let [validProcess, setValidProcess] = useState(false);
@@ -41,21 +41,33 @@ const RevenueCreate = (props) => {
         files: []
     });
 
-    const [addFile, setAddFile] = useState({
-        file: null
-    })
+    // const [addFile, setAddFile] = useState({
+    //     file: null
+    // })
 
     useEffect( () => {
         titleButt()
-        
-        if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' && !validProcess) {
+        // && validProcess === true
+        if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' ) {
             showAlert("Error en el proceso", errorRevenue?.message, "error",4000);
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
+            updateCodeError(dispatch);
         }
-        if (statusCodeRevenue ) {
+
+        if (errorRevenue?.code !== undefined && validProcess === false ) {
+            showAlert("Error en el proceso", 'Error al realizar la transaccion', "error",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+            updateCodeError(dispatch);
+        }
+        
+        console.log('statusCodeRevenue', statusCodeRevenue)
+        if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
             validRedirect()
         }
         if (props.match.params._id) {
@@ -69,7 +81,7 @@ const RevenueCreate = (props) => {
                 addFiles(dataRevenue)
             }
         }
-    }, [dispatch, revenues, isLoadingRevenue, errorRevenue, statusCodeRevenue, titleButt, validRedirect]);
+    }, [dispatch, updateCodeError, revenues, isLoadingRevenue, errorRevenue, statusCodeRevenue, titleButt, validRedirect]);
 
     const setValuesRevenue = async (data) => {
         reset(formValues => ({
@@ -103,10 +115,6 @@ const RevenueCreate = (props) => {
             setDataFile(dataFile);
             setValue("files", dataFile);
         }
-    }
-
-    const driverSubmit =e=> {
-        e.preventDefault();
     }
 
     const handlerChange = async e => {
@@ -289,7 +297,7 @@ const RevenueCreate = (props) => {
     }
 
     const validImages = async (e) => {
-        var maxSize = 4048;
+        var maxSize = 9048;
 
         var file = e.target.files[0];
         var imageType = file.type;
@@ -330,18 +338,17 @@ const RevenueCreate = (props) => {
         phone: "Debes introducir un número correcto"
     };
 
-    const patterns = {
-        name: /^[A-Za-z]/gi,
-        mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-        phone: /^[0-9]+$/i,
-    };
+    // const patterns = {
+    //     name: /^[A-Za-z]/gi,
+    //     mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+    //     phone: /^[0-9]+$/i,
+    // };
 
     const { 
         register, 
         handleSubmit, 
         formState: { errors }, 
         setValue, 
-        getValues,
         watch, 
         reset,
         control } = useForm({mode:  "all", reValidateMode: "onChange"});
@@ -349,7 +356,7 @@ const RevenueCreate = (props) => {
     const watchTotalAmount = watch("totalAmount");
     
     const onSubmit = (dataInfo) => {
-        console.log('dataInfo', dataInfo)
+        // console.log('dataInfo', dataInfo)
         if (dataInfo.files === undefined || dataInfo.files.length === 0) {
             showAlert(
                 'validacion Cierre Ventas', 
@@ -367,6 +374,7 @@ const RevenueCreate = (props) => {
 
     const validRedirect = () => {
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        updateCodeError(dispatch);
         console.log('datos validRedirect', errorRevenue)
         props.history.push("/revenue");
         return;
@@ -415,7 +423,7 @@ const RevenueCreate = (props) => {
                     <Card.Header>
                         <Row>
                             <Col md={4}>
-                                <Card.Title as="h5">Registro Cierre</Card.Title>
+                                <Card.Title as="h5">Registro Cierre Caja</Card.Title>
                             </Col>
                             <Col md={{ span: 1, offset: 6  }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>

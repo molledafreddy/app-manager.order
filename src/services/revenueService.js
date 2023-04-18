@@ -84,10 +84,14 @@ export default class revenueService {
 
     async updateRevenue(extend, payload, id) {
         try {
+            // console.log('data valores', payload?.amountCash)
             const amountPos = payload?.amountPos === undefined ? 0 : payload?.amountPos.toString().replace(/[$,]/g,'');
             const amountTransfer = payload?.amountTransfer === undefined ? 0 : payload?.amountTransfer.toString().replace(/[$,]/g,'');
             const amountCash = payload?.amountCash === undefined ? 0 : payload?.amountCash.toString().replace(/[$,]/g,'');
-            const amountOther = payload?.amountOther === undefined ? 0 : payload?.amountOther.toString().replace(/[$,]/g,'');
+            let amountOther = 0;
+            if (payload?.amountOther !== null) {
+                amountOther = payload?.amountOther === undefined ? 0 : payload?.amountOther.toString().replace(/[$,]/g,'');
+            }
             
             const dataA = new FormData();
             const totalAmount = (Number(amountPos) + Number(amountTransfer) + Number(amountCash) + Number(amountOther));
@@ -123,7 +127,7 @@ export default class revenueService {
                 }
                 
             }
-            console.log('files',dataFiles)
+            // console.log('files',dataFiles)
             dataA.append("dataFiles",JSON.stringify(dataFiles));
             console.log('payload',payload)
             const response = await fetch(`${this.url}/${extend}`, 

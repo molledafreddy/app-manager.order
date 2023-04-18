@@ -8,9 +8,8 @@ export default class providerService {
 
     async getAccount(extend, limit, page, search) {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3OTkyODE2NywiZXhwIjoxNjc5OTM1MzY3fQ.iBKq07FZnjeV3WGdITRxZoeiWJDFQdu2sXaqKejn8lw';
             return await axios.get(`${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}`,
-                                    { headers: {"Authorization" : `Bearer ${token}`} });
+                                    { headers: {"Authorization" : `Bearer ${this.token}`} });
         } catch (error) {
             throw error;
         }

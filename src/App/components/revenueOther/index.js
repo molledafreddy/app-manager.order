@@ -5,7 +5,7 @@ import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab,  Breadcrumb, 
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteRevenues, getSearchRevenues } from '../../../store/actions/revenueAction';
-import { getSearchOrderPaitOut } from '../../../store/actions/orderAction';
+import { getSearchOrderPaitOut, updateCodeError } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
@@ -46,7 +46,7 @@ const RevenueOtherIndex = (props) => {
         setActive(number);
         validDateSearch();
         console.log('body', body.startDate)
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, number, body.startDate, body.endDate));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, number, body.startDate, body.endDate));
     }
 
     const validDateSearch = () => {
@@ -60,14 +60,14 @@ const RevenueOtherIndex = (props) => {
     const searchHandler = () => {
         setActive(1);
         validDateSearch();
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate, 'other'));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'other'));
         createItem()
     }
 
     useEffect(() => {
         if (active === 1) {
             validDateSearch()
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 5, 1, body.startDate, body.endDate, 'other'));
+            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'other'));
             createItem()
         }
         
@@ -101,6 +101,7 @@ const RevenueOtherIndex = (props) => {
     }
 
     const handlerUpdate = async (id) => {
+        updateCodeError(dispatch);
         props.history.push(`/revenue-other/edit/${id}`);
     }
 
@@ -157,11 +158,10 @@ const RevenueOtherIndex = (props) => {
                             {revenues?.map(revenue =>
                                 <tr key={revenue?._id}>
                                 <td>{revenue?.users[0]?.name}</td>
-                                <td>{revenue?.totalAmount}</td>
+                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount === undefined ? 0: revenue?.totalAmount)}</td>
                                 <td>{revenue?.description}</td>
                                 <td>{moment(revenue?.createdAt).format("YYYY-MM-DD")}</td>
                                 <td>{moment(revenue?.updateAt).format("YYYY-MM-DD")}</td>
-                                
                                 <td>
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
                                         <i className="feather icon-edit-1" />

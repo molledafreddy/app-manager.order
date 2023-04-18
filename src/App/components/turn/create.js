@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Button, Form, Badge, ListGroup} from 'react-bootstrap';
+import {Row, Col, Card, Button, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { getTurn, createTurn, updateTurn } from '../../../store/actions/turnAction';
+import { getTurn, createTurn, updateTurn, updateCodeError } from '../../../store/actions/turnAction';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import "../../../../src/styles/datepiker.css";
@@ -16,7 +16,11 @@ const TurnCreate = (props) => {
    
     const dispatch = useDispatch()
     const turns = useSelector(state => state.turns.docs)
-    let [titleButtom, setTitleButtom] = useState('Crear');
+    let [titleButtom, setTitleButtom] = useState('Crear');const errorOrder = useSelector(state => state.errorOrder);
+    const statusCodeTurn = useSelector(state => state.statusCodeTurn);
+    const errorTurn = useSelector(state => state.errorTurn);
+    let [validProcess, setValidProcess] = useState(false);
+
     const [body, setBody] = useState({
         _id: null,
         description: "",
@@ -28,6 +32,28 @@ const TurnCreate = (props) => {
 
     useEffect( () => {
         titleButt()
+        // console.log('ingreso if errorTurn ssss', errorTurn)
+        if (errorTurn?.code === 'TURN_ACTIVE'  && validProcess === false) {
+            showAlert("Alerta en el proceso", errorTurn?.message, "warning",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+            return;
+        }
+        if (errorTurn?.code !== undefined  && validProcess === false) {
+            // console.log('ingreso if errorOrder', errorTurn)
+            showAlert("Error en el proceso", errorTurn?.message, "error",4000);
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+        }
+
+        if (statusCodeTurn === '200' && errorOrder.length === 0) {
+            // console.log('ingreso al redirect', statusCodeTurn)
+            validRedirect()
+        }
         if (props.match.params._id) {
             if ( turns === undefined || turns?.length === 0) {
                 dispatch(getTurn(dispatch,'turn', props.match.params._id));
@@ -37,7 +63,14 @@ const TurnCreate = (props) => {
                 setValuesTurn(dataTurn);
             }
         }
-    }, [dispatch, turns, titleButt]);
+    }, [dispatch, turns, statusCodeTurn, errorTurn, validRedirect, titleButt]);
+
+    const validRedirect = () => {
+        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        dispatch(updateCodeError(dispatch));
+        props.history.push("/turn");
+        return;
+    }
 
     const setValuesTurn = async (data) => {
         let dateStr = undefined;
@@ -58,8 +91,9 @@ const TurnCreate = (props) => {
             let DStart = fechaStart[1];
             dateStr = new Date(YStart, MStart-1, DStart, HStar, MNStar, SStar,0);
         }
-
+        console.log('data', data)
         if (data.endDate !== null && data.endDate !== undefined ) {
+            console.log('ingreso a la fecha end')
             let convertFechaEnd = data.endDate.toString();
             let resultEnd = convertFechaEnd.split("T");
             let dataHoraEnd = resultEnd[1]
@@ -120,11 +154,11 @@ const TurnCreate = (props) => {
         phone: "Debes introducir un número correcto"
     };
 
-    const patterns = {
-        name: /^[A-Za-z]/gi,
-        mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-        phone: /^[0-9]+$/i,
-    };
+    // const patterns = {
+    //     name: /^[A-Za-z]/gi,
+    //     mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+    //     phone: /^[0-9]+$/i,
+    // };
 
     const { 
         register, 
@@ -136,11 +170,11 @@ const TurnCreate = (props) => {
         control } = useForm({mode:  "onChange", reValidateMode: "onChange"});
 
         const onSubmit = (dataInfo) => {
-            console.log('dataInfo', dataInfo)
-            if (dataInfo.startDate === undefined ) {
+            
+            if (dataInfo.startDate === undefined || dataInfo.endDate === undefined ) {
                 showAlert(
                     'validacion Turno', 
-                    "Debe Ingresar la fecha y Hora del turno", 
+                    "Debe Ingresar la fecha y Hora de Inicio y Fin de turno", 
                     "warning",
                     4000);
                     return;
@@ -154,24 +188,12 @@ const TurnCreate = (props) => {
                     return;
             }
             
-            
+            console.log('dataInfo', dataInfo)
             if (props.match.params._id) {
-                dispatch(updateTurn(dispatch,'turn', dataInfo, props.match.params._id))
-                showAlert(
-                    false, 
-                    "Se realizo la transacion con exito", 
-                    "success",
-                    3000);
+                dispatch(updateTurn(dispatch,'turn', dataInfo, props.match.params._id));
             } else {
-                dispatch(createTurn(dispatch,'turn', dataInfo))
-                showAlert(
-                    false, 
-                    "Se realizo la transacion con exito", 
-                    "success",
-                    3000);
+                dispatch(createTurn(dispatch,'turn', dataInfo));
             }
-            props.history.push("/turn");
-            return;
         }
     
         const showAlert = (title, text, icon, timer) => {
@@ -237,7 +259,7 @@ const TurnCreate = (props) => {
                                         {errors.status && <p>{errors.status.message}</p>}
                                     </Form.Group> 
                                     <Form.Group controlId="form.ControlDescrption">
-                                        <Form.Label>Descripcion</Form.Label>
+                                        <Form.Label>Nota</Form.Label>
                                         <Form.Control 
                                             as="textarea" 
                                             rows="3" 

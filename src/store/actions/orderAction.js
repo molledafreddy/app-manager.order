@@ -9,7 +9,7 @@ import  { LOADING_ORDER,
           UPDATE_ORDER,
           DELETE_ORDER,
           GET_ALL_ORDER,
-          GET_SEARCH_ORDER,
+          UPDATE_CODE_ERROR_ORDER,
           GET_SEARCH_ORDER_PAITOUT } from "../types/order";
 
 const OrderService = new orderService();
@@ -99,26 +99,55 @@ export const createOrder= (dispatch, extens, payload) => {
     return dispat => {
         dispatch(actionCreator(LOADING_ORDER, "payload")(true))
         OrderService.createOrder(extens, payload).then(data => {
-            dispatch(actionCreator(CREATE_ORDER, "payload")(data))
+            if (data?.status  === 200) {
+                console.log('ingreso no tiene errorssss 200', data)
+                dispatch(actionCreator(CREATE_ORDER, "payload")(data));
+                
+            } if (data?.status  === 400 && data?.statusText === "Bad Request") {
+                console.log('ingreso tiene error 400', data)
+                dispatch(actionCreator(ERROR_ORDER, "payload")(data));
+                redirectNoLogin();
+            } else {
+                console.log('ingreso al else tiene error', data)
+                dispatch(actionCreator(ERROR_ORDER, "payload")(data))
+            }
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
+            
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('datos errorssssssss', error)
+            if(error?.response?.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
     }
 }
 
+export const updateCodeError = (dispatch) => {
+    return dispat => {
+        dispatch(actionCreator(UPDATE_CODE_ERROR_ORDER, "payload")(''));
+    }
+}
+
 export const updateOrder = (dispatch, extens, payload, id) => {
     return dispat => {
         dispatch(actionCreator(LOADING_ORDER, "payload")(true))
-        OrderService.updateOrder(extens, payload, id).then(data => {
-            dispatch(actionCreator(UPDATE_ORDER, "payload")(data))
+        OrderService.updateOrder(extens, payload, id).then(async data => {
+            let result = await data.json();
+            if (data?.status  === 200) {
+                dispatch(actionCreator(UPDATE_ORDER, "payload")(result));
+                
+            } if (data?.status  === 400 && data?.statusText === "Bad Request") {
+                dispatch(actionCreator(ERROR_ORDER, "payload")(result));
+                redirectNoLogin();
+            } if (data?.status  === 500) {
+                dispatch(actionCreator(ERROR_ORDER, "payload")(result))
+            }
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('datos', error )
+            if (error?.response?.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })

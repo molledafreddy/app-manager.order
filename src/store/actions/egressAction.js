@@ -26,12 +26,11 @@ export const getSearchEgress = (dispatch, extens, data) => {
     return dispat => {
         dispatch(actionCreator(LOADING_EGRESS, "payload")(true))
         EgressService.getSearchEgress(extens, data).then(data => {
-            // console.log('OperationBillService', data)
             dispatch(actionCreator(GET_SEARCH_EGRESS, "payload")(data))
             dispatch(actionCreator(LOADING_EGRESS, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_EGRESS, "payload")(error))
             dispatch(actionCreator(LOADING_EGRESS, "payload")(false))
         })

@@ -1,22 +1,15 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
-// import UcFirst from "../../../App/components/UcFirst";
+import {Row, Col, Card, Table, Button, Form, Container, Pagination} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-// import * as actionTypes from "../../../store/actions";
-import * as actionTypes from "../../../store/actions";
 import { getAccounts, deleteAccounts } from '../../../store/actions/accountAction';
 import { getProviders } from '../../../store/actions/providerAction';
-// import DEMO from "../../../../../../store/constant";
-import DEMO from "../../../store/constant";
-
-
 
 const AccountIndex = (props) => {
     const accounts = useSelector(state => state.accounts.docs)
-    const providers = useSelector(state => state.provider)
+    const providers = useSelector(state => state.provider.docs)
     let totalPages = useSelector(state => state.accounts.totalPages)
     let [active, setActive] = useState(1);
 
@@ -65,7 +58,7 @@ const AccountIndex = (props) => {
             createItem();
         }
         
-    }, [dispatch, createItem()]);
+    }, [dispatch, createItem(), providers, getProviders]);
 
     const driverSubmit =e=> {
         e.preventDefault();
@@ -110,7 +103,7 @@ const AccountIndex = (props) => {
                                         <Form.Group controlId="form.ControlType">
                                             <Form.Control as="select" name="search" value={body?.search} onChange={handlerChangeSearch}>
                                             <option  value="">todos</option>
-                                            {providers.map(provider =>
+                                            { providers?.map(provider =>
                                                 <option key={provider?._id} value={provider?._id}>{provider?.businessName}</option>
                                             )}
                                             </Form.Control>
@@ -164,7 +157,7 @@ const AccountIndex = (props) => {
                     </Card.Body>
                     <Row>
                         <Col xs={{ span: 4, offset: 4 }} sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                            <Pagination size="sm" class="row justify-content-center">
+                            <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}
                                 />

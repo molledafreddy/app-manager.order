@@ -19,7 +19,7 @@ export const getAccount = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ACCOUNT, "payload")(error))
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
@@ -34,7 +34,7 @@ export const getAccounts = (dispatch, extens, limit, page, search) => {
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ACCOUNT, "payload")(error))
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
@@ -49,7 +49,7 @@ export const createAccounts = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ACCOUNT, "payload")(error))
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
@@ -65,7 +65,7 @@ export const updateAccounts = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ACCOUNT, "payload")(error))
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
@@ -81,7 +81,7 @@ export const deleteAccounts = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ACCOUNT, "payload")(error))
             dispatch(actionCreator(LOADING_ACCOUNT, "payload")(false))
         })

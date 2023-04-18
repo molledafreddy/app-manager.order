@@ -1,10 +1,6 @@
 import * as actionTypes from './actions';
 import config from './../config';
 import { LOADING_PROVIDER, ERROR_PROVIDER, GET_SEARCH_PROVIDER } from "./types/provider";
-import storage from "redux-persist/lib/storage";
-import { combinereducers } from "@reduxjs/toolkit";
-import { persistreducer } from "redux-persist";
-import { thunk } from "redux-thunk";
 import {  
     CREATE_ACCOUNT,
     GET_ACCOUNT,
@@ -22,7 +18,8 @@ import {
     DELETE_OPERATIONBILL,
     LOADING_OPERATIONBILL, 
     ERROR_OPERATIONBILL,
-    GET_SEARCH_OPERATIONBILL  } from "./types/operationBill";
+    GET_SEARCH_OPERATIONBILL,
+    UPDATE_CODE_ERROR_OPERATIONBILL  } from "./types/operationBill";
 
 import {  
         CREATE_ORDER,
@@ -33,7 +30,8 @@ import {
         LOADING_ORDER, 
         ERROR_ORDER,
         GET_SEARCH_ORDER,
-        GET_SEARCH_ORDER_PAITOUT  } from "./types/order";
+        GET_SEARCH_ORDER_PAITOUT,
+        UPDATE_CODE_ERROR_ORDER  } from "./types/order";
 
 import {  
     CREATE_REVENUE,
@@ -43,7 +41,8 @@ import {
     DELETE_REVENUE,
     LOADING_REVENUE, 
     ERROR_REVENUE,
-    GET_SEARCH_REVENUE  } from "./types/revenue";
+    GET_SEARCH_REVENUE,
+    UPDATE_CODE_ERROR_REVENUES  } from "./types/revenue";
 
 import { GET_ALL_BANK  } from "./types/bank";
 
@@ -60,21 +59,10 @@ import {
     LOADING_TURN, 
     ERROR_TURN,
     GET_SEARCH_TURN,
-    GET_TURN_FOR_USER  } from "./types/turn";
+    GET_TURN_FOR_USER,
+    UPDATE_CODE_ERROR_TURN  } from "./types/turn";
 
     import { GET_AUTH, LOADING_AUTH, ERROR_AUTH  } from "./types/auth";
-
-
-
-// const persistConfig = {
-//     key: 'root',
-//     storage,
-//     whitelist: ['auth']
-// }
-
-// const rootreducer = combinereducers({
-
-// })
 
 const initialState = {
     isOpen: [], //for active default menu
@@ -87,10 +75,12 @@ const initialState = {
     errorProvider: '',
     statusCodeProvider: '',
     isLoadingProvider: false,
+
     accounts: [],
     errorAccount: '',
     statusCodeAccount: '',
     isLoadingAccount: false,
+    
     banks: [],
     errorBank: '',
     statusCodeBank: '',
@@ -107,8 +97,8 @@ const initialState = {
     orders: [],
     orderPaitOuts: [],
     order: [],
-    errorOrder: '',
-    statusCodeOorder: '',
+    errorOrder: [],
+    statusCodeOrder: '',
     isLoadingOrder: false,
 
     revenues: [],
@@ -119,7 +109,7 @@ const initialState = {
 
     turns: [],
     turn: [],
-    errorTurn: '',
+    errorTurn: [],
     statusCodeTurn: '',
     isLoadingTurn: false,
 
@@ -249,10 +239,6 @@ const reducer = (state = initialState, action) => {
             }
         case GET_SEARCH_PROVIDER:
             console.log('llego por aca GET_SEARCH_PROVIDER')
-            // return {
-            //     ...state,
-            //     operationBills: action.payload.data,
-            // }
             return {
                 ...state,
                 provider: action.payload.data,
@@ -263,11 +249,12 @@ const reducer = (state = initialState, action) => {
             
             state.provider.push(payload);
         // break;
+        // eslint-disable-next-line no-fallthrough
         case actionTypes.UPDATE_PROVIDER:
             
             const {_id} = action.payload;
             
-            const provider = state.provider.find((provider) => provider._id == _id);
+            const provider = state.provider.find((provider) => provider._id === _id);
             if (provider) {
                 provider.address = action.payload.address
                 provider.rut = action.payload.rut
@@ -281,8 +268,9 @@ const reducer = (state = initialState, action) => {
                 provider.email = action.payload.email
                 provider.merchandiseType = action.payload.merchandiseType
             }
-            
-       
+            return {
+                ...state
+            }
         case actionTypes.DELETE_PROVIDER:
             const providerFound = state.provider.find(provider => provider._id === action.payload._id);
             if (providerFound) {
@@ -320,6 +308,7 @@ const reducer = (state = initialState, action) => {
             
             state.accounts.push(payload);
         // break;
+        // eslint-disable-next-line no-fallthrough
         case UPDATE_ACCOUNT:
             
             const {idAccount} = action.payload;
@@ -374,14 +363,19 @@ const reducer = (state = initialState, action) => {
                 operationBills: action.payload.data,
             }
         case CREATE_OPERATIONBILL:
-            
-            state.operationBills.push(payload);
+            // state.operationBills.push(payload);
+            // state.statusCodeOperationBill = '200';
+            return {
+                ...state,
+                operationBills: payload,
+                statusCodeOperationBill: '200',
+            }
         // break;
+        // eslint-disable-next-line no-fallthrough
         case UPDATE_OPERATIONBILL:
+            const {_idOperationBill} = action.payload._id;
             
-            const {_idOperation} = action.payload;
-            
-            const operationBill = state.operationBills.find((operationBill) => operationBill._id == _idOperation);
+            const operationBill = state.operationBills.docs.find((operationBill) => operationBill._id === _idOperationBill);
             if (operationBill) {
                 operationBill.address = action.payload.address
                 operationBill.rut = action.payload.rut
@@ -395,11 +389,14 @@ const reducer = (state = initialState, action) => {
                 provider.email = action.payload.email
                 provider.merchandiseType = action.payload.merchandiseType
             }
-        // eslint-disable-next-line no-fallthrough
+            return {
+                ...state,
+                statusCodeOperationBill: '200',
+            }
         case DELETE_OPERATIONBILL:
-            const operationFound = state.operationBills.find(operationBill => operationBill._id === action.payload._id);
+            const operationFound = state.operationBills.docs.find(operationBill => operationBill._id === action.payload._id);
             if (operationFound) {
-                state.operationBills.splice(state.operationBills.indexOf(operationFound), 1)
+                state.operationBills.docs.splice(state.operationBills.docs.indexOf(operationFound), 1)
             }
             return {
                 ...state,
@@ -410,12 +407,17 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isLoadingProvider: action.payload
             }
-
+        case UPDATE_CODE_ERROR_OPERATIONBILL:
+            return {
+                ...state,
+                statusCodeOperationBill: '',
+            }
         case ERROR_OPERATIONBILL:
             return {
                 ...state,
                 statusCode: action.payload.status,
-                errorProvider: action.payload.message
+                errorOperationBill: action.payload,
+                statusCodeOperationBill: '500',
             }
         case GET_PAYMENTHASEGRESS:
             return {
@@ -455,48 +457,61 @@ const reducer = (state = initialState, action) => {
                 orderPaitOuts: action.payload.data,
             }
         case CREATE_ORDER:
-            
-            state.orders.push(payload);
-        // break;
-        case UPDATE_ORDER:
-            
-            const {_idOrder} = action.payload;
-            
-            const order = state.orders.find((order) => order._id == _idOrder);
-            if (order) {
-                // order.address = action.payload.address
-                // order.rut = action.payload.rut
-                // order.businessName = action.payload.businessName
-                // order.web = action.payload.web
-                // order.type = action.payload.type
-                // order.contactName = action.payload.contactName
-                // order.phone = action.payload.phone
-                // order.instagran = action.payload.instagran
-                // order.description = action.payload.description
-                // provider.email = action.payload.email
-                // provider.merchandiseType = action.payload.merchandiseType
-            }
-        // eslint-disable-next-line no-fallthrough
-        case DELETE_ORDER:
-            const orderFound = state.orders.find(order => order._id === action.payload._id);
-            if (orderFound) {
-                state.orders.splice(state.orders.indexOf(orderFound), 1)
-            }
             return {
                 ...state,
-                orders: state.orders
+                orders: payload,
+                statusCodeOrder: '200'
             }
+        case UPDATE_ORDER:
+            
+            const _idOrder = action.payload._id;
+            // console.log('payload UPDATE_ORDER', _idOrder)
+            if (_idOrder !== undefined) {
+                const order = state.orders.docs.find((order) => order._id === _idOrder);
+                if (order) {
+                    order.descriptionOrder = action.payload.descriptionOrder
+                    order.estimatedAmount = action.payload.estimatedAmount
+                    order.address = action.payload.address
+                    order.description = action.payload.description
+                    order.egress= action.payload.egress
+                    order.orderDate = action.payload.orderDate
+                    order.paymentMethod = action.payload.paymentMethod
+                    order.providers = action.payload.providers
+                    order.status = action.payload.status
+                    order._id = action.payload._id
+                }
+                return {
+                    ...state,
+                    statusCodeOrder: '200',
+                }
+                
+            }
+        case DELETE_ORDER:
+            // const orderFound = state.orders.docs.find(order => order._id === action.payload._id);
+            // if (orderFound) {
+            //     state.orders.splice(state.orders.indexOf(orderFound), 1)
+            // }
+            // return {
+            //     ...state,
+            //     orders: state.orders
+            // }
         case LOADING_ORDER:
             return {
                 ...state,
                 isLoadingOrder: action.payload
             }
-
+        // eslint-disable-next-line no-duplicate-case
+        case UPDATE_CODE_ERROR_ORDER:
+            return {
+                ...state,
+                statusCodeOrder: '',
+            }
         case ERROR_ORDER:
             return {
                 ...state,
                 statusCode: action.payload.status,
-                errorOrder: action.payload.message
+                errorOrder: action.payload.message,
+                statusCodeOrder: '500',
             } 
             
         
@@ -522,28 +537,39 @@ const reducer = (state = initialState, action) => {
             }
         case CREATE_TURN:
             
-            state.turns.push(payload);
+            // state.turns.push(payload);
+            return {
+                ...state,
+                turns: payload,
+                statusCodeTurn: '200'
+            }
         // break;
+        // eslint-disable-next-line no-fallthrough
         case UPDATE_TURN:
             
-            
-            const turn = state.turns.find((turn) => turn._id === _idOperation);
+            const {_idTurn} = action.payload;
+            const turn = state.turns.docs.find((turn) => turn._id === _idTurn);
             if (turn) {
-                turn.initDate = action.payload.initDate
-                turn.end = action.payload.endDate
-                turn.description = action.payload.description
-                turn.status = action.payload.status
-                turn.statusPayment = action.payload.statusPayment
-                turn.type = action.payload.type
-                turn.users = action.payload.users
-                turn.paymentDate = action.payload.paymentDate
-                provider.workingDay = action.payload.workingDay
+                turn.initDate = action?.payload?.initDate
+                turn.end = action?.payload?.endDate
+                turn.description = action?.payload?.description
+                turn.status = action?.payload?.status
+                turn.statusPayment = action?.payload?.statusPayment
+                turn.type = action?.payload?.type
+                turn.users = action?.payload?.users
+                turn.paymentDate = action?.payload?.paymentDate
+                turn.workingDay = action?.payload?.workingDay
             }
+            return {
+                ...state,
+                statusCodeTurn: '200',
+            }
+        // eslint-disable-next-line no-fallthrough
         case DELETE_TURN:
             // const turnFound = state.turns.find(turn => turn._id === action.payload._id);
-            if (operationFound) {
-                state.turns.splice(state.turns.indexOf(operationFound), 1)
-            }
+            // if (operationFound) {
+            //     state.turns.splice(state.turns.indexOf(operationFound), 1)
+            // }
             return {
                 ...state,
                 turns: state.turns
@@ -557,11 +583,15 @@ const reducer = (state = initialState, action) => {
         case ERROR_TURN:
             return {
                 ...state,
-                statusCode: action.payload.status,
-                errorTurn: action.payload.message
+                statusCode: action.payload?.codeHttp,
+                errorTurn: action.payload,
+                statusCodeTurn: action.payload?.codeHttp
             }
-
-
+        case UPDATE_CODE_ERROR_TURN:
+            return {
+                ...state,
+                statusCodeTurn: '',
+            }
         case GET_REVENUE:
             return {
                 ...state,
@@ -578,17 +608,18 @@ const reducer = (state = initialState, action) => {
                 revenues: action.payload.data,
             }
         case CREATE_REVENUE:
-            console.log('action.payload.data CREATE_REVENUE', action.payload)
-            state.revenues.push(payload);
+            // console.log('action.payload.data CREATE_REVENUE', action.payload)
+            // state.revenues.push(payload);
             return {
                 ...state,
-                statusCodeRevenue: '200',
+                revenues: payload,
+                statusCodeRevenue: '200'
             }
         case UPDATE_REVENUE:
             
             const {_idRevenue} = action.payload;
             
-            const revenue = state.revenues.find((revenue) => revenue._id == _idRevenue);
+            const revenue = state.revenues.docs.find((revenue) => revenue._id === _idRevenue);
             if (revenue) {
                 revenue.address = action.payload.address
                 revenue.rut = action.payload.rut
@@ -601,6 +632,10 @@ const reducer = (state = initialState, action) => {
                 revenue.description = action.payload.description
                 revenue.email = action.payload.email
                 revenue.merchandiseType = action.payload.merchandiseType
+            }
+            return {
+                ...state,
+                statusCodeRevenue: '200',
             }
         case DELETE_REVENUE:
             const revenueFound = state.revenues.find(revenue => revenue._id === action.payload._id);
@@ -616,11 +651,17 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isLoadingRevenue: action.payload
             }
-        case ERROR_REVENUE:
-            console.log('datos ERROR_REVENUE', action.payload)
+        case UPDATE_CODE_ERROR_REVENUES:
+            console.log('llego por aca UPDATE_CODE_ERROR_REVENUE')
             return {
                 ...state,
-                statusCode: action.payload.status,
+                statusCodeRevenue: '',
+            }
+        case ERROR_REVENUE:
+            // console.log('datos ERROR_REVENUE', action.payload)
+            return {
+                ...state,
+                statusCode: action.payload.codeHttp,
                 errorRevenue: action.payload,
                 statusCodeRevenue: '400',
             }
