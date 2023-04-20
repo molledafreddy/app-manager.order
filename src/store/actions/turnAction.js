@@ -118,7 +118,7 @@ export const updateTurn = (dispatch, extens, payload, id) => {
             // dispatch(actionCreator(LOADING_TURN, "payload")(false))
             if (data?.status  === 200) {
                 // console.log('ingreso no tiene errorssss 200', data)
-                dispatch(actionCreator(UPDATE_TURN, "payload")(data));
+                dispatch(actionCreator(UPDATE_TURN, "payload")(data.data));
                 
             } else if (data?.status  === 400 && data?.statusText === "Bad Request") {
                 console.log('ingreso tiene error 400', data)

@@ -156,7 +156,7 @@ const AccountIndex = (props) => {
                         </Table>
                     </Card.Body>
                     <Row>
-                        <Col xs={{ span: 4, offset: 4 }} sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                        <Col xs={{ span: 4, offset: 4 }} sm={{ span: 5, offset: 2 }} md={{ span: 6, offset: 5 }}>
                             <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}

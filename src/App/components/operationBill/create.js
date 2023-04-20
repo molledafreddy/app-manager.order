@@ -16,6 +16,7 @@ const OperationBillCreate = (props) => {
     const paymentTypes = useSelector(state => state.paymentTypes)
     const paymentHasEgressR = useSelector(state => state.paymentHasEgress)
     const [validPaimentHas, setValidPaimentHas] = useState(true);
+    let isLoadingOperationBill = useSelector(state => state.isLoadingOperationBill)
     let [titleButtom, setTitleButtom] = useState('Crear');
 
     const errorOperationBill = useSelector(state => state.errorOperationBill);
@@ -49,9 +50,9 @@ const OperationBillCreate = (props) => {
         files: []
     });
 
-    const [addFile, setAddFile] = useState({
-        file: null
-    })
+    // const [addFile, setAddFile] = useState({
+    //     file: null
+    // })
 
     useEffect( () => {
         titleButt()
@@ -67,6 +68,7 @@ const OperationBillCreate = (props) => {
         console.log('statusCodeOrder', statusCodeOperationBill)
         if (statusCodeOperationBill === '200' && errorOperationBill.length === 0) {
             console.log('ingreso al redirect', statusCodeOperationBill)
+            Swal.close()
             validRedirect()
         }
         if (props.match.params._id) {
@@ -83,10 +85,12 @@ const OperationBillCreate = (props) => {
         }
 
         if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
-            formatPaymentContainer();
+            setTimeout(() => {
+                formatPaymentContainer();
+            }, 200);
         }
         
-    }, [dispatch, operationBills, paymentTypes, paymentHasEgressR, statusCodeOperationBill, errorOperationBill, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, operationBills, isLoadingOperationBill, paymentTypes, paymentHasEgressR, statusCodeOperationBill, errorOperationBill, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
 
     const validRedirect = () => {
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
@@ -104,10 +108,11 @@ const OperationBillCreate = (props) => {
                 id: element?.payments[0]?.name
             })
         });
+       
         setPaymentContainer(dataPayment);
-        setTimeout(() => {
-            setValue("paymentHasEgress", dataPayment);
-        }, 100);
+        setValue("paymentHasEgress", dataPayment);
+        
+        console.log('lelgo por aca formatPaymentContainer', dataPayment)
     }
 
     const formatDataUpdate = async () => {
@@ -141,7 +146,7 @@ const OperationBillCreate = (props) => {
                     filesD.push({
                         id: index,
                         filename: element.filename,
-                        file: `http://localhost:3002/upload/${element.filename}`,
+                        file: `${process.env.REACT_APP_API_BASE}/upload/${element.filename}`,
                         flag: true,
                         path: element.path,
                         size: element.size,
@@ -158,7 +163,7 @@ const OperationBillCreate = (props) => {
     const formatData = async () => {
         const data = await operationBills.find(prov => prov._id === props.match.params._id)
         let filesD = [];
-        
+        // console.log('llego por aca', data)
         reset(formValues => ({
             // ...formValues,
             _id: data._id,
@@ -182,7 +187,7 @@ const OperationBillCreate = (props) => {
                 filesD.push({
                     id: index,
                     filename: element.filename,
-                    file: `http://localhost:3002/upload/${element.filename}`,
+                    file: `${process.env.REACT_APP_API_BASE}/upload/${element.filename}`,
                     flag: true,
                     path: element.path,
                     size: element.size,
@@ -540,11 +545,12 @@ const OperationBillCreate = (props) => {
         const watchAmount = watch("amount");
     const onSubmit = (dataInfo) => {
         if (props.match.params._id) {
-            dispatch(updateOperationBills(dispatch,'operation-bills', dataInfo, props.match.params._id))
+            dispatch(updateOperationBills(dispatch,'operation-bills', dataInfo, paymentContainer, props.match.params._id))
         } else {
             console.log('inbgreso la else')
             dispatch(createOperationBills(dispatch,'operation-bills', dataInfo));
         }
+        showLoading();
     };
 
     const showAlert = (title, text, icon, timer) => {
@@ -556,6 +562,16 @@ const OperationBillCreate = (props) => {
             showConfirmButton: false,
             timer: timer
         })
+    }
+
+    const showLoading = () => {
+        Swal.fire({
+        title: 'En Proceso!',
+        html: 'Transaccion en Proceso.',
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} })
     }
 
     const download = async (originalImage, flag) => {
@@ -589,10 +605,10 @@ const OperationBillCreate = (props) => {
                 <Card>
                     <Card.Header>
                         <Row>
-                            <Col md={4}>
+                            <Col md={4} xs="auto">
                                 <Card.Title as="h5">Facturas de Operacion</Card.Title>
                             </Col>
-                            <Col md={{ span: 1, offset: 6  }}>
+                            <Col md={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 2  }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>
                             </Col>
                         </Row>
@@ -672,7 +688,7 @@ const OperationBillCreate = (props) => {
                                                     disabled
                                                     type="text" 
                                                     name="amount"
-                                                    value={ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(watchAmount)}
+                                                    value={ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(watchAmount === undefined ? 0 :watchAmount)}
                                                 />
                                             </Form.Group>
                                             <Form.Group>
@@ -685,7 +701,7 @@ const OperationBillCreate = (props) => {
                                                     <ListGroup.Item key={'cardd_'+payment?.id} as="li" className="d-flex justify-content-between align-items-start">
                                                         <div className="ms-2 me-auto">
                                                             <div className="fw-bold">{payment.payments}</div>
-                                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(payment.paymentAmount)}
+                                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(payment.paymentAmount === undefined ? 0 : payment.paymentAmount)}
                                                         </div> 
                                                         <Badge variant='danger' className='badge_position ml-5' onClick={() => deletePaymentAmount(payment.id)}>X</Badge>  
                                                     </ListGroup.Item>

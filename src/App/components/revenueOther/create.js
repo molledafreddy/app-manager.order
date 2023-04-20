@@ -32,20 +32,14 @@ const RevenueOtherCreate = (props) => {
         files: []
     });
 
-    // const [addFile, setAddFile] = useState({
-    //     file: null
-    // })
-
     useEffect( () => {
         titleButt()
-        // console.log('errorRevenue', errorRevenue)
         if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' ) {
             showAlert("Error en el proceso", errorRevenue?.message, "error",4000);
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
-            // updateCodeError(dispatch);
         }
 
         if (errorRevenue?.code !== undefined && validProcess === false ) {
@@ -54,10 +48,10 @@ const RevenueOtherCreate = (props) => {
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
-            // updateCodeError(dispatch);
         }
-        // console.log('statusCodeRevenue', statusCodeRevenue)
+
         if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
+            Swal.close()
             validRedirect()
         }
         if (props.match.params._id) {
@@ -67,7 +61,6 @@ const RevenueOtherCreate = (props) => {
 
             if (revenues !== undefined || revenues?.length > 0) {
                 const dataRevenue = revenues.find(prov => prov._id === props.match.params._id);
-                // setBody(dataRevenue);
                 setValuesRevenueOther(dataRevenue)
                 addFiles(dataRevenue)
             }
@@ -99,7 +92,7 @@ const RevenueOtherCreate = (props) => {
                 filesD.push({
                     id: index,
                     filename: element.filename,
-                    file: `http://localhost:3002/upload/${element.filename}`,
+                    file: `${process.env.REACT_APP_API_BASE}/upload/${element.filename}`,
                     flag: true,
                     path: element.path,
                     size: element.size,
@@ -123,14 +116,11 @@ const RevenueOtherCreate = (props) => {
     }
 
     const  numberFormatPositive = async (e) => {
-        // Format only positive decimal numbers
-        // console.log('e.target.name', e.target.name)
         if ( e.target.name === 'totalAmount' ) {
             let DECIMALS = ".";
             let THOUSANDS = ",";
             
             let value = await e.target.value.length>0? numberFormat(e.target.value, -1, THOUSANDS, DECIMALS, false): "";
-            // console.log('value', value)
             e.target.value  = await value;
         }
     }
@@ -350,12 +340,12 @@ const RevenueOtherCreate = (props) => {
     const watchTotalAmount = watch("totalAmount");
 
     const onSubmit = (dataInfo) => {
-        // console.log('dataInfo', dataInfo)
-
         if (props.match.params._id) {
             dispatch(updateRevenues(dispatch,'revenue/other', dataInfo, props.match.params._id));
+            showLoading();
         } else {
             dispatch(createRevenues(dispatch,'revenue/other', dataInfo));
+            showLoading();
         }
     }
     
@@ -368,6 +358,16 @@ const RevenueOtherCreate = (props) => {
             showConfirmButton: false,
             timer: timer
         })
+    }
+
+    const showLoading = () => {
+        Swal.fire({
+        title: 'En Proceso!',
+        html: 'Transaccion en Proceso.',
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} })
     }
 
     const download = async (originalImage, flag) => {
@@ -400,10 +400,10 @@ const RevenueOtherCreate = (props) => {
                 <Card>
                     <Card.Header>
                         <Row>
-                            <Col md={4}>
+                            <Col md={4} sm={4} xs="auto">
                                 <Card.Title as="h5">Registro Ingresos</Card.Title>
                             </Col>
-                            <Col md={{ span: 1, offset: 6  }}>
+                            <Col md={{ span: 1, offset: 6  }} sm={{ span: 1, offset: 8  }} xs={{ span: 1, offset: 2  }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>
                             </Col>
                         </Row>

@@ -9,6 +9,7 @@ import { getProviders } from '../../../store/actions/providerAction';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import "../../../../src/styles/datepiker.css";
+import { loading } from "../../../helpers/loading";
 
 import {Controller, useForm} from 'react-hook-form';
 
@@ -26,6 +27,7 @@ const OrderCreate = (props) => {
     const paymentHasEgressR = useSelector(state => state.paymentHasEgress);
     const errorOrder = useSelector(state => state.errorOrder);
     const statusCodeOrder = useSelector(state => state.statusCodeOrder);
+    let isLoadingOrder = useSelector(state => state.isLoadingOrder)
 
     let [validProcess, setValidProcess] = useState(false);
     let [titleButtom, setTitleButtom] = useState('Crear');
@@ -68,12 +70,15 @@ const OrderCreate = (props) => {
         files: []
     });
 
-    const [addFile, setAddFile] = useState({
-        file: null
-    })
+    // const [addFile, setAddFile] = useState({
+    //     file: null
+    // })
 
     useEffect( () => {
         console.log('errorOrder', errorOrder)
+        // if (isLoadingOrder === false) {
+        //     Swal.close()
+        // }
         if (errorOrder?.code !== undefined  && !validProcess) {
             console.log('ingreso if errorOrder', errorOrder)
             showAlert("Error en el proceso", errorOrder?.message, "error",4000);
@@ -85,6 +90,7 @@ const OrderCreate = (props) => {
         // console.log('statusCodeOrder', statusCodeOrder)
         if (statusCodeOrder === '200' && errorOrder.length === 0) {
             console.log('ingreso al redirect', statusCodeOrder)
+            Swal.close()
             validRedirect()
         }
         titleButt()
@@ -108,11 +114,11 @@ const OrderCreate = (props) => {
             formatPaymentContainer();
         }
         
-    }, [dispatch, orders, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
 
     const validRedirect = () => {
         console.log('validRedirect')
-        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",6500);
         dispatch(updateCodeError(dispatch));
         props.history.push("/order");
         return;
@@ -136,7 +142,8 @@ const OrderCreate = (props) => {
         dispatch(getOrder(dispatch,'order', props.match.params._id));
         if ((orders !== undefined || orders?.length > 0)) {
             console.log('formatDataUpdate', orders)
-            const data = await orders.find(prov => prov._id === props.match.params._id)
+            const data = await orders.find(prov => prov._id === props.match.params._id);
+
             let filesD = [];
             reset(formValues => ({
                 // ...formValues,
@@ -169,7 +176,7 @@ const OrderCreate = (props) => {
                     filesD.push({
                         id: index,
                         filename: element.filename,
-                        file: `http://localhost:3002/upload/${element.filename}`,
+                        file: `${process.env.REACT_APP_API_BASE}/upload/${element.filename}`,
                         flag: true,
                         path: element.path,
                         size: element.size,
@@ -187,7 +194,7 @@ const OrderCreate = (props) => {
         const data = await orders.find(prov => prov._id === props.match.params._id);
         
         if (data._id !== undefined ) {
-            console.log('llego por aca formatDataUpdate', data.paymentDate)
+            // console.log('llego por aca formatDataUpdate', data.paymentDate)
             // validDateFront(data);
             let filesD = [];
             reset(formValues => ({
@@ -220,7 +227,7 @@ const OrderCreate = (props) => {
                     filesD.push({
                         id: index,
                         filename: element.filename,
-                        file: `http://localhost:3002/upload/${element.filename}`,
+                        file: `${process.env.REACT_APP_API_BASE}/upload/${element.filename}`,
                         flag: true,
                         path: element.path,
                         size: element.size,
@@ -590,11 +597,11 @@ const OrderCreate = (props) => {
         phone: "Debes introducir un número correcto"
     };
 
-    const patterns = {
-        name: /^[A-Za-z]/gi,
-        mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-        phone: /^[0-9]+$/i,
-    };
+    // const patterns = {
+    //     name: /^[A-Za-z]/gi,
+    //     mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+    //     phone: /^[0-9]+$/i,
+    // };
 
     const { 
             register, 
@@ -648,22 +655,12 @@ const OrderCreate = (props) => {
         
         if (props.match.params._id) {
             dispatch(updateOrder(dispatch,'order', dataInfo, props.match.params._id));
-            // showAlert(
-            //     false, 
-            //     "Se realizo la transacion con exito", 
-            //     "success",
-            //     3000);
+            showLoading();
         } else {
             dispatch(createOrder(dispatch,'order', dataInfo));
-            // console.log('result', data)
-            // showAlert(
-            //     false, 
-            //     "Se realizo la transacion con exito", 
-            //     "success",
-            //     3000);
+            showLoading();
         }
-        // props.history.push("/order");
-        // return;
+       
     };
 
     const showAlert = (title, text, icon, timer) => {
@@ -677,17 +674,28 @@ const OrderCreate = (props) => {
         })
     }
 
+    const showLoading = () => {
+        Swal.fire({
+        title: 'En Proceso!',
+        html: 'Transaccion en Proceso.',
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} })
+    }
+
     return (
         <Aux>
+        <loading/>
             <Row>
                 <Col>
                     <Card>
                         <Card.Header>
                             <Row>
-                                <Col md={4}>
+                                <Col md={4} xs="auto">
                                     <Card.Title as="h5">Gestion Ordenes</Card.Title>
                                 </Col>
-                                <Col md={{ span: 1, offset: 6  }}>
+                                <Col md={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 2  }}>
                                 <Button variant="primary" onClick={handlerBack}>Volver</Button>
                                 </Col>
                             </Row>
@@ -930,7 +938,7 @@ const OrderCreate = (props) => {
                                                             <ListGroup.Item key={payment?.id} as="li" className="d-flex justify-content-between align-items-start">
                                                                 <div className="ms-2 me-auto">
                                                                     <div className="fw-bold">{payment.payments}</div>
-                                                                    { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(payment.paymentAmount)}
+                                                                    { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(payment.paymentAmount === undefined ? 0 : payment.paymentAmount)}
                                                                 </div> 
                                                                 <Badge key={payment?.id} variant='danger' className='badge_position ml-5' onClick={() => deletePaymentAmount(payment.id)}>X</Badge>  
                                                             </ListGroup.Item>

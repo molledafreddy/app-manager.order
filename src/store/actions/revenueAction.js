@@ -96,12 +96,12 @@ export const createRevenues = (dispatch, extens, payload) => {
 export const updateRevenues = (dispatch, extens, payload, id) => {
     // console.log('llego la data', payload)
     return dispat => {
-        console.log('lelgo por aca updateRevenues antes de la peticios')
+        // console.log('lelgo por aca updateRevenues antes de la peticios')
         dispatch(actionCreator(LOADING_REVENUE, "payload")(true))
         RevenueService.updateRevenue(extens, payload, id).then(data => {
             // dispatch(actionCreator(UPDATE_REVENUE, "payload")(data))
             // dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
-            console.log('lelgo por aca updateRevenues', data)
+            // console.log('lelgo por aca updateRevenues', data)
             if (data?.codeHttp === '400') {
                 dispatch(actionCreator(ERROR_REVENUE, "payload")(data));
             } else if (data?.status === '400') {
@@ -122,7 +122,7 @@ export const updateRevenues = (dispatch, extens, payload, id) => {
 
 export const updateCodeError = (dispatch) => {
     return dispat => {
-        console.log('updateCodeError UPDATE_CODE_ERROR_REVENUE')
+        // console.log('updateCodeError UPDATE_CODE_ERROR_REVENUE')
         dispatch(actionCreator(UPDATE_CODE_ERROR_REVENUES, "payload")(''));
     }
 }

@@ -55,31 +55,26 @@
     font-weight: 100;
     letter-spacing: 5px;
   }
-  
-  /* input[type="submit"]:hover {
-    cursor: pointer;
-    background: #4858aa;
-  } */
-  
-  /* input[type="submit"]:active {
-    transition: 0.3s all;
-    transform: translateY(3px);
-    border: 1px solid transparent;
-    opacity: 0.8;
-  } */
-  
-  /* input:disabled {
-    opacity: 0.4;
-  } */
-  
-  /* input[type="submit"] {
-    -webkit-appearance: none;
-  } */
-  
-  /* div {
-    text-align: center;
-    padding: 15px;
-    font-size: 18px;
-    font-weight: 100;
-  } */
-  
+
+  .egress_title {
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  .ingress_title {
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  .egress_color {
+    color: #f44236;
+    font-weight: 400;
+  }
+
+  .border_card_egress {
+    border-color: #f44236;
+  }
+  .ingress {
+    color: #007bff ;
+    font-weight: 400;
+  }

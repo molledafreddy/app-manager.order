@@ -107,7 +107,7 @@ export default class revenueService {
                 type: payload?.type,
                 totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount
             })
-            console.log('data', data)
+            // console.log('data', data)
             let dataFiles = [];
             dataA.append("data",data);
             // dataA.append("paymentHasEgress", JSON.stringify(payload.paymentHasEgress));
@@ -129,7 +129,7 @@ export default class revenueService {
             }
             // console.log('files',dataFiles)
             dataA.append("dataFiles",JSON.stringify(dataFiles));
-            console.log('payload',payload)
+            // console.log('payload',payload)
             const response = await fetch(`${this.url}/${extend}`, 
                 { 
                     method: "POST",

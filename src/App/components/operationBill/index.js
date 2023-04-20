@@ -1,14 +1,14 @@
 import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Pagination,InputGroup, FormControl} from 'react-bootstrap';
 import UcFirst from "../../components/UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { getOperationBills, deleteOperationBills, getSearchOperationBills } from '../../../store/actions/operationBillAction';
+import { deleteOperationBills, getSearchOperationBills, updateCodeError } from '../../../store/actions/operationBillAction';
 import DatePicker from 'react-datepicker';
 import Moment from 'react-moment';
 import moment from 'moment';
-
+import Swal from 'sweetalert2';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import "../../../../src/styles/datepiker.css";
@@ -16,6 +16,7 @@ import "../../../../src/styles/datepiker.css";
 
 const OperationBillIndex = (props) => {
     const operationBills = useSelector(state => state.operationBills.docs)
+    let isLoadingOperationBill = useSelector(state => state.isLoadingOperationBill)
     let totalPages = useSelector(state => state.operationBills.totalPages)
     let [active, setActive] = useState(1);
 
@@ -52,11 +53,13 @@ const OperationBillIndex = (props) => {
     function pagination(number) {
         setActive(number);
         const date = validDateSearch();
+        showLoading()
         dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 10, number, body.search, date))
     }
 
     const searchHandler = () => {
        const date = validDateSearch();
+       showLoading()
         dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 10, 1, body.search, date));
         createItem()
     }
@@ -74,14 +77,27 @@ const OperationBillIndex = (props) => {
     }
 
     useEffect(() => {
-        if (active === 1) {
+        if (isLoadingOperationBill === false) {
+            Swal.close()
+        }
+    
+        if (active === 1  && (operationBills === undefined ) && isLoadingOperationBill === false) {
             const date = validDateSearch();
+            showLoading();
             dispatch(getSearchOperationBills(dispatch,'operation-bills/search', 10, 1, '', date));
             createItem()
         }
-    }, [dispatch, createItem()]);
+    }, [dispatch, createItem(), showLoading, isLoadingOperationBill, operationBills]);
 
-    
+    const showLoading = () => {
+        Swal.fire({
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} });
+        updateCodeError(dispatch)
+    }
+
     const driverSubmit =e=> {
         e.preventDefault();
     }
@@ -181,7 +197,7 @@ const OperationBillIndex = (props) => {
                                 <tr key={operation._id}>
                                 <td>{operation?.type}</td>
                                 <td>{operation?.egress[0]?.invoiceNumber}</td>
-                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(operation?.egress[0]?.amount === undefined ? 0: operation?.egress[0]?.amount)}</td>
+                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(operation?.egress[0]?.amount === undefined ? operation?.amount: operation?.egress[0]?.amount)}</td>
                                 <td>{operation?.description}</td>
                                 <td>{moment(operation?.createdAt).format("YYYY-MM-DD")}</td>
                                 <td>{moment(operation?.updatedAt).format("YYYY-MM-DD")}</td>

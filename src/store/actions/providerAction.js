@@ -20,7 +20,7 @@ export const getProvider = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -35,7 +35,7 @@ export const getSearchProviders = (dispatch, extens, limit, page, search) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -52,7 +52,7 @@ export const getProviders = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -63,11 +63,11 @@ export const createProviders = (dispatch, extens, payload) => {
     return dispat => {
         dispatch(actionCreator(LOADING_PROVIDER, "payload")(true))
         ProviderService.createProvider(extens, payload).then(data => {
-            dispatch(actionCreator(CREATE_PROVIDER, "payload")(data))
+            dispatch(actionCreator(CREATE_PROVIDER, "payload")(data.data))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -79,11 +79,11 @@ export const updateProviders = (dispatch, extens, payload, id) => {
     return dispat => {
         dispatch(actionCreator(LOADING_PROVIDER, "payload")(true))
         ProviderService.updateProvider(extens, payload, id).then(data => {
-            dispatch(actionCreator(UPDATE_PROVIDER, "payload")(data))
+            dispatch(actionCreator(UPDATE_PROVIDER, "payload")(data.data))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -99,7 +99,7 @@ export const deleteProviders = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })

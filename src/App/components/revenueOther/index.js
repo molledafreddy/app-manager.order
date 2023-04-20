@@ -1,20 +1,21 @@
 import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab, Pagination,InputGroup, FormControl} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteRevenues, getSearchRevenues } from '../../../store/actions/revenueAction';
+import { deleteRevenues, getSearchRevenues, updateCodeErrorRevenue } from '../../../store/actions/revenueAction';
 import { getSearchOrderPaitOut, updateCodeError } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
-
+import Swal from 'sweetalert2';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const RevenueOtherIndex = (props) => {
     const revenues = useSelector(state => state.revenues.docs)
     let totalPages = useSelector(state => state.revenues.totalPages)
     let sumRevenue = useSelector(state => state.revenues.sum)
+    let isLoadingRevenue = useSelector(state => state.isLoadingRevenue)
     let [active, setActive] = useState(1);
 
     const [dateRange, setDateRange] = useState([null, null]);
@@ -45,6 +46,7 @@ const RevenueOtherIndex = (props) => {
     function pagination(number) {
         setActive(number);
         validDateSearch();
+        showLoading()
         console.log('body', body.startDate)
         dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, number, body.startDate, body.endDate));
     }
@@ -60,18 +62,24 @@ const RevenueOtherIndex = (props) => {
     const searchHandler = () => {
         setActive(1);
         validDateSearch();
+        showLoading()
         dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'other'));
         createItem()
     }
 
     useEffect(() => {
-        if (active === 1) {
+        if (isLoadingRevenue === false) {
+            Swal.close()
+        }
+
+        if (active === 1 && (revenues === undefined ) && isLoadingRevenue === false) {
             validDateSearch()
+            showLoading()
             dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'other'));
             createItem()
         }
         
-    }, [dispatch, createItem()]);
+    }, [dispatch, createItem(), showLoading, revenues, isLoadingRevenue]);
 
     
     const driverSubmit =e=> {
@@ -103,6 +111,15 @@ const RevenueOtherIndex = (props) => {
     const handlerUpdate = async (id) => {
         updateCodeError(dispatch);
         props.history.push(`/revenue-other/edit/${id}`);
+    }
+
+    const showLoading = () => {
+        Swal.fire({
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} });
+        updateCodeErrorRevenue(dispatch);
     }
 
     return (

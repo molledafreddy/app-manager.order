@@ -4,11 +4,11 @@ import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Table, Button, Form, Container, Pagination} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { getSearchOrder, deleteOrder } from '../../../store/actions/orderAction';
+import { getSearchOrder, deleteOrder, updateCodeError } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import { getProviders } from '../../../store/actions/providerAction';
-
+import Swal from 'sweetalert2';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import "../../../../src/styles/datepiker.css";
@@ -18,6 +18,7 @@ const OrderIndex = (props) => {
     const providers = useSelector(state => state.provider)
     const orders = useSelector(state => state.orders.docs)
     let totalPages = useSelector(state => state.orders.totalPages)
+    let isLoadingOrder = useSelector(state => state.isLoadingOrder)
     let [active, setActive] = useState(1);
 
     const dispatch = useDispatch()
@@ -76,6 +77,7 @@ const OrderIndex = (props) => {
         body.page = number; 
         setBody({...body});
         validDateSearch();
+        showLoading()
         dispatch(getSearchOrder(dispatch,'order/search/detail', body))
     }
 
@@ -83,6 +85,7 @@ const OrderIndex = (props) => {
         validDateSearch();
         body.page = 1;
         setBody({...body});
+        showLoading()
         dispatch(getSearchOrder(dispatch,'order/search/detail', body));
         createItem()
     }
@@ -130,26 +133,26 @@ const OrderIndex = (props) => {
     }
 
     useEffect(() => {
+        
+        if (isLoadingOrder === false) {
+            Swal.close()
+        }
         if (providers === undefined || providers?.length === 0 ) {
             dispatch(getProviders(dispatch,'provider'));
         }
-        if (active === 1) {
+        
+        if (active === 1 && (orders === undefined ) && isLoadingOrder === false) {
+            console.log('ingreso active', active)
+            
             dispatch(getSearchOrder(dispatch,'order/search/detail', body));
+            showLoading()
             createItem()
         }
-    }, [dispatch, createItem(), providers]);
 
-    
+    }, [dispatch,  createItem(), providers, orders, isLoadingOrder]);
+
     const driverSubmit =e=> {
         e.preventDefault();
-    }
-
-    const driverChangeSearch = async e => {
-        setBody({
-            ...body,
-            [e.target.name]: e.target.value
-        })
-        console.log('e.target.value', e.target.value)
     }
 
     const driverButtomCreate = async (e) => {
@@ -189,6 +192,15 @@ const OrderIndex = (props) => {
         { id:7, type: "cancelled_provider" },
         { id:8, type: "cancelled" }
     ];
+
+    const showLoading = () => {
+        Swal.fire({
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} });
+        updateCodeError(dispatch);
+    }
 
     return (
         <Aux>
@@ -327,17 +339,17 @@ const OrderIndex = (props) => {
                                 <td>{order?.status}</td>
                                 <td>{ order?.providers[0]?.businessName}</td>
                                 <td>{ order?.paymentMethod}</td>
-                                <td>{moment(order?.EstimateReceptionDate).format("YYYY-MM-DD")}</td>
-                                <td>{moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
-                                <td>{moment(order?.orderDate).format("YYYY-MM-DD")}</td>
-                                <td>{moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.EstimateReceptionDate === undefined ? '' : moment(order?.EstimateReceptionDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.receptionDate === undefined ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.orderDate === undefined ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.paymentDate === undefined ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
                                 <td>
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(order?._id)}>
                                         <i className="feather icon-edit-1" />
                                     </Button>
-                                    <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(order?._id)}>
+                                    {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(order?._id)}>
                                         <i className="feather icon-delete" />
-                                    </Button>
+                                    </Button> */}
                                     
                                 </td>
                                 </tr>
@@ -346,7 +358,7 @@ const OrderIndex = (props) => {
                         </Table>
                     </Card.Body>
                     <Row>
-                        <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                        <Col xs={{ span: 7, offset: 4 }} sm={{ span: 7, offset: 2 }} md={{ span: 6, offset: 5 }}>
                             <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}

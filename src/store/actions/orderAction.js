@@ -33,12 +33,12 @@ export const getSearchOrder = (dispatch, extens, data) => {
     return dispat => {
         dispatch(actionCreator(LOADING_ORDER, "payload")(true))
         OrderService.getSearchOrder(extens, data).then(data => {
-            console.log('OperationBillService', data)
+            // console.log('OperationBillService', data)
             dispatch(actionCreator(GET_ALL_ORDER, "payload")(data))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
-            console.log('getSearchOrder error', error)
+            // console.log('getSearchOrder error', error)
             if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))

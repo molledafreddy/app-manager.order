@@ -70,11 +70,11 @@ export default class providerService {
        
     }
 
-    async updateOperationBill(extend, payload, id) {
+    async updateOperationBill(extend, payload, paymentContainer, id) {
         try {
             // console.log('payload?.idEgress', payload?._idEgress)
             const dataA = new FormData();
-            // console.log('payload',payload)
+            console.log('paymentContainer',paymentContainer)
             const data = JSON.stringify({
                 _id: id,
                 _idEgress: payload?._idEgress,
@@ -85,7 +85,7 @@ export default class providerService {
             })
             let dataFiles = [];
             dataA.append("data",data);
-            dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
+            dataA.append("paymentHasEgress", JSON.stringify(paymentContainer));
             // dataA.append("files", payload.files);
             // console.log('payload',payload?.files)
             if (payload?.length > 0) {
@@ -105,8 +105,6 @@ export default class providerService {
                 
             }
             dataA.append("dataFiles",JSON.stringify(dataFiles));
-            // console.log('files',dataFiles)
-            
             
             const response = await fetch(`${this.url}/${extend}`, 
                 { 

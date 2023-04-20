@@ -98,10 +98,10 @@ const AccountCreate = (props) => {
                 <Card>
                     <Card.Header>
                         <Row>
-                            <Col md={4}>
+                            <Col md={4} xs="auto">
                                 <Card.Title as="h5">Cuentas proveedor</Card.Title>
                             </Col>
-                            <Col md={{ span: 1, offset: 6  }}>
+                            <Col md={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 3  }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>
                             </Col>
                         </Row>

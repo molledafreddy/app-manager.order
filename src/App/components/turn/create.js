@@ -19,16 +19,17 @@ const TurnCreate = (props) => {
     let [titleButtom, setTitleButtom] = useState('Crear');const errorOrder = useSelector(state => state.errorOrder);
     const statusCodeTurn = useSelector(state => state.statusCodeTurn);
     const errorTurn = useSelector(state => state.errorTurn);
+    let isLoadingTurn = useSelector(state => state.isLoadingTurn)
     let [validProcess, setValidProcess] = useState(false);
 
-    const [body, setBody] = useState({
-        _id: null,
-        description: "",
-        type: "",
-        endDate: "",
-        startDate: "",
-        status: "",
-    })
+    // const [body, setBody] = useState({
+    //     _id: null,
+    //     description: "",
+    //     type: "",
+    //     endDate: "",
+    //     startDate: "",
+    //     status: "",
+    // })
 
     useEffect( () => {
         titleButt()
@@ -42,7 +43,6 @@ const TurnCreate = (props) => {
             return;
         }
         if (errorTurn?.code !== undefined  && validProcess === false) {
-            // console.log('ingreso if errorOrder', errorTurn)
             showAlert("Error en el proceso", errorTurn?.message, "error",4000);
             setValidProcess(true);
             setTimeout(() => {
@@ -51,7 +51,7 @@ const TurnCreate = (props) => {
         }
 
         if (statusCodeTurn === '200' && errorOrder.length === 0) {
-            // console.log('ingreso al redirect', statusCodeTurn)
+            Swal.close()
             validRedirect()
         }
         if (props.match.params._id) {
@@ -63,7 +63,7 @@ const TurnCreate = (props) => {
                 setValuesTurn(dataTurn);
             }
         }
-    }, [dispatch, turns, statusCodeTurn, errorTurn, validRedirect, titleButt]);
+    }, [dispatch, turns, statusCodeTurn, errorTurn, validRedirect, titleButt, isLoadingTurn]);
 
     const validRedirect = () => {
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
@@ -191,9 +191,12 @@ const TurnCreate = (props) => {
             console.log('dataInfo', dataInfo)
             if (props.match.params._id) {
                 dispatch(updateTurn(dispatch,'turn', dataInfo, props.match.params._id));
+                showLoading();
             } else {
                 dispatch(createTurn(dispatch,'turn', dataInfo));
+                showLoading();
             }
+
         }
     
         const showAlert = (title, text, icon, timer) => {
@@ -207,6 +210,16 @@ const TurnCreate = (props) => {
             })
         }
 
+        const showLoading = () => {
+            Swal.fire({
+            title: 'En Proceso!',
+            html: 'Transaccion en Proceso.',
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading() },
+            willClose: () => {} })
+        }
+
     return (
         <Aux>
             <Row>
@@ -214,10 +227,10 @@ const TurnCreate = (props) => {
                 <Card>
                     <Card.Header>
                         <Row>
-                            <Col md={4} className="mt-3">
+                            <Col md={4} className="mt-3" xs="auto">
                                 <Card.Title as="h5">Turnos</Card.Title>
                             </Col>
-                            <Col md={{ span: 1, offset: 6  }}>
+                            <Col md={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 4  }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>
                             </Col>
                         </Row>

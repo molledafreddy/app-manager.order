@@ -1,27 +1,29 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab, Pagination} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteRevenues, getSearchRevenues } from '../../../store/actions/revenueAction';
+import { getSearchRevenues, updateCodeError } from '../../../store/actions/revenueAction';
 import { getSearchOrderPaitOut } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
-
+import Swal from 'sweetalert2';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import "./styles.css";
 
 const RevenueIndex = (props) => {
     const revenues = useSelector(state => state.revenues.docs)
     let totalPages = useSelector(state => state.revenues.totalPages)
     let sumRevenue = useSelector(state => state.revenues.sum)
+    let isLoadingRevenue = useSelector(state => state.isLoadingRevenue)
     let [active, setActive] = useState(1);
 
     const orderPaitOuts = useSelector(state => state.orderPaitOuts.docs)
     let totalPagesPait = useSelector(state => state.orderPaitOuts.totalPages)
     let sumOrderPaitOut = useSelector(state => state.orderPaitOuts.sum)
-    
+    let isLoadingOrder = useSelector(state => state.isLoadingOrder)
+
     let [activePait, setActivePait] = useState(1);
 
     const [dateRange, setDateRange] = useState([null, null]);
@@ -70,16 +72,15 @@ const RevenueIndex = (props) => {
     function pagination(number) {
         setActive(number);
         validDateSearch();
+        showLoading()
         console.log('body', body.startDate)
         dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, number, body.startDate, body.endDate, 'closure'));
     }
 
     function paginationPait(number) {
-        console.log('paginationPait', number)
         setActivePait(number)
-        console.log('activePait', activePait)
         validDateSearch();
-        console.log('body', body.startDate)
+        showLoading()
         dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, number, 'paid_out', body.startDate, body.endDate));
         
     }
@@ -96,6 +97,7 @@ const RevenueIndex = (props) => {
         setActive(1);
         setActivePait(1)
         validDateSearch();
+        showLoading()
         dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
         dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
         createItem()
@@ -103,50 +105,48 @@ const RevenueIndex = (props) => {
     }
 
     useEffect(() => {
-        if (active === 1) {
-            validDateSearch()
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
-            createItem()
+        
+        if (isLoadingRevenue === false) {
+            Swal.close()
         }
 
-        if (activePait === 1) {
+        if (isLoadingOrder === false) {
+            Swal.close()
+        }
+        if (active === 1 && (revenues === undefined ) && isLoadingRevenue === false) {
+            validDateSearch()
+            showLoading()
+            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
+            createItem()
+            
+        }
+        
+        if (activePait === 1 && (orderPaitOuts === undefined ) && isLoadingOrder === false) {
             validDateSearch()
             dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
             createItemPait()
         }
-    }, [dispatch, createItem(), createItemPait()]);
-
-    // providers
+    }, [dispatch, createItem(), createItemPait(), showLoading, isLoadingRevenue, revenues, isLoadingOrder, orderPaitOuts ]);
     
     const driverSubmit =e=> {
         e.preventDefault();
-    }
-
-    const driverChange = async e => {
-        setBody({
-            ...body,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    const driverChangeSearch = async e => {
-        setBody({
-            ...body,
-            [e.target.name]: e.target.value
-        })
-        console.log('e.target.value', e.target.value)
     }
 
     const driverButtomCreate = async (e) => {
         props.history.push("/revenue/create");
     }
 
-    const handlerDelete = async (_id) => {
-        dispatch(deleteRevenues(dispatch,'revenue', _id))
-    }
-
     const handlerUpdate = async (id) => {
         props.history.push(`/revenue/edit/${id}`);
+    }
+
+    const showLoading = () => {
+        Swal.fire({
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} })
+        updateCodeError(dispatch);
     }
 
     return (
@@ -163,8 +163,8 @@ const RevenueIndex = (props) => {
                             </Row>
                             <Form onSubmit={driverSubmit}> 
                                 <Row>
-                                    <Col className="mt-2" md={{ span: 4, offset: 0 }}> 
-                                        <Form.Label>Rango Fecha Cierre</Form.Label>
+                                    <Col className="mt-2" md={{ span: 4, offset: 0 }} sm={{ span: 5, offset: 0 }}> 
+                                        <Form.Label>Rango Fecha</Form.Label>
                                         <DatePicker
                                             className="form-control input_width"
                                             selectsRange={true}
@@ -176,10 +176,10 @@ const RevenueIndex = (props) => {
                                             isClearable={true}
                                         />
                                     </Col>
-                                    <Col md={{ span: 1, offset: 0 }} sm={6}> 
+                                    <Col md={{ span: 2, offset: 0 }} sm={2}> 
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col md={{ span: 1, offset: 0 }}> 
+                                    <Col md={{ span: 2  , offset: 0 }} sm={2}> 
                                         <Button variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col> 
                                 </Row>
@@ -188,33 +188,26 @@ const RevenueIndex = (props) => {
                     </Card.Header>
                     <Row>
                     <Col md={6} xl={6}>
-                        <Card>
+                        <Card className='border_card_egress'>
                             <Card.Body>
-                                <h6 className='mb-4'>Ingresos Venta del Dia</h6>
+                                <h6 className='mb-4 ingress_title'>Ingresos Cierres de Caja</h6>
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
-                                        <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 ingress">
                                         { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue === undefined ? 0 : sumRevenue)}
                                         </h3>
                                     </div>
-
-                                    {/* <div className="col-3 text-right">
-                                        <p className="m-b-0">50%</p>
-                                    </div> */}
                                 </div>
-                                {/* <div className="progress m-t-30" style={{height: '7px'}}>
-                                    <div className="progress-bar progress-c-theme" role="progressbar" style={{width: '50%'}} aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"/>
-                                </div> */}
                             </Card.Body>
                         </Card>
                     </Col>
                     <Col md={6} xl={6}>
                         <Card>
                             <Card.Body>
-                                <h6 className='mb-4'>Egresos del Dia</h6>
+                                <h6 className='mb-4 egress_title'>Egresos del Dia Pago Ordenes</h6>
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
-                                        <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 egress_color ">
                                             {/* <i className="feather icon-arrow-up text-c-green f-30 m-r-5"/>  */}
                                             { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumOrderPaitOut === undefined ? 0 :sumOrderPaitOut)}
                                         </h3>
@@ -234,12 +227,12 @@ const RevenueIndex = (props) => {
                     <Card.Body>
                         <h5 className="mt-0">Cierres y Facturas del dia</h5>
                         <hr/>
-                        <Tabs variant="pills" defaultActiveKey="home" className="mb-3">
+                        <Tabs  defaultActiveKey="home" className="mb-3">
                             <Tab eventKey="home" title=" Cierres Caja">
                                 <Table responsive hover>
                                     <thead>
                                     <tr>
-                                        <th>User</th>
+                                        <th>Usuario</th>
                                         <th>Monto Sistema</th>
                                         <th>Monto turno</th>
                                         <th>Monto Punto</th>
@@ -254,28 +247,24 @@ const RevenueIndex = (props) => {
                                     {revenues?.map(revenue =>
                                         <tr key={revenue?._id}>
                                         <td>{revenue?.users[0]?.name}</td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountSistem)} </td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount)}</td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountPos)}</td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountCash)}</td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountTransfer)}</td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountOther)}</td>
-                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.cashFund)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountSistem === undefined ? 0 : revenue?.amountSistem)} </td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount === undefined ? 0 : revenue?.totalAmount)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountPos === undefined ? 0 : revenue?.amountPos)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountCash === undefined ? 0 : revenue?.amountCash)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountTransfer === undefined ? 0 : revenue?.amountTransfer)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountOther === undefined ? 0 : revenue?.amountOther)}</td>
+                                        <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.cashFund === undefined ? 0 : revenue?.cashFund)}</td>
                                         <td>
                                             <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
                                                 <i className="feather icon-edit-1" />
                                             </Button>
-                                            {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(revenue._id)}>
-                                                <i className="feather icon-delete" />
-                                            </Button> */}
-                                            
                                         </td>
                                         </tr>
                                     )}
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col sm={{ span: 1, offset: 4 }} md={{ span: 6, offset: 5 }}>
+                                    <Col sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 5 }}>
                                         <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (active > 1) {pagination(1);}}}
@@ -310,7 +299,7 @@ const RevenueIndex = (props) => {
                                     <tbody>
                                         {orderPaitOuts?.map(order =>
                                             <tr key={order?._id}>
-                                            <td>$ { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.egress[0]?.amount)}</td>
+                                            <td>$ { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.egress[0]?.amount === undefined ? 0 : order?.egress[0]?.amount)}</td>
                                             <td>{order?.status}</td>
                                             <td>{order?.providers[0]?.businessName}</td>
                                             <td>{order?.paymentMethod}</td>
@@ -322,7 +311,7 @@ const RevenueIndex = (props) => {
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col sm={{ span: 1, offset: 4 }} md={{ span: 6, offset: 5 }}>
+                                    <Col sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 5 }}>
                                         <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (activePait > 1) {paginationPait(1);}}}

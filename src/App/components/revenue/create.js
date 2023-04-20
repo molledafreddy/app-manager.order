@@ -41,10 +41,6 @@ const RevenueCreate = (props) => {
         files: []
     });
 
-    // const [addFile, setAddFile] = useState({
-    //     file: null
-    // })
-
     useEffect( () => {
         titleButt()
         // && validProcess === true
@@ -68,6 +64,7 @@ const RevenueCreate = (props) => {
         
         console.log('statusCodeRevenue', statusCodeRevenue)
         if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
+            Swal.close()
             validRedirect()
         }
         if (props.match.params._id) {
@@ -104,7 +101,7 @@ const RevenueCreate = (props) => {
                 filesD.push({
                     id: index,
                     filename: element.filename,
-                    file: `http://localhost:3002/upload/${element.filename}`,
+                    file: `${process.env.REACT_APP_API_BASE}/upload/${element.filename}`,
                     flag: true,
                     path: element.path,
                     size: element.size,
@@ -338,11 +335,15 @@ const RevenueCreate = (props) => {
         phone: "Debes introducir un número correcto"
     };
 
-    // const patterns = {
-    //     name: /^[A-Za-z]/gi,
-    //     mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-    //     phone: /^[0-9]+$/i,
-    // };
+    const showLoading = () => {
+        Swal.fire({
+        title: 'En Proceso!',
+        html: 'Transaccion en Proceso.',
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} })
+    }
 
     const { 
         register, 
@@ -356,7 +357,6 @@ const RevenueCreate = (props) => {
     const watchTotalAmount = watch("totalAmount");
     
     const onSubmit = (dataInfo) => {
-        // console.log('dataInfo', dataInfo)
         if (dataInfo.files === undefined || dataInfo.files.length === 0) {
             showAlert(
                 'validacion Cierre Ventas', 
@@ -367,15 +367,16 @@ const RevenueCreate = (props) => {
         }
         if (props.match.params._id) {
             dispatch(updateRevenues(dispatch,'revenue/working-day', dataInfo, props.match.params._id));
+            showLoading()
         } else {
             dispatch(createRevenues(dispatch,'revenue/working-day', dataInfo));
+            showLoading()
         }
     }
 
     const validRedirect = () => {
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
         updateCodeError(dispatch);
-        console.log('datos validRedirect', errorRevenue)
         props.history.push("/revenue");
         return;
     }
@@ -422,10 +423,10 @@ const RevenueCreate = (props) => {
                 <Card>
                     <Card.Header>
                         <Row>
-                            <Col md={4}>
+                            <Col md={4} sm={4} xs={6}>
                                 <Card.Title as="h5">Registro Cierre Caja</Card.Title>
                             </Col>
-                            <Col md={{ span: 1, offset: 6  }}>
+                            <Col md={{ span: 1, offset: 6  }} sm={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 3  }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>
                             </Col>
                         </Row>
@@ -645,26 +646,6 @@ const RevenueCreate = (props) => {
                                         />  */}
                                         {errors.cashFund && <p>{errors.cashFund.message}</p>}
                                     </Form.Group>
-                                    <Form.Group controlId="form.ControlTotalAmount">
-                                        <Form.Label>Monto Total Turno</Form.Label>
-                                        {/* <Form.Control 
-                                            type="text" 
-                                            disabled 
-                                            placeholder="totalAmount" n
-                                            ame="totalAmount" 
-                                            value={body?.totalAmount} 
-                                            onChange={handlerChange}/> */}
-                                        <Form.Control 
-                                            disabled
-                                            type="text" 
-                                            name="amount"
-                                            value={ watchTotalAmount}
-                                        />
-                                    </Form.Group>
-                                    {/* <Form.Group controlId="form.ControlUsers">
-                                        <Form.Label>users</Form.Label>
-                                        <Form.Control type="text" placeholder="users" name="users" value={body?.users} onChange={handlerChange}/>
-                                    </Form.Group> */}
                                 </Col>
                                 <Col className="mb-5" md={12}>
                                     <h5 className="mt-5">Archivos</h5>

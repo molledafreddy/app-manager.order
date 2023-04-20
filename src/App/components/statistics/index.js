@@ -9,9 +9,8 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import { getSearchEgress } from '../../../store/actions/egressAction';
 import { getSearchRevenues } from '../../../store/actions/revenueAction';
-
 import 'react-datepicker/dist/react-datepicker.css';
-
+import "./styles.css";
 import "../../../../src/styles/datepiker.css";
 
 
@@ -46,7 +45,7 @@ const StatisticsIndex = (props) => {
     const [body, setBody] = useState({
         _idEgress: "",
         type: "",
-        limit: 10,
+        limit: 20,
         page:1,
         paymentDate: {firstDate: null, endDate: null }
     })
@@ -93,7 +92,7 @@ const StatisticsIndex = (props) => {
         setBody({...body});
         validDateSearch();
         // dispatch(getSearchEgress(dispatch,'egress/search', body));
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, number,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 20, number,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
     }
 
     const searchHandler = () => {
@@ -167,7 +166,7 @@ const StatisticsIndex = (props) => {
 
         if (activeR === 1) {
             dispatch(getSearchEgress(dispatch,'egress/search', body));
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 20, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
             createItemR()
         }
     }, [dispatch, createItem(), createItemR()]);
@@ -331,31 +330,24 @@ const StatisticsIndex = (props) => {
                     <Col md={6} xl={6}>
                         <Card>
                             <Card.Body>
-                                <h6 className='mb-4'>Ingresos Venta del Dia</h6>
+                                <h6 className='mb-4 ingress_title'>Ingresos</h6>
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
-                                        <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 ingress_color">
                                         { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue)}
                                         </h3>
                                     </div>
-
-                                    {/* <div className="col-3 text-right">
-                                        <p className="m-b-0">50%</p>
-                                    </div> */}
                                 </div>
-                                {/* <div className="progress m-t-30" style={{height: '7px'}}>
-                                    <div className="progress-bar progress-c-theme" role="progressbar" style={{width: '50%'}} aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"/>
-                                </div> */}
                             </Card.Body>
                         </Card>
                     </Col>
                     <Col md={6} xl={6}>
                         <Card>
                             <Card.Body>
-                                <h6 className='mb-4'>Egresos del Dia</h6>
+                                <h6 className='mb-4 egress_title'>Egresos</h6>
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
-                                        <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 egress_color">
                                             {/* <i className="feather icon-arrow-up text-c-green f-30 m-r-5"/>  */}
                                             { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumEgress)}
                                         </h3>
@@ -395,24 +387,15 @@ const StatisticsIndex = (props) => {
                                             <td>{new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(egres?.amount)}</td>
                                             
                                             <td>{egres?.invoiceNumber}</td>
-                                            <td>{ egres?.type}</td>
+                                            <td>{ egres?.type === 'operationBills' ? 'Gastos Operation' : 'Gastos ordenes'}</td>
                                             <td>{ egres?.description}</td>
                                             <td>{moment(egres?.paymentDate).format("YYYY-MM-DD")}</td>
-                                            {/* <td>
-                                                <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(order?._id)}>
-                                                    <i className="feather icon-edit-1" />
-                                                </Button>
-                                                <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(order?._id)}>
-                                                    <i className="feather icon-delete" />
-                                                </Button>
-                                                
-                                            </td> */}
                                             </tr>
                                         )}
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                                    <Col sm={{ span: 5, offset: 2 }} md={{ span: 6, offset: 5 }}>
                                         <Pagination size="sm" class="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (active > 1) {pagination(1);}}}
@@ -435,38 +418,29 @@ const StatisticsIndex = (props) => {
                                 <Table responsive hover>
                                     <thead>
                                         <tr>
-                                            <th>User</th>
+                                            <th>Usuario</th>
                                             <th>Monto Ingreso</th>
+                                            <th>Tipo</th>
                                             <th>Descripcion</th>
                                             <th>Fecha Creacion</th>
                                             <th>Fecha Actualizacion</th>
-                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {revenues?.map(revenue =>
                                             <tr key={revenue?._id}>
-                                            <td>{revenue?.users[0]?.name}</td>
-                                            <td>{revenue?.totalAmount}</td>
-                                            <td>{revenue?.description}</td>
-                                            <td>{moment(revenue?.createdAt).format("YYYY-MM-DD")}</td>
-                                            <td>{moment(revenue?.updateAt).format("YYYY-MM-DD")}</td>
-                                            
-                                            <td>
-                                                <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
-                                                    <i className="feather icon-edit-1" />
-                                                </Button>
-                                                {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(revenue._id)}>
-                                                    <i className="feather icon-delete" />
-                                                </Button> */}
-                                                
-                                            </td>
+                                                <td>{revenue?.users[0]?.name}</td>
+                                                <td>{new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount === undefined ? 0 : revenue?.totalAmount) }</td>
+                                                <td>{revenue?.type === 'other' ? 'Ingreso Extra' : 'Cierre Caja'}</td>
+                                                <td>{revenue?.description}</td>
+                                                <td>{moment(revenue?.createdAt).format("YYYY-MM-DD")}</td>
+                                                <td>{moment(revenue?.updateAt).format("YYYY-MM-DD")}</td>
                                             </tr>
                                         )}
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                                    <Col sm={{ span: 5, offset: 2 }} md={{ span: 6, offset: 5 }}>
                                         <Pagination size="sm" class="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (activeR > 1) {pagination(1);}}}

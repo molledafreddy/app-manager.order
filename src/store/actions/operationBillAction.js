@@ -87,18 +87,22 @@ export const createOperationBills = (dispatch, extens, payload) => {
     }
 }
 
-export const updateOperationBills = (dispatch, extens, payload, id) => {
+export const updateOperationBills = (dispatch, extens, payload, paymentContainer, id) => {
     // console.log('llego la data', payload)
     return dispat => {
         dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
-        OperationBillService.updateOperationBill(extens, payload, id).then(async data => {
+        OperationBillService.updateOperationBill(extens, payload, paymentContainer, id).then(async data => {
             // dispatch(actionCreator(UPDATE_OPERATIONBILL, "payload")(data))
             // dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
             
             let result = await data.json();
-            // console.log('resultado valores', result)
+            // console.log('resultado valores', result[0])
             if (data?.status  === 200) {
-                dispatch(actionCreator(UPDATE_OPERATIONBILL, "payload")(result));
+                if (result[0] === "NOT_FOUND_DATA_PAYMENT_HAS_EGRESS") {
+                    dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(result));
+                } else {
+                    dispatch(actionCreator(UPDATE_OPERATIONBILL, "payload")(result));
+                }
                 
             } if (data?.status  === 400 && data?.statusText === "SESSION_NO_VALIDA") {
                 dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(result));

@@ -7,15 +7,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { getTurnForUser, deleteTurn } from '../../../store/actions/turnAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
-
+import Swal from 'sweetalert2';
 import 'react-datepicker/dist/react-datepicker.css';
-
 import "../../../../src/styles/datepiker.css";
 
 
 const TurnIndex = (props) => {
     const turns = useSelector(state => state.turns.docs)
     let totalPages = useSelector(state => state.turns.totalPages)
+    let isLoadingTurn = useSelector(state => state.isLoadingTurn)
     let [active, setActive] = useState(1);
 
     const dispatch = useDispatch()
@@ -79,12 +79,17 @@ const TurnIndex = (props) => {
     }
 
     useEffect(() => {
-        if (active === 1) {
+        if (isLoadingTurn === false) {
+            console.log('llego por aca isLoadingTurn', isLoadingTurn)
+            Swal.close()
+        }
+        if (active === 1 && (turns === undefined ) && isLoadingTurn === false) {
             const date = validDateSearch();
+            showLoading()
             dispatch(getTurnForUser(dispatch,'turn/search/for/user', 5, 1, '', '', '', date));
             createItem()
         }
-    }, [dispatch, createItem()]);
+    }, [dispatch, createItem(), isLoadingTurn, turns]);
 
     
     const driverSubmit =e=> {
@@ -122,6 +127,16 @@ const TurnIndex = (props) => {
         { id:2, type: "Stop" },
         { id:3, type: "completed" },
     ];
+
+    const showLoading = () => {
+        Swal.fire({
+        // title: 'En Proceso!',
+        // html: 'Transaccion en Proceso.',
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} })
+    }
 
     return (
         <Aux>
@@ -164,7 +179,7 @@ const TurnIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col>
-                                    <Col md={{ span: 2.5, offset: 0 }} sm={{ span: 2, offset: 0 }}> 
+                                    <Col md={{ span: 3, offset: 0 }} sm={{ span: 5, offset: 0 }}> 
                                         <Form.Group controlId="form.ControlStatus">
                                             <Form.Label>Estatus</Form.Label>
                                             <Form.Control as="select" name="status" value={body?.status} onChange={handlerChangeSearch}>
@@ -176,10 +191,10 @@ const TurnIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col>
-                                    <Col md={{ span: 1, offset: 0 }} sm={6} xs={6}> 
+                                    <Col md={{ span: 3, offset: 0 }} sm={4} xs={6}> 
                                         <Button className='mt-4'  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col md={{ span: 1, offset: 0 }} xs={6}> 
+                                    <Col md={{ span: 5, offset: 0 }} xs={3}> 
                                         <Button className='mt-4  ml-5' variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col>
                                 </Row>
@@ -219,26 +234,26 @@ const TurnIndex = (props) => {
                             )}
                             </tbody>
                         </Table>
+                        <Row>
+                            <Col sm={{ span: 5, offset: 3 }} md={{ span: 6, offset: 5 }}>
+                                <Pagination size="sm" className="row justify-content-center">
+                                    <Pagination.First
+                                        onClick={() => {if (active > 1) {pagination(1);}}}
+                                    />
+                                    <Pagination.Prev
+                                        onClick={() => {if (active > 1) {pagination(active - 1);}}}
+                                    />
+                                    {pages}
+                                    <Pagination.Next
+                                        onClick={() => {if (active < totalPages) {pagination(totalPages);}}}
+                                    />
+                                    <Pagination.Last 
+                                        onClick={() => { if (active < totalPages) {pagination(totalPages);}}}
+                                    />
+                                </Pagination>
+                            </Col>
+                        </Row>
                     </Card.Body>
-                    <Row>
-                        <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                            <Pagination size="sm" className="row justify-content-center">
-                                <Pagination.First
-                                    onClick={() => {if (active > 1) {pagination(1);}}}
-                                />
-                                <Pagination.Prev
-                                    onClick={() => {if (active > 1) {pagination(active - 1);}}}
-                                />
-                                {pages}
-                                <Pagination.Next
-                                    onClick={() => {if (active < totalPages) {pagination(totalPages);}}}
-                                />
-                                <Pagination.Last 
-                                    onClick={() => { if (active < totalPages) {pagination(totalPages);}}}
-                                />
-                            </Pagination>
-                        </Col>
-                    </Row>
                 </Card>
                 </Col>
             </Row>
