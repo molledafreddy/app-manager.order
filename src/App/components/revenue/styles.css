@@ -43,6 +43,22 @@
     font-size: 15px;
     font-weight: 200;
   }
+
+  .text_tam {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .color_success {
+    color: aquamarine;
+    
+  }
+
+  .color_warning {
+    color: blue;
+    font-size: 18px;
+    font-weight: 700;
+  }
   
   input[type="submit"] {
     background: #5a66a4;
@@ -61,10 +77,24 @@
     font-size: 20px;
   }
 
+  .text_card {
+    font-weight: 500;
+    font-size: 15px;
+  }
+
   .ingress_title {
     font-weight: 500;
     font-size: 20px;
+    margin-left: 5px;
   }
+  
+  .ubication_cash {
+    margin-top: 10px;
+  }
+
+  .ubication_title {
+    margin-right: 5px;
+  } 
 
   .egress_color {
     color: #f44236;

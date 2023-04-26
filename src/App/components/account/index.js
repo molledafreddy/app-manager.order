@@ -24,16 +24,131 @@ const AccountIndex = (props) => {
     })
 
     const createItem = () => {
-        for (let number = 1; number <= totalPages; number++) {
-            pages.push(
-              <Pagination.Item
-                key={number}
-                active={number === active}
-                onClick={() => pagination(number)}
-              >
-                {number}
-              </Pagination.Item>
-            );
+        let flag = 0
+        if (totalPages <= 4) {
+            for (let number = 1; number <= totalPages; number++) {
+                pages.push(
+                  <Pagination.Item
+                    key={number}
+                    active={number === active}
+                    onClick={() => pagination(number)}
+                  >
+                    {number}
+                  </Pagination.Item>
+                );
+            }
+        } else {
+            for (let number = 1; number <= totalPages; number++) {
+                if (number > 1 && flag === 0 && active > 1) {
+                    pages.push( <Pagination.Ellipsis /> );
+                    flag = 1
+                }
+                if (number === 1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                // permite validar paginacion cuando se esta desde el item 2 hasta el 4
+                if (number > 1 && number < 4 && active < 3 ) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                if ( number === active && (active === 3 || active > 3) && active < totalPages-1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active}
+                            active={number === active}
+                            onClick={() => pagination(active)}
+                        >
+                            {active}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active+1}
+                            active={number === active+1}
+                            onClick={() => pagination(active+1)}
+                        >
+                            {active+1}
+                        </Pagination.Item>
+                    );
+                }
+                if (active === totalPages-1 && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+    
+                if (active === totalPages && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-2}
+                            active={number === active-2}
+                            onClick={() => pagination(active-2)}
+                        >
+                            {active-2}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                }
+                if (number ===  (totalPages - 1) && active !== totalPages) { pages.push( <Pagination.Ellipsis /> ); }
+                if (number === totalPages) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+            }
         }
     }
 
@@ -123,7 +238,7 @@ const AccountIndex = (props) => {
                         </Container>
                     </Card.Header>
                     <Card.Body>
-                        <Table responsive hover>
+                        <Table striped responsive hover>
                             <thead>
                             <tr>
                                 <th>Numero</th>

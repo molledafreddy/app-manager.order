@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab, Pagination} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab, Pagination, Badge} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { getSearchRevenues, updateCodeError } from '../../../store/actions/revenueAction';
+import { getSearchRevenuesClosure, updateCodeError } from '../../../store/actions/revenueAction';
 import { getSearchOrderPaitOut } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -13,16 +13,23 @@ import 'react-datepicker/dist/react-datepicker.css';
 import "./styles.css";
 
 const RevenueIndex = (props) => {
-    const revenues = useSelector(state => state.revenues.docs)
-    let totalPages = useSelector(state => state.revenues.totalPages)
-    let sumRevenue = useSelector(state => state.revenues.sum)
+    const revenues = useSelector(state => state.revenuesClosure.docs)
+    let totalPages = useSelector(state => state.revenuesClosure.totalPages)
+    let sumRevenue = useSelector(state => state.revenuesClosure.sum)
     let isLoadingRevenue = useSelector(state => state.isLoadingRevenue)
+    // const paymentHasEgressR = useSelector(state => state.paymentHasEgress);
     let [active, setActive] = useState(1);
+    let [roleUser, setRoleUser] = useState('');
 
     const orderPaitOuts = useSelector(state => state.orderPaitOuts.docs)
+    const paymentHasEgress = useSelector(state => state.orderPaitOuts.paymentHasEgress)
     let totalPagesPait = useSelector(state => state.orderPaitOuts.totalPages)
     let sumOrderPaitOut = useSelector(state => state.orderPaitOuts.sum)
     let isLoadingOrder = useSelector(state => state.isLoadingOrder)
+
+    let [paymentWithBox, setPaymentWithBox] = useState(0);
+    let [validCash, setValidCash] = useState(0);
+    let [totalCash, setTotalCash] = useState(0);
 
     let [activePait, setActivePait] = useState(1);
 
@@ -32,6 +39,15 @@ const RevenueIndex = (props) => {
     const dispatch = useDispatch()
     let pages = [];
     let pagesPait = [];
+
+    // const [paymentHasEgress, setPaymentHasEgress] = useState({
+    //     id: null,
+    //     payments: "",
+    //     paymentAmount: "",
+    //     originMoney: ""
+    // });
+
+    // const [paymentContainer, setPaymentContainer] = useState([]);
     
     const [body, setBody] = useState({
         startDate: null, 
@@ -42,30 +58,264 @@ const RevenueIndex = (props) => {
     })
 
     const createItem = () => {
-        for (let number = 1; number <= totalPages; number++) {
-            pages.push(
-              <Pagination.Item
-                key={number}
-                active={number === active}
-                onClick={() => pagination(number)}
-              >
-                {number}
-              </Pagination.Item>
-            );
+        let flag = 0
+        if (totalPages > 0 && totalPages <= 4) {
+            for (let number = 1; number <= totalPages; number++) {
+                pages.push(
+                  <Pagination.Item
+                    key={number}
+                    active={number === active}
+                    onClick={() => pagination(number)}
+                  >
+                    {number}
+                  </Pagination.Item>
+                );
+            }
+            return;
+        } else if (totalPages > 4) {
+            for (let number = 1; number <= totalPages; number++) {
+                if (number > 1 && flag === 0 && active > 1) {
+                    pages.push( <Pagination.Ellipsis /> );
+                    flag = 1
+                }
+                if (number === 1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                // permite validar paginacion cuando se esta desde el item 2 hasta el 4
+                if (number > 1 && number < 4 && active < 3 ) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                if ( number === active && (active === 3 || active > 3) && active < totalPages-1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active}
+                            active={number === active}
+                            onClick={() => pagination(active)}
+                        >
+                            {active}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active+1}
+                            active={number === active+1}
+                            onClick={() => pagination(active+1)}
+                        >
+                            {active+1}
+                        </Pagination.Item>
+                    );
+                }
+                if (active === totalPages-1 && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+    
+                if (active === totalPages && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-2}
+                            active={number === active-2}
+                            onClick={() => pagination(active-2)}
+                        >
+                            {active-2}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                }
+                if (number ===  (totalPages - 1) && active !== totalPages) { pages.push( <Pagination.Ellipsis /> ); }
+                if (number === totalPages) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+            }
+            return;
         }
     }
 
     const createItemPait = () => {
-        for (let numberPait = 1; numberPait <= totalPagesPait; numberPait++) {
-            pagesPait.push(
-              <Pagination.Item
-                key={numberPait}
-                active={numberPait === activePait}
-                onClick={() => paginationPait(numberPait)}
-              >
-                {numberPait}
-              </Pagination.Item>
-            );
+        let flagPait = 0
+        if (totalPagesPait > 0 && totalPagesPait <= 4) {
+            for (let numberPait = 1; numberPait <= totalPagesPait; numberPait++) {
+                pagesPait.push(
+                  <Pagination.Item
+                    key={numberPait}
+                    activePait={numberPait === activePait}
+                    onClick={() => paginationPait(numberPait)}
+                  >
+                    {numberPait}
+                  </Pagination.Item>
+                );
+            }
+            return;
+        } else if (totalPagesPait > 4) {
+            for (let numberPait = 1; numberPait <= totalPages; numberPait++) {
+                if (numberPait > 1 && flagPait === 0 && activePait > 1) {
+                    pagesPait.push( <Pagination.Ellipsis /> );
+                    flagPait = 1
+                }
+                if (numberPait === 1) {
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={numberPait}
+                            active={numberPait === active}
+                            onClick={() => paginationPait(numberPait)}
+                        >
+                            {numberPait}
+                        </Pagination.Item>
+                    );
+                }
+                // permite validar paginacion cuando se esta desde el item 2 hasta el 4
+                if (numberPait > 1 && numberPait < 4 && activePait < 3 ) {
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={numberPait}
+                            active={numberPait === activePait}
+                            onClick={() => paginationPait(numberPait)}
+                        >
+                            {numberPait}
+                        </Pagination.Item>
+                    );
+                }
+                if ( numberPait === activePait && (activePait === 3 || activePait > 3) && activePait < totalPagesPait-1) {
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={activePait-1}
+                            active={numberPait === activePait-1}
+                            onClick={() => paginationPait(activePait-1)}
+                        >
+                            {activePait-1}
+                        </Pagination.Item>
+                    );
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={activePait}
+                            active={numberPait === activePait}
+                            onClick={() => paginationPait(activePait)}
+                        >
+                            {activePait}
+                        </Pagination.Item>
+                    );
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={activePait+1}
+                            active={numberPait === activePait+1}
+                            onClick={() => paginationPait(activePait+1)}
+                        >
+                            {activePait+1}
+                        </Pagination.Item>
+                    );
+                }
+                if (activePait === totalPagesPait-1 && activePait === numberPait) {
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={activePait-1}
+                            active={numberPait === activePait-1}
+                            onClick={() => paginationPait(activePait-1)}
+                        >
+                            {activePait-1}
+                        </Pagination.Item>
+                    );
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={numberPait}
+                            active={numberPait === activePait}
+                            onClick={() => paginationPait(numberPait)}
+                        >
+                            {numberPait}
+                        </Pagination.Item>
+                    );
+                }
+    
+                if (activePait === totalPagesPait && activePait === numberPait) {
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={activePait-2}
+                            active={numberPait === activePait-2}
+                            onClick={() => paginationPait(activePait-2)}
+                        >
+                            {activePait-2}
+                        </Pagination.Item>
+                    );
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={activePait-1}
+                            active={numberPait === activePait-1}
+                            onClick={() => paginationPait(activePait-1)}
+                        >
+                            {activePait-1}
+                        </Pagination.Item>
+                    );
+                }
+                if (numberPait ===  (totalPagesPait - 1) && activePait !== totalPagesPait) { pagesPait.push( <Pagination.Ellipsis /> ); }
+                if (numberPait === totalPagesPait) {
+                    pagesPait.push(
+                        <Pagination.Item
+                            key={numberPait}
+                            active={numberPait === activePait}
+                            onClick={() => paginationPait(numberPait)}
+                        >
+                            {numberPait}
+                        </Pagination.Item>
+                    );
+                }
+            }
+            return;
         }
     }
 
@@ -74,7 +324,7 @@ const RevenueIndex = (props) => {
         validDateSearch();
         showLoading()
         console.log('body', body.startDate)
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, number, body.startDate, body.endDate, 'closure'));
+        dispatch(getSearchRevenuesClosure(dispatch,'revenue/get-revenue-turn', 10, number, body.startDate, body.endDate, 'closure'));
     }
 
     function paginationPait(number) {
@@ -98,25 +348,35 @@ const RevenueIndex = (props) => {
         setActivePait(1)
         validDateSearch();
         showLoading()
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
+        dispatch(getSearchRevenuesClosure(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
         dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
         createItem()
         createItemPait()
     }
 
     useEffect(() => {
-        
+        setRoleUser(localStorage.getItem('role'));
+
         if (isLoadingRevenue === false) {
             Swal.close()
         }
 
+        
+        // console.log('datos paymentHasEgress', paymentHasEgress)
+        // if (paymentWithBox === 0) {
+            moneyOrigin()
+            closingBoxCalculations()
+            
+            
+        // }
+        
         if (isLoadingOrder === false) {
             Swal.close()
         }
         if (active === 1 && (revenues === undefined ) && isLoadingRevenue === false) {
             validDateSearch()
             showLoading()
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
+            dispatch(getSearchRevenuesClosure(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
             createItem()
             
         }
@@ -126,10 +386,53 @@ const RevenueIndex = (props) => {
             dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
             createItemPait()
         }
-    }, [dispatch, createItem(), createItemPait(), showLoading, isLoadingRevenue, revenues, isLoadingOrder, orderPaitOuts ]);
+
+        // if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
+        //     formatPaymentContainer();
+        // }
+    }, [dispatch, createItem(), validCashF, createItemPait(), showLoading, paymentHasEgress, moneyOrigin, isLoadingRevenue, revenues, isLoadingOrder, orderPaitOuts ]);
     
     const driverSubmit =e=> {
         e.preventDefault();
+    }
+
+    const moneyOrigin = async () => {
+        let totalPaymentBox = 0
+        if (paymentHasEgress?.length > 0) {
+            paymentHasEgress.forEach(element => {
+                if (element.originMoney === 'caja') {
+                    totalPaymentBox += Number(element.paymentAmount) 
+                }
+            });
+            setPaymentWithBox(totalPaymentBox)
+        }
+    }
+
+    const closingBoxCalculations = async () => {
+        let sumTotalCash = 0
+        // console.log('revenues',revenues)
+        if (revenues?.length > 0) {
+            revenues.forEach(element => {
+                // console.log('orderPaitOuts',element.amountCash)
+                // if (element.originMoney === 'caja') {
+                    sumTotalCash += Number(element.amountCash) 
+                // }
+            });
+            
+            setTotalCash(sumTotalCash)
+        }
+        validCashF()
+        // console.log('totalCash',totalCash)
+    }
+
+    const validCashF = async ()=> {
+        console.log('totalCash', totalCash)
+        console.log('paymentWithBox', paymentWithBox)
+        if (totalCash > 0 && paymentWithBox > 0) {
+            
+            let result = Math.sign(totalCash - paymentWithBox)
+            setValidCash(result);
+        }
     }
 
     const driverButtomCreate = async (e) => {
@@ -140,8 +443,13 @@ const RevenueIndex = (props) => {
         props.history.push(`/revenue/edit/${id}`);
     }
 
+    const handlerVieworder = async (id) => {
+        props.history.push(`/revenue/view/order/${id}`);
+    }
+
     const showLoading = () => {
         Swal.fire({
+        title: 'Cargando',
         timerProgressBar: true,
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading() },
@@ -163,7 +471,7 @@ const RevenueIndex = (props) => {
                             </Row>
                             <Form onSubmit={driverSubmit}> 
                                 <Row>
-                                    <Col className="mt-2" md={{ span: 4, offset: 0 }} sm={{ span: 5, offset: 0 }}> 
+                                    <Col className="mt-2" md={{ span: 4, offset: 3 }} sm={{ span: 5, offset: 2 }}> 
                                         <Form.Label>Rango Fecha</Form.Label>
                                         <DatePicker
                                             className="form-control input_width"
@@ -180,7 +488,7 @@ const RevenueIndex = (props) => {
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
                                     <Col md={{ span: 2  , offset: 0 }} sm={2}> 
-                                        <Button variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
+                                        <Button disabled={roleUser === 'Admin' ? true : false} variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col> 
                                 </Row>
                             </Form>
@@ -191,13 +499,32 @@ const RevenueIndex = (props) => {
                         <Card className='border_card_egress'>
                             <Card.Body>
                                 <h6 className='mb-4 ingress_title'>Ingresos Cierres de Caja</h6>
-                                <div className="row d-flex align-items-center">
-                                    <div className="col-9">
-                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 ingress">
-                                        { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue === undefined ? 0 : sumRevenue)}
-                                        </h3>
-                                    </div>
-                                </div>
+                                <Row>
+                                    <Col sm={7} md={6} xl={6}>
+                                        <div className='text_card'>
+                                            <span className='ubication_title'>Ingreso por Cierre:</span>
+                                            <span className='ingress'>
+                                                { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue === undefined ? 0 : sumRevenue)}
+                                            </span>
+                                        </div>
+                                    </Col>
+                                    <Col sm={5} md={6} xl={6}>
+                                        <div className='text_card'>
+                                            <span className='ubication_title'>Ingreso En Efectivo:</span>
+                                            <span className='ingress'>
+                                                { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(totalCash)}
+                                            </span>
+                                        </div>
+                                    </Col>
+                                    <Col sm={12} md={12} xl={12}>
+                                        <div className='text_card ubication_cash'>
+                                            <span className='ubication_title'>Disponible Efectivo:</span>
+                                            <span className={`${validCash === -1 ? 'egress_color' : 'ingress'}`} >
+                                                { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(totalCash - paymentWithBox)}
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -205,21 +532,27 @@ const RevenueIndex = (props) => {
                         <Card>
                             <Card.Body>
                                 <h6 className='mb-4 egress_title'>Egresos del Dia Pago Ordenes</h6>
-                                <div className="row d-flex align-items-center">
-                                    <div className="col-9">
-                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 egress_color ">
-                                            {/* <i className="feather icon-arrow-up text-c-green f-30 m-r-5"/>  */}
-                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumOrderPaitOut === undefined ? 0 :sumOrderPaitOut)}
-                                        </h3>
-                                    </div>
-
-                                    {/* <div className="col-3 text-right">
-                                        <p className="m-b-0">50%</p>
-                                    </div> */}
-                                </div>
-                                {/* <div className="progress m-t-30" style={{height: '7px'}}>
-                                    <div className="progress-bar progress-c-theme" role="progressbar" style={{width: '50%'}} aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"/>
-                                </div> */}
+                                <Row>
+                                    <Col sm={7} md={7} xl={7}>
+                                        <div className='text_card'>
+                                            <span className='ubication_title'>Pagados con Caja:</span>
+                                            <span className='egress_color'>
+                                                { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(paymentWithBox)}
+                                            </span>
+                                        </div>
+                                    </Col>
+                                    <Col sm={5} md={5} xl={5}>
+                                        <div className='text_card'>
+                                        <span className='ubication_title'>Total Pagados:</span> 
+                                            <span className='egress_color'>
+                                                { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumOrderPaitOut === undefined ? 0 :sumOrderPaitOut)}
+                                            </span> 
+                                        </div>
+                                    </Col>
+                                </Row>
+                               
+                                
+                               
                             </Card.Body>
                         </Card>
                     </Col>
@@ -229,7 +562,7 @@ const RevenueIndex = (props) => {
                         <hr/>
                         <Tabs  defaultActiveKey="home" className="mb-3">
                             <Tab eventKey="home" title=" Cierres Caja">
-                                <Table responsive hover>
+                                <Table striped responsive hover>
                                     <thead>
                                     <tr>
                                         <th>Usuario</th>
@@ -240,12 +573,16 @@ const RevenueIndex = (props) => {
                                         <th>Monto Transf</th>
                                         <th>Monto Otros</th>
                                         <th>Fondo Caja</th>
+                                        <th>Validacion Cierre</th>
+                                        {/* <th>Usuario Validador</th> */}
+                                        {/* <th>Nota Validacion</th> */}
+                                        {/* <th>Fecha Validacion</th> */}
                                         <th>Acciones</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {revenues?.map(revenue =>
-                                        <tr key={revenue?._id}>
+                                        <tr key={revenue?._id} onClick={() => handlerUpdate(revenue?._id)}>
                                         <td>{revenue?.users[0]?.name}</td>
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountSistem === undefined ? 0 : revenue?.amountSistem)} </td>
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount === undefined ? 0 : revenue?.totalAmount)}</td>
@@ -254,6 +591,14 @@ const RevenueIndex = (props) => {
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountTransfer === undefined ? 0 : revenue?.amountTransfer)}</td>
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountOther === undefined ? 0 : revenue?.amountOther)}</td>
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.cashFund === undefined ? 0 : revenue?.cashFund)}</td>
+                                        <td >
+                                            <Badge className='badge_position text_tam' variant={`${revenue?.validAdmin === 'Verificado' ? 'success' :  'warning'}`} >
+                                                {revenue?.validAdmin}            
+                                            </Badge>
+                                        </td>
+                                        {/* <td>{revenue?.usersAdmin}</td> */}
+                                        {/* <td>{revenue?.noteValid}</td> */}
+                                        {/* <td>{revenue?.validDate === undefined ? '' : moment( revenue?.validDate).format("YYYY-MM-DD")}</td> */}
                                         <td>
                                             <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(revenue?._id)}>
                                                 <i className="feather icon-edit-1" />
@@ -264,7 +609,7 @@ const RevenueIndex = (props) => {
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 5 }}>
+                                    <Col xs={{ span: 4, offset: 2 }} sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 3 }}>
                                         <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (active > 1) {pagination(1);}}}
@@ -284,34 +629,48 @@ const RevenueIndex = (props) => {
                                 </Row>
                             </Tab>
                             <Tab eventKey="profile" title="Facturas Pagadas">
-                                <Table responsive hover>
+                                <Table striped responsive hover>
                                     <thead>
                                         <tr>
-                                        <th>Monto Pagado</th>
-                                        <th>Estado</th>
-                                        <th>Proveedor</th>
-                                        <th>Metodo Pago</th>
-                                        <th>Fecha Pago</th>
-                                        <th>Fecha Recepcion</th>
-                                        <th>Fecha Pedido</th>
+                                            <th>Monto Pagado</th>
+                                            <th>Estado</th>
+                                            <th>Proveedor</th>
+                                            <th>Metodo Pago</th>
+                                            <th>Fecha Pago</th>
+                                            <th>Fecha Recepcion</th>
+                                            <th>Fecha Pedido</th>
+                                            <th>Validacion Cierre</th>
+                                            <th>Nota Validacion</th> 
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {orderPaitOuts?.map(order =>
                                             <tr key={order?._id}>
-                                            <td>$ { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.egress[0]?.amount === undefined ? 0 : order?.egress[0]?.amount)}</td>
-                                            <td>{order?.status}</td>
-                                            <td>{order?.providers[0]?.businessName}</td>
-                                            <td>{order?.paymentMethod}</td>
-                                            <td>{moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
-                                            <td>{moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
-                                            <td>{moment(order?.orderDate).format("YYYY-MM-DD")}</td>
+                                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.egress[0]?.amount === undefined ? 0 : order?.egress[0]?.amount)}</td>
+                                                <td>{order?.status}</td>
+                                                <td>{order?.providers[0]?.businessName}</td>
+                                                <td>{order?.paymentMethod}</td>
+                                                <td>{moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
+                                                <td>{moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
+                                                <td>{moment(order?.orderDate).format("YYYY-MM-DD")}</td>
+                                                <td >
+                                                    <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : 'warning'}`} >
+                                                        {order?.validAdmin}            
+                                                    </Badge>
+                                                </td>
+                                                <td>{order?.noteValid}</td>
+                                                <td>
+                                                    <Button disabled={roleUser === 'Admin' ? false : true}  variant="outline-warning" size="sm" onClick={() => handlerVieworder(order?._id)}>
+                                                        <i className="feather icon-edit-1" />
+                                                    </Button>
+                                                </td>
                                             </tr>
                                         )}
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 5 }}>
+                                    <Col xs={{ span: 4, offset: 2 }} sm={{ span: 4, offset: 2 }} md={{ span: 4, offset: 2 }}>
                                         <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (activePait > 1) {paginationPait(1);}}}
@@ -331,12 +690,6 @@ const RevenueIndex = (props) => {
                                 </Row>
                             </Tab>
                         </Tabs>
-
-
-
-
-
-                        
                     </Card.Body>
                 </Card>
                 </Col>

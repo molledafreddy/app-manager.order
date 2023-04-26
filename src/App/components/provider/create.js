@@ -149,7 +149,7 @@ const ProviderCreate = (props) => {
                                     <Form.Control type="text" placeholder="Facebook" name="facebook" value={body?.facebook} onChange={handlerChange}/>
                                 </Form.Group>
                                 <Form.Group controlId="form.ControlInstagran">
-                                    <Form.Label>Instagran</Form.Label>
+                                    <Form.Label>Instagram</Form.Label>
                                     <Form.Control type="text" placeholder="instagran" name="instagran" value={body?.instagran} onChange={handlerChange}/>
                                 </Form.Group>
                                 <Form.Group controlId="form.ControlDescrption">

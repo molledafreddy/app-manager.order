@@ -130,7 +130,7 @@ const TurnIndex = (props) => {
 
     const showLoading = () => {
         Swal.fire({
-        // title: 'En Proceso!',
+        title: 'Cargando',
         // html: 'Transaccion en Proceso.',
         timerProgressBar: true,
         allowOutsideClick: false,
@@ -167,7 +167,7 @@ const TurnIndex = (props) => {
                                             />
                                         </Form.Group>
                                     </Col>
-                                    <Col md={{ span: 3, offset: 0 }}> 
+                                    <Col md={{ span: 2, offset: 0 }}> 
                                         <Form.Group controlId="form.ControlType">
                                             <Form.Label>Tipo Turno</Form.Label>
                                             <Form.Control as="select" name="type" value={body?.type} onChange={handlerChangeSearch}>
@@ -179,7 +179,7 @@ const TurnIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col>
-                                    <Col md={{ span: 3, offset: 0 }} sm={{ span: 5, offset: 0 }}> 
+                                    <Col md={{ span: 2, offset: 0 }} sm={{ span: 5, offset: 0 }}> 
                                         <Form.Group controlId="form.ControlStatus">
                                             <Form.Label>Estatus</Form.Label>
                                             <Form.Control as="select" name="status" value={body?.status} onChange={handlerChangeSearch}>
@@ -191,10 +191,10 @@ const TurnIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col>
-                                    <Col md={{ span: 3, offset: 0 }} sm={4} xs={6}> 
+                                    <Col md={{ span: 2, offset: 0 }} sm={4} xs={6}> 
                                         <Button className='mt-4'  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col md={{ span: 5, offset: 0 }} xs={3}> 
+                                    <Col md={{ span: 2, offset: 0 }} xs={3}> 
                                         <Button className='mt-4  ml-5' variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col>
                                 </Row>
@@ -202,7 +202,7 @@ const TurnIndex = (props) => {
                         </Container>
                     </Card.Header>
                     <Card.Body>
-                        <Table responsive hover>
+                        <Table striped responsive hover>
                             <thead>
                             <tr>
                                 <th>Tipo</th>
@@ -225,17 +225,16 @@ const TurnIndex = (props) => {
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(turn?._id)}>
                                         <i className="feather icon-edit-1" />
                                     </Button>
-                                    <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(turn?._id)}>
+                                    {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(turn?._id)}>
                                         <i className="feather icon-delete" />
-                                    </Button>
-                                    
+                                    </Button> */}
                                 </td>
                                 </tr>
                             )}
                             </tbody>
                         </Table>
                         <Row>
-                            <Col sm={{ span: 5, offset: 3 }} md={{ span: 6, offset: 5 }}>
+                            <Col xs={{ span: 5, offset: 2 }} sm={{ span: 5, offset: 3 }} md={{ span: 6, offset: 3 }}>
                                 <Pagination size="sm" className="row justify-content-center">
                                     <Pagination.First
                                         onClick={() => {if (active > 1) {pagination(1);}}}

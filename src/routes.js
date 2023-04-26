@@ -41,12 +41,13 @@ const createOperationBill = React.lazy(() => import('./App/components/operationB
 //revenue
 const indexRevenue = React.lazy(() => import('./App/components/revenue/index'));
 const createRevenue = React.lazy(() => import('./App/components/revenue/create'));
+const viewOrder = React.lazy(() => import('./App/components/revenue/viewOrder'));
 
 //order
 const indexOrder = React.lazy(() => import('./App/components/order/index'));
 const createOrder = React.lazy(() => import('./App/components/order/create'));
 
-//order
+//Turn
 const indexTurn = React.lazy(() => import('./App/components/turn/index'));
 const createTurn = React.lazy(() => import('./App/components/turn/create'));
 
@@ -86,7 +87,8 @@ const routes = [
     { path: '/revenue', exact: true, name: 'revenue', component: indexRevenue },
     { path: '/revenue/create', exact: true, name: 'revenueCreate', component: createRevenue },
     { path: '/revenue/edit/:_id', exact: true, name: 'revenueEdit', component: createRevenue },
-
+    { path: '/revenue/view/order/:_id', exact: true, name: 'revenueViewOrder', component: viewOrder },
+    
     { path: '/order', exact: true, name: 'order', component: indexOrder },
     { path: '/order/create', exact: true, name: 'orderCreate', component: createOrder },
     { path: '/order/edit/:_id', exact: true, name: 'orderEdit', component: createOrder },

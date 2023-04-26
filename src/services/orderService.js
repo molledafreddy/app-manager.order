@@ -1,5 +1,5 @@
 import axios from "axios";
-import moment from 'moment';
+// import moment from 'moment';
 
 export default class orderService {
     constructor(){
@@ -69,7 +69,7 @@ export default class orderService {
 
     async createOrder(extend, payload) {
         try {
-            // console.log('payload', payload)
+            console.log('payload', payload)
             const dataA = new FormData();
             const data = JSON.stringify({
                 amount: payload?.amount,
@@ -86,6 +86,7 @@ export default class orderService {
                 descriptionOrder: payload?.descriptionOrder,
                 descriptionPayment: payload?.descriptionPayment,
                 descriptionLogistic: payload?.descriptionLogistic,
+                validAdmin: "por_verificar"
             })
             dataA.append("data",data);
             dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));
@@ -113,7 +114,7 @@ export default class orderService {
 
     async updateOrder(extend, payload, id) {
         try {
-            // console.log('payload?.idEgress', payload?._idEgress)
+            console.log('payload', payload)
             const dataA = new FormData();
             
             const data = JSON.stringify({
@@ -133,7 +134,10 @@ export default class orderService {
                 descriptionOrder: payload?.descriptionOrder,
                 descriptionPayment: payload?.descriptionPayment,
                 descriptionLogistic: payload?.descriptionLogistic,
+                validAdmin: payload?.validAdmin,
+                noteValid: payload?.noteValid
             })
+            console.log('data', data)
             let dataFiles = [];
             dataA.append("data",data);
             dataA.append("paymentHasEgress", JSON.stringify(payload?.paymentHasEgress));

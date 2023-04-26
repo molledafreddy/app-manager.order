@@ -3,17 +3,14 @@ import React, { useState, useEffect} from 'react';
 import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Form, Badge, ListGroup} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { getOrder, createOrder, updateOrder, updateCodeError } from '../../../store/actions/orderAction';
+import { getOrderPaitOut, updateOrderClosure, updateCodeError } from '../../../store/actions/orderAction';
 import { getPaymentTypes, getPaymentHasEgress } from '../../../store/actions/paymentTypeAction';
 import { getProviders } from '../../../store/actions/providerAction';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import "../../../../src/styles/datepiker.css";
-import { loading } from "../../../helpers/loading";
 
 import {Controller, useForm} from 'react-hook-form';
-
-import InputMask from 'react-input-mask';
 import "./styles.css";
 import Swal from 'sweetalert2';
 
@@ -22,12 +19,14 @@ const OrderCreate = (props) => {
     const dispatch = useDispatch()
 
     const providers = useSelector(state => state.provider);
-    const orders = useSelector(state => state.orders.docs);
+    // const orders = useSelector(state => state.orders.docs);
+    const orderPaitOuts = useSelector(state => state.orderPaitOuts.docs)
     const paymentTypes = useSelector(state => state.paymentTypes);
     const paymentHasEgressR = useSelector(state => state.paymentHasEgress);
     const errorOrder = useSelector(state => state.errorOrder);
     const statusCodeOrder = useSelector(state => state.statusCodeOrder);
-    let isLoadingOrder = useSelector(state => state.isLoadingOrder)
+    let [roleUser, setRoleUser] = useState('');
+    // let isLoadingOrder = useSelector(state => state.isLoadingOrder)
 
     let [validProcess, setValidProcess] = useState(false);
     let [titleButtom, setTitleButtom] = useState('Crear');
@@ -71,15 +70,9 @@ const OrderCreate = (props) => {
         files: []
     });
 
-    // const [addFile, setAddFile] = useState({
-    //     file: null
-    // })
-
     useEffect( () => {
         console.log('errorOrder', errorOrder)
-        // if (isLoadingOrder === false) {
-        //     Swal.close()
-        // }
+        setRoleUser(localStorage.getItem('role'));
         if (errorOrder?.code !== undefined  && !validProcess) {
             console.log('ingreso if errorOrder', errorOrder)
             showAlert("Error en el proceso", errorOrder?.message, "error",4000);
@@ -87,9 +80,7 @@ const OrderCreate = (props) => {
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
-        }
-        // console.log('statusCodeOrder', statusCodeOrder)
-        if (statusCodeOrder === '200' && errorOrder.length === 0) {
+        } else if (statusCodeOrder === '200' && errorOrder.length === 0) {
             console.log('ingreso al redirect', statusCodeOrder)
             Swal.close()
             validRedirect()
@@ -99,10 +90,10 @@ const OrderCreate = (props) => {
             dispatch(getProviders(dispatch,'provider'));
         }
         if (props.match.params._id) {
-            if ( orders === undefined || orders?.length === 0) {
+            if ( orderPaitOuts === undefined || orderPaitOuts?.length === 0) {
                 formatDataUpdate();
             } 
-            if (orders !== undefined || orders?.length > 0) {
+            if (orderPaitOuts !== undefined || orderPaitOuts?.length > 0) {
                 formatData();
             }  
         }
@@ -115,13 +106,13 @@ const OrderCreate = (props) => {
             formatPaymentContainer();
         }
         
-    }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, showLoading, orderPaitOuts, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
 
     const validRedirect = () => {
         console.log('validRedirect')
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",6500);
         dispatch(updateCodeError(dispatch));
-        props.history.push("/order");
+        props.history.push("/revenue");
         return;
     }
 
@@ -141,10 +132,10 @@ const OrderCreate = (props) => {
 
     const formatDataUpdate = async () => {
         console.log('llego por aca formatDataUpdate')
-        dispatch(getOrder(dispatch,'order', props.match.params._id));
-        if ((orders !== undefined || orders?.length > 0)) {
-            console.log('formatDataUpdate', orders)
-            const data = await orders.find(prov => prov._id === props.match.params._id);
+        dispatch(getOrderPaitOut(dispatch,'order', props.match.params._id));
+        if ((orderPaitOuts !== undefined || orderPaitOuts?.length > 0)) {
+            console.log('formatDataUpdate', orderPaitOuts)
+            const data = await orderPaitOuts.find(prov => prov._id === props.match.params._id);
 
             let filesD = [];
             reset(formValues => ({
@@ -166,6 +157,10 @@ const OrderCreate = (props) => {
                 _idEgress: data?.egress[0]?._id,
                 paymentHasEgress: data?.egress[0]?.operationBills,
                 files: data?.egress[0]?.files,
+                validAdmin: data?.validAdmin,
+                validDate: data?.validDate,
+                noteValid: data?.noteValid,
+                usersAdmin: data?.usersAdmin,
             }))
             
             if (data?.egress[0]?._id !== undefined && validPaimentHas) {
@@ -193,11 +188,9 @@ const OrderCreate = (props) => {
     }
 
     const formatData = async () => {
-        const data = await orders.find(prov => prov._id === props.match.params._id);
+        const data = await orderPaitOuts.find(prov => prov._id === props.match.params._id);
         
         if (data._id !== undefined ) {
-            // console.log('llego por aca formatDataUpdate', data.paymentDate)
-            // validDateFront(data);
             let filesD = [];
             reset(formValues => ({
                 // ...formValues,
@@ -217,6 +210,10 @@ const OrderCreate = (props) => {
                 providers: data?.providers[0]?._id,
                 _idEgress: data?.egress[0]?._id,
                 files: data?.egress[0]?.files,
+                validAdmin: data?.validAdmin,
+                validDate: data?.validDate,
+                noteValid: data?.noteValid,
+                usersAdmin: data?.usersAdmin,
 
               }));
            
@@ -493,7 +490,7 @@ const OrderCreate = (props) => {
     }
 
     const handlerBack = async e => {
-        props.history.push("/order");
+        props.history.push("/revenue");
     }
 
     const deleteImg = async (id) => {
@@ -596,6 +593,12 @@ const OrderCreate = (props) => {
         { id:3, type: "prestamo" },
     ];
 
+    const TypeStatusValid = [
+        { id:1, type: "Verificado" },
+        { id:2, type: "por_verificar" },
+        { id:3, type: "con_error" },
+    ];
+
     const messages = {
         required: "Este campo es obligatorio",
         name: "El formato introducido no es el correcto",
@@ -603,12 +606,6 @@ const OrderCreate = (props) => {
         mail: "Debes introducir una dirección correcta",
         phone: "Debes introducir un número correcto"
     };
-
-    // const patterns = {
-    //     name: /^[A-Za-z]/gi,
-    //     mail: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-    //     phone: /^[0-9]+$/i,
-    // };
 
     const { 
             register, 
@@ -661,13 +658,9 @@ const OrderCreate = (props) => {
         } 
         
         if (props.match.params._id) {
-            dispatch(updateOrder(dispatch,'order', dataInfo, props.match.params._id));
-            showLoading();
-        } else {
-            dispatch(createOrder(dispatch,'order', dataInfo));
+            dispatch(updateOrderClosure(dispatch,'order', dataInfo, props.match.params._id));
             showLoading();
         }
-       
     };
 
     const showAlert = (title, text, icon, timer) => {
@@ -966,6 +959,43 @@ const OrderCreate = (props) => {
                                                         )}
                                                     </ListGroup>
                                                 </Col>
+                                            </Row>
+                                        </Col>
+                                    )}
+                                    {(roleUser === 'Admin' && roleUser !== '' )  && (
+                                        <Col className="mb-0" md={12}>
+                                            <h5 className="mt-3">Validacion de Cierre</h5>
+                                            <hr/>
+                                            <Row>
+                                                <Col md={6}>
+                                                <Form.Group controlId="form.ControlStatus">
+                                                    <Form.Label>Estado Validacion</Form.Label>
+                                                    <Form.Control 
+                                                        as="select" 
+                                                        name="validAdmin" 
+                                                        className={errors.status && "error"}
+                                                        {...register("validAdmin", {
+                                                        })}>
+                                                        <option  value="">selecciona...</option>
+                                                        {TypeStatusValid.map(status =>
+                                                            <option key={status?.id} value={status?.type}>{status?.type}</option>
+                                                        )}
+                                                    </Form.Control>
+                                                    {errors.validAdmin && <p>{errors.validAdmin.message}</p>}
+                                                </Form.Group> 
+                                                </Col>
+                                                <Col md={6}>
+                                                    <Form.Group controlId="form.ControlNoteValid">
+                                                        <Form.Label>Nota Validacion</Form.Label>
+                                                        <Form.Control 
+                                                            as="textarea" 
+                                                            rows="3" 
+                                                            name="noteValid" 
+                                                            {...register("noteValid")}
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                
                                             </Row>
                                         </Col>
                                     )}

@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Badge, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { createRevenues, updateRevenues, getRevenue, updateCodeErrorRevenue } from '../../../store/actions/revenueAction';
+import { createRevenueOther, updateRevenueOther, getRevenue, updateCodeErrorRevenue } from '../../../store/actions/revenueAction';
 import Swal from 'sweetalert2';
 import { useForm} from 'react-hook-form';
 import "./styles.css";
@@ -12,7 +12,7 @@ import "./styles.css";
 const RevenueOtherCreate = (props) => {
    
     const dispatch = useDispatch()
-    const revenues = useSelector(state => state.revenues.docs)
+    const revenues = useSelector(state => state.revenueOther.docs)
     const errorRevenue = useSelector(state => state.errorRevenue);
     const statusCodeRevenue = useSelector(state => state.statusCodeRevenue);
 
@@ -341,10 +341,10 @@ const RevenueOtherCreate = (props) => {
 
     const onSubmit = (dataInfo) => {
         if (props.match.params._id) {
-            dispatch(updateRevenues(dispatch,'revenue/other', dataInfo, props.match.params._id));
+            dispatch(updateRevenueOther(dispatch,'revenue/other', dataInfo, props.match.params._id));
             showLoading();
         } else {
-            dispatch(createRevenues(dispatch,'revenue/other', dataInfo));
+            dispatch(createRevenueOther(dispatch,'revenue/other', dataInfo));
             showLoading();
         }
     }

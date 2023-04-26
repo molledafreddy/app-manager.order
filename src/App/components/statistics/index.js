@@ -1,30 +1,33 @@
 import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab,  Breadcrumb, Pagination,InputGroup, FormControl} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Tabs, Tab,  Badge, Pagination,InputGroup, FormControl} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { getSearchOrder, deleteOrder } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import { getSearchEgress } from '../../../store/actions/egressAction';
-import { getSearchRevenues } from '../../../store/actions/revenueAction';
+import { getSearchRevenuesStadistics } from '../../../store/actions/revenueAction';
 import 'react-datepicker/dist/react-datepicker.css';
 import "./styles.css";
 import "../../../../src/styles/datepiker.css";
+import Swal from 'sweetalert2';
 
 
 const StatisticsIndex = (props) => {
     const providers = useSelector(state => state.provider)
     const egress = useSelector(state => state.egress.docs)
+    let isLoadingEgress = useSelector(state => state.isLoadingEgress)
     let totalPages = useSelector(state => state.egress.totalPages)
     let sumEgress = useSelector(state => state.egress.sum)
     let [active, setActive] = useState(1);
 
-    const revenues = useSelector(state => state.revenues.docs)
-    let totalPagesRevenue = useSelector(state => state.revenues.totalPages)
-    let sumRevenue = useSelector(state => state.revenues.sum)
+    const revenues = useSelector(state => state.revenueStadistic.docs)
+    let totalPagesRevenue = useSelector(state => state.revenueStadistic.totalPages)
+    let sumRevenue = useSelector(state => state.revenueStadistic.sum)
+    let isLoadingRevenue = useSelector(state => state.isLoadingRevenue)
     let [activeR, setActiveR] = useState(1);
+    let [validCash, setValidCash] = useState(0);
 
     const dispatch = useDispatch()
     let pages = [];
@@ -51,30 +54,264 @@ const StatisticsIndex = (props) => {
     })
 
     const createItem = () => {
-        for (let number = 1; number <= totalPages; number++) {
-            pages.push(
-              <Pagination.Item
-                key={number}
-                active={number === active}
-                onClick={() => pagination(number)}
-              >
-                {number}
-              </Pagination.Item>
-            );
+        let flag = 0
+        if (totalPages > 0 && totalPages <= 4) {
+            for (let number = 1; number <= totalPages; number++) {
+                pages.push(
+                  <Pagination.Item
+                    key={number}
+                    active={number === active}
+                    onClick={() => pagination(number)}
+                  >
+                    {number}
+                  </Pagination.Item>
+                );
+            }
+            return;
+        } else if (totalPages > 4) {
+            for (let number = 1; number <= totalPages; number++) {
+                if (number > 1 && flag === 0 && active > 1) {
+                    pages.push( <Pagination.Ellipsis /> );
+                    flag = 1
+                }
+                if (number === 1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                // permite validar paginacion cuando se esta desde el item 2 hasta el 4
+                if (number > 1 && number < 4 && active < 3 ) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                if ( number === active && (active === 3 || active > 3) && active < totalPages-1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active}
+                            active={number === active}
+                            onClick={() => pagination(active)}
+                        >
+                            {active}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active+1}
+                            active={number === active+1}
+                            onClick={() => pagination(active+1)}
+                        >
+                            {active+1}
+                        </Pagination.Item>
+                    );
+                }
+                if (active === totalPages-1 && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+    
+                if (active === totalPages && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-2}
+                            active={number === active-2}
+                            onClick={() => pagination(active-2)}
+                        >
+                            {active-2}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                }
+                if (number ===  (totalPages - 1) && active !== totalPages) { pages.push( <Pagination.Ellipsis /> ); }
+                if (number === totalPages) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+            }
+            return;
         }
     }
 
     const createItemR = () => {
-        for (let number = 1; number <= totalPagesRevenue; number++) {
-            pagesR.push(
-              <Pagination.Item
-                key={number}
-                active={number === activeR}
-                onClick={() => paginationR(number)}
-              >
-                {number}
-              </Pagination.Item>
-            );
+        let flagR = 0
+        if (totalPagesRevenue > 0 && totalPagesRevenue <= 4) {
+            for (let numberR = 1; numberR <= totalPagesRevenue; numberR++) {
+                pagesR.push(
+                  <Pagination.Item
+                    key={numberR}
+                    active={numberR === activeR}
+                    onClick={() => paginationR(numberR)}
+                  >
+                    {numberR}
+                  </Pagination.Item>
+                );
+            }
+            return;
+        } else if (totalPagesRevenue > 4) {
+            for (let numberR = 1; numberR <= totalPagesRevenue; numberR++) {
+                if (numberR > 1 && flagR === 0 && activeR > 1) {
+                    pagesR.push( <Pagination.Ellipsis /> );
+                    flagR = 1
+                }
+                if (numberR === 1) {
+                    pagesR.push(
+                        <Pagination.Item
+                            key={numberR}
+                            active={numberR === activeR}
+                            onClick={() => paginationR(numberR)}
+                        >
+                            {numberR}
+                        </Pagination.Item>
+                    );
+                }
+                // permite validar paginacion cuando se esta desde el item 2 hasta el 4
+                if (numberR > 1 && numberR < 4 && activeR < 3 ) {
+                    pagesR.push(
+                        <Pagination.Item
+                            key={numberR}
+                            activeR={numberR === activeR}
+                            onClick={() => paginationR(numberR)}
+                        >
+                            {numberR}
+                        </Pagination.Item>
+                    );
+                }
+                if ( numberR === activeR && (activeR === 3 || activeR > 3) && activeR < totalPagesRevenue-1) {
+                    pagesR.push(
+                        <Pagination.Item
+                            key={activeR-1}
+                            active={numberR === activeR-1}
+                            onClick={() => paginationR(activeR-1)}
+                        >
+                            {activeR-1}
+                        </Pagination.Item>
+                    );
+                    pagesR.push(
+                        <Pagination.Item
+                            key={activeR}
+                            active={numberR === activeR}
+                            onClick={() => paginationR(activeR)}
+                        >
+                            {activeR}
+                        </Pagination.Item>
+                    );
+                    pagesR.push(
+                        <Pagination.Item
+                            key={activeR+1}
+                            active={numberR === activeR+1}
+                            onClick={() => paginationR(active+1)}
+                        >
+                            {activeR+1}
+                        </Pagination.Item>
+                    );
+                }
+                if (activeR === totalPagesRevenue-1 && activeR === numberR) {
+                    pagesR.push(
+                        <Pagination.Item
+                            key={activeR-1}
+                            active={numberR === activeR-1}
+                            onClick={() => paginationR(activeR-1)}
+                        >
+                            {activeR-1}
+                        </Pagination.Item>
+                    );
+                    pagesR.push(
+                        <Pagination.Item
+                            key={numberR}
+                            active={numberR === activeR}
+                            onClick={() => paginationR(numberR)}
+                        >
+                            {numberR}
+                        </Pagination.Item>
+                    );
+                }
+    
+                if (activeR === totalPagesRevenue && activeR === numberR) {
+                    pagesR.push(
+                        <Pagination.Item
+                            key={activeR-2}
+                            active={numberR === activeR-2}
+                            onClick={() => paginationR(activeR-2)}
+                        >
+                            {activeR-2}
+                        </Pagination.Item>
+                    );
+                    pagesR.push(
+                        <Pagination.Item
+                            key={activeR-1}
+                            active={numberR === activeR-1}
+                            onClick={() => paginationR(activeR-1)}
+                        >
+                            {activeR-1}
+                        </Pagination.Item>
+                    );
+                }
+                if (numberR ===  (totalPagesRevenue - 1) && activeR !== totalPagesRevenue) { pages.push( <Pagination.Ellipsis /> ); }
+                if (numberR === totalPagesRevenue) {
+                    pagesR.push(
+                        <Pagination.Item
+                            key={numberR}
+                            active={numberR === activeR}
+                            onClick={() => paginationR(numberR)}
+                        >
+                            {numberR}
+                        </Pagination.Item>
+                    );
+                }
+            }
+            return;
         }
     }
 
@@ -83,6 +320,8 @@ const StatisticsIndex = (props) => {
         body.page = number; 
         setBody({...body});
         validDateSearch();
+        validCashF();
+        showLoading()
         dispatch(getSearchEgress(dispatch,'egress/search', body));
     }
 
@@ -91,19 +330,22 @@ const StatisticsIndex = (props) => {
         body.page = number; 
         setBody({...body});
         validDateSearch();
-        // dispatch(getSearchEgress(dispatch,'egress/search', body));
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 20, number,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+        validCashF();
+        showLoading()
+        dispatch(getSearchRevenuesStadistics(dispatch,'revenue/get-revenue-turn', 20, number,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
     }
 
     const searchHandler = () => {
         validDateSearch();
+        showLoading()
         body.page = 1;
         setBody({...body});
         // dispatch(getSearchOrder(dispatch,'order/search/detail', body));
         dispatch(getSearchEgress(dispatch,'egress/search', body));
-        dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 10, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+        dispatch(getSearchRevenuesStadistics(dispatch,'revenue/get-revenue-turn', 20, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
         createItem()
         createItemR()
+        validCashF()
     }
 
     const validDateSearch = () => {
@@ -158,20 +400,53 @@ const StatisticsIndex = (props) => {
         // if (providers === undefined || providers?.length === 0 ) {
         //     dispatch(getSearchEgress(dispatch,'provider'));
         // }
-        if (active === 1) {
-            // dispatch(getSearchOrder(dispatch,'order/search/detail', body));
+        // if (active === 1) {
+        //     // dispatch(getSearchOrder(dispatch,'order/search/detail', body));
+        //     dispatch(getSearchEgress(dispatch,'egress/search', body));
+        //     createItem()
+        // }
+
+        if (isLoadingRevenue === false) {
+            Swal.close()
+        }
+        if (isLoadingEgress === false) {
+            Swal.close()
+        }
+
+        if (active === 1 && (egress === undefined ) && isLoadingEgress === false) {
+            showLoading()
             dispatch(getSearchEgress(dispatch,'egress/search', body));
+            validCashF()
             createItem()
         }
-
-        if (activeR === 1) {
-            dispatch(getSearchEgress(dispatch,'egress/search', body));
-            dispatch(getSearchRevenues(dispatch,'revenue/get-revenue-turn', 20, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+        
+        if (activeR === 1 && (revenues === undefined ) && isLoadingRevenue === false) {
+            dispatch(getSearchRevenuesStadistics(dispatch,'revenue/get-revenue-turn', 20, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+            validCashF()
             createItemR()
         }
-    }, [dispatch, createItem(), createItemR()]);
+    }, [dispatch, createItem(), validCashF, createItemR(), isLoadingRevenue, revenues, egress, isLoadingEgress]);
 
-    
+    const showLoading = () => {
+        Swal.fire({
+        timerProgressBar: true,
+        title: 'Cargando',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() },
+        willClose: () => {} });
+    }
+
+    const validCashF = async ()=> {
+        // console.log('totalCash', totalCash)
+        // console.log('paymentWithBox', paymentWithBox)
+        if (sumRevenue > 0 && sumEgress > 0) {
+            
+            let result = Math.sign(sumRevenue - sumEgress)
+            setValidCash(result);
+        }
+        console.log('setValidCash', validCash)
+    }
+
     const driverSubmit =e=> {
         e.preventDefault();
     }
@@ -183,41 +458,41 @@ const StatisticsIndex = (props) => {
         })
     }
 
-    const driverButtomCreate = async (e) => {
-        console.log('llego')
-        props.history.push("/order/create");
-    }
+    // const driverButtomCreate = async (e) => {
+    //     console.log('llego')
+    //     props.history.push("/order/create");
+    // }
 
-    const handlerDelete = async (_id) => {
-        dispatch(deleteOrder(dispatch,'order', _id))
-    }
+    // const handlerDelete = async (_id) => {
+    //     dispatch(deleteOrder(dispatch,'order', _id))
+    // }
 
-    const handlerUpdate = async (id) => {
-        props.history.push(`/order/edit/${id}`);
-    }
+    // const handlerUpdate = async (id) => {
+    //     props.history.push(`/order/edit/${id}`);
+    // }
 
-    const handlerChangeSearch = async e => {
-        setBody({
-            ...body,
-            [e.target.name]: e.target.value
-        })
-        console.log('e.target.name', e.target.name)
-        console.log('e.target.value', e.target.value)
-    }
+    // const handlerChangeSearch = async e => {
+    //     setBody({
+    //         ...body,
+    //         [e.target.name]: e.target.value
+    //     })
+    //     console.log('e.target.name', e.target.name)
+    //     console.log('e.target.value', e.target.value)
+    // }
     
 
-    const TypePaymentMethod = [
-        { id:1, type: "discounted" },
-        { id:2, type: "credit" },
-        { id:3, type: "partial" },
-        { id:4, type: "consignment" }
-    ];
+    // const TypePaymentMethod = [
+    //     { id:1, type: "discounted" },
+    //     { id:2, type: "credit" },
+    //     { id:3, type: "partial" },
+    //     { id:4, type: "consignment" }
+    // ];
 
-    const TypeEgress = [
-        { id:1, type: "orders" },
-        { id:2, type: "operationBills" },
-        { id:3, type: "payroll" }
-    ];
+    // const TypeEgress = [
+    //     { id:1, type: "orders" },
+    //     { id:2, type: "operationBills" },
+    //     { id:3, type: "payroll" }
+    // ];
 
     return (
         <Aux>
@@ -309,7 +584,7 @@ const StatisticsIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col> */}
-                                    <Col md={{ span: 2, offset: 0 }}> 
+                                    {/* <Col md={{ span: 2, offset: 0 }}> 
                                         <Form.Group controlId="form.ControlType">
                                             <Form.Label>Tipo Egreso</Form.Label>
                                             <Form.Control as="select" name="type" value={body?.type} onChange={handlerChangeSearch}>
@@ -320,7 +595,7 @@ const StatisticsIndex = (props) => {
                                             </Form.Control>
                                         </Form.Group>
                                         
-                                    </Col>
+                                    </Col> */}
                                     <Col md={{ span: 1, offset: 0 }} sm={6}> 
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col> 
@@ -334,7 +609,7 @@ const StatisticsIndex = (props) => {
                                 <div className="row d-flex align-items-center">
                                     <div className="col-9">
                                         <h3 className="f-w-300 d-flex align-items-center m-b-0 ingress_color">
-                                        { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue)}
+                                        { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue === undefined ? 0 : sumRevenue)}
                                         </h3>
                                     </div>
                                 </div>
@@ -349,7 +624,7 @@ const StatisticsIndex = (props) => {
                                     <div className="col-9">
                                         <h3 className="f-w-300 d-flex align-items-center m-b-0 egress_color">
                                             {/* <i className="feather icon-arrow-up text-c-green f-30 m-r-5"/>  */}
-                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumEgress)}
+                                            { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumEgress === undefined ? 0 : sumEgress)}
                                         </h3>
                                     </div>
 
@@ -363,6 +638,22 @@ const StatisticsIndex = (props) => {
                             </Card.Body>
                         </Card>
                     </Col>
+                    <Col md={6} xl={6}>
+                        <Card>
+                            <Card.Body>
+                                <h6 className='mb-4 egress_title'>Total Disponible</h6>
+                                <div className="row d-flex align-items-center">
+                                    <div className="col-9">
+                                        <h3 className="f-w-300 d-flex align-items-center m-b-0 ">
+                                            <span className={`${validCash === -1 ? 'egress_color' : 'positive_ingress_color'}`}>
+                                                { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(sumRevenue - sumEgress)}
+                                            </span>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                     </Row>
                         </Container>
                     </Card.Header>
@@ -371,7 +662,7 @@ const StatisticsIndex = (props) => {
                         <hr/>
                         <Tabs defaultActiveKey="home">
                             <Tab eventKey="home" title="Egresos">
-                                <Table responsive hover>
+                                <Table striped responsive hover>
                                     <thead>
                                         <tr>
                                             <th>Monto Pagado</th>
@@ -387,7 +678,11 @@ const StatisticsIndex = (props) => {
                                             <td>{new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(egres?.amount)}</td>
                                             
                                             <td>{egres?.invoiceNumber}</td>
-                                            <td>{ egres?.type === 'operationBills' ? 'Gastos Operation' : 'Gastos ordenes'}</td>
+                                            <td>
+                                                <Badge className='badge_position text_tam' variant={`${egres?.type === 'operationBills' ? 'warning' : 'success'}`} >
+                                                    { egres?.type === 'operationBills' ? 'Gastos Operation' : 'Gastos ordenes'}           
+                                                </Badge>
+                                            </td>
                                             <td>{ egres?.description}</td>
                                             <td>{moment(egres?.paymentDate).format("YYYY-MM-DD")}</td>
                                             </tr>
@@ -396,7 +691,7 @@ const StatisticsIndex = (props) => {
                                 </Table>
                                 <Row>
                                     <Col sm={{ span: 5, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                                        <Pagination size="sm" class="row justify-content-center">
+                                        <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (active > 1) {pagination(1);}}}
                                             />
@@ -415,7 +710,7 @@ const StatisticsIndex = (props) => {
                                 </Row>
                             </Tab>
                             <Tab eventKey="profile" title="Ingresos">
-                                <Table responsive hover>
+                                <Table striped responsive hover>
                                     <thead>
                                         <tr>
                                             <th>Usuario</th>
@@ -431,7 +726,12 @@ const StatisticsIndex = (props) => {
                                             <tr key={revenue?._id}>
                                                 <td>{revenue?.users[0]?.name}</td>
                                                 <td>{new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.totalAmount === undefined ? 0 : revenue?.totalAmount) }</td>
-                                                <td>{revenue?.type === 'other' ? 'Ingreso Extra' : 'Cierre Caja'}</td>
+                                                <td>
+                                                    <Badge className='badge_position text_tam' variant={`${revenue?.type === 'other' ? 'warning' : 'success'}`} >
+                                                        {revenue?.type === 'other' ? 'Ingreso Extra' : 'Cierre Caja'}           
+                                                    </Badge>
+                                                </td>
+                                                
                                                 <td>{revenue?.description}</td>
                                                 <td>{moment(revenue?.createdAt).format("YYYY-MM-DD")}</td>
                                                 <td>{moment(revenue?.updateAt).format("YYYY-MM-DD")}</td>
@@ -441,7 +741,7 @@ const StatisticsIndex = (props) => {
                                 </Table>
                                 <Row>
                                     <Col sm={{ span: 5, offset: 2 }} md={{ span: 6, offset: 5 }}>
-                                        <Pagination size="sm" class="row justify-content-center">
+                                        <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (activeR > 1) {pagination(1);}}}
                                             />

@@ -18,6 +18,11 @@
     font-weight: 500;
   }
 
+  .positive_ingress_color {
+    color: #00b347;
+    font-weight: 500;
+  }
+
   .ingress_title {
     font-weight: 700;
     font-size: 25px;

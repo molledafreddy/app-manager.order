@@ -1,12 +1,13 @@
 export default {
-    defaultPath: '/dashboard/default',
+    // defaultPath: '/dashboard/default',
+    defaultPath: '/auth/signin',
     basename: '/', // only at build time to set, like /datta-able
     layout: 'vertical', // vertical, horizontal (not available in lite version)
     preLayout: null, // (not available in lite version)
     collapseMenu: false, // mini-menu
     layoutType: 'menu-light', // menu-dark, (menu-light, dark are not available in lite version)
     navIconColor: false,
-    headerBackColor: 'header-default', // header-default, (header-blue, header-red, header-purple, header-lightblue, header-dark are not available in lite version)
+    headerBackColor: 'header-blue', // header-default, (header-blue, header-red, header-purple, header-lightblue, header-dark are not available in lite version)
     navBackColor: 'navbar-default', // navbar-default, (navbar-blue, navbar-red, navbar-purple, navbar-lightblue, navbar-dark are not available in lite version)
     navBrandColor: 'brand-default', // brand-default, (brand-blue, brand-red, brand-purple, brand-lightblue, brand-dark are not available in lite version)
     navBackImage: false, // not available in lite version

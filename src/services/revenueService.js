@@ -49,7 +49,7 @@ export default class revenueService {
             const amountTransfer = payload?.amountTransfer === undefined ? 0 : payload?.amountTransfer.toString().replace(/[$,]/g,'');
             const amountCash = payload?.amountCash === undefined ? 0 : payload?.amountCash.toString().replace(/[$,]/g,'');
             const amountOther = payload?.amountOther === undefined ? 0 : payload?.amountOther.toString().replace(/[$,]/g,'');
-            
+            console.log('payload',  payload)
             const totalAmount = (Number(amountPos) + Number(amountTransfer) + Number(amountCash) + Number(amountOther));
             
             const data = JSON.stringify({
@@ -61,7 +61,8 @@ export default class revenueService {
                 description: payload?.description,
                 cashFund: payload?.cashFund === undefined ? null : payload?.cashFund.toString().replace(/[$,]/g,''),
                 type: payload?.type,
-                totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount
+                totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount,
+                validAdmin: "por_verificar"
             })
             dataA.append("data",data);
             // console.log('data',  data)
@@ -84,7 +85,7 @@ export default class revenueService {
 
     async updateRevenue(extend, payload, id) {
         try {
-            // console.log('data valores', payload?.amountCash)
+            console.log('data valores', payload)
             const amountPos = payload?.amountPos === undefined ? 0 : payload?.amountPos.toString().replace(/[$,]/g,'');
             const amountTransfer = payload?.amountTransfer === undefined ? 0 : payload?.amountTransfer.toString().replace(/[$,]/g,'');
             const amountCash = payload?.amountCash === undefined ? 0 : payload?.amountCash.toString().replace(/[$,]/g,'');
@@ -105,7 +106,9 @@ export default class revenueService {
                 description: payload?.description,
                 cashFund: payload?.cashFund === undefined ? null : payload?.cashFund.toString().replace(/[$,]/g,''),
                 type: payload?.type,
-                totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount
+                totalAmount: payload?.totalAmount === undefined ? totalAmount: payload?.totalAmount,
+                validAdmin: payload?.validAdmin,
+                noteValid: payload?.noteValid
             })
             // console.log('data', data)
             let dataFiles = [];

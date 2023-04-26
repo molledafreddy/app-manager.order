@@ -59,16 +59,131 @@ const OrderIndex = (props) => {
     })
 
     const createItem = () => {
-        for (let number = 1; number <= totalPages; number++) {
-            pages.push(
-              <Pagination.Item
-                key={number}
-                active={number === active}
-                onClick={() => pagination(number)}
-              >
-                {number}
-              </Pagination.Item>
-            );
+        let flag = 0
+        if (totalPages <= 4) {
+            for (let number = 1; number <= totalPages; number++) {
+                pages.push(
+                  <Pagination.Item
+                    key={number}
+                    active={number === active}
+                    onClick={() => pagination(number)}
+                  >
+                    {number}
+                  </Pagination.Item>
+                );
+            }
+        } else {
+            for (let number = 1; number <= totalPages; number++) {
+                if (number > 1 && flag === 0 && active > 1) {
+                    pages.push( <Pagination.Ellipsis /> );
+                    flag = 1
+                }
+                if (number === 1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                // permite validar paginacion cuando se esta desde el item 2 hasta el 4
+                if (number > 1 && number < 4 && active < 3 ) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+                if ( number === active && (active === 3 || active > 3) && active < totalPages-1) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active}
+                            active={number === active}
+                            onClick={() => pagination(active)}
+                        >
+                            {active}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active+1}
+                            active={number === active+1}
+                            onClick={() => pagination(active+1)}
+                        >
+                            {active+1}
+                        </Pagination.Item>
+                    );
+                }
+                if (active === totalPages-1 && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+    
+                if (active === totalPages && active === number) {
+                    pages.push(
+                        <Pagination.Item
+                            key={active-2}
+                            active={number === active-2}
+                            onClick={() => pagination(active-2)}
+                        >
+                            {active-2}
+                        </Pagination.Item>
+                    );
+                    pages.push(
+                        <Pagination.Item
+                            key={active-1}
+                            active={number === active-1}
+                            onClick={() => pagination(active-1)}
+                        >
+                            {active-1}
+                        </Pagination.Item>
+                    );
+                }
+                if (number ===  (totalPages - 1) && active !== totalPages) { pages.push( <Pagination.Ellipsis /> ); }
+                if (number === totalPages) {
+                    pages.push(
+                        <Pagination.Item
+                            key={number}
+                            active={number === active}
+                            onClick={() => pagination(number)}
+                        >
+                            {number}
+                        </Pagination.Item>
+                    );
+                }
+            }
         }
     }
 
@@ -77,6 +192,7 @@ const OrderIndex = (props) => {
         body.page = number; 
         setBody({...body});
         validDateSearch();
+        createItem()
         showLoading()
         dispatch(getSearchOrder(dispatch,'order/search/detail', body))
     }
@@ -196,6 +312,7 @@ const OrderIndex = (props) => {
     const showLoading = () => {
         Swal.fire({
         timerProgressBar: true,
+        title: 'Cargando',
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading() },
         willClose: () => {} });
@@ -315,7 +432,7 @@ const OrderIndex = (props) => {
                         </Container>
                     </Card.Header>
                     <Card.Body>
-                        <Table responsive hover>
+                        <Table striped responsive hover>
                             <thead>
                             <tr>
                                 <th>Monto Estimado</th>
@@ -332,7 +449,7 @@ const OrderIndex = (props) => {
                             </thead>
                             <tbody>
                             {orders?.map(order =>
-                                <tr key={order._id}>
+                                <tr key={order._id} onClick={() => handlerUpdate(order?._id)}>
                                 
                                 <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.estimatedAmount === undefined ? 0: order?.estimatedAmount)}</td>
                                 <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.amountPaid === undefined ? 0: order?.amountPaid)}</td>
@@ -358,7 +475,7 @@ const OrderIndex = (props) => {
                         </Table>
                     </Card.Body>
                     <Row>
-                        <Col xs={{ span: 7, offset: 4 }} sm={{ span: 7, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                        <Col xs={{ span: 7, offset: 3 }} sm={{ span: 7, offset: 2 }} md={{ span: 6, offset: 3 }}>
                             <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}

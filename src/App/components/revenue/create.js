@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Badge, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { createRevenues, updateRevenues, getRevenue, updateCodeError } from '../../../store/actions/revenueAction';
+import { createRevenueClosure, updateRevenueClosure, getRevenue, updateCodeError } from '../../../store/actions/revenueAction';
 import Swal from 'sweetalert2';
 import { Controller, useForm} from 'react-hook-form';
 import "./styles.css";
@@ -11,12 +11,13 @@ import "./styles.css";
 const RevenueCreate = (props) => {
    
     const dispatch = useDispatch()
-    const revenues = useSelector(state => state.revenues.docs);
+    const revenues = useSelector(state => state.revenuesClosure.docs);
     const isLoadingRevenue = useSelector(state => state.isLoadingRevenue);
     const errorRevenue = useSelector(state => state.errorRevenue);
     const statusCodeRevenue = useSelector(state => state.statusCodeRevenue);
 
     let [validProcess, setValidProcess] = useState(false);
+    let [roleUser, setRoleUser] = useState('');
 
     let [titleButtom, setTitleButtom] = useState('Crear');
    
@@ -42,30 +43,43 @@ const RevenueCreate = (props) => {
     });
 
     useEffect( () => {
-        titleButt()
-        // && validProcess === true
+        titleButt();
+        setRoleUser(localStorage.getItem('role'));
+        // console.log('datos watchValidAdmin', watchValidAdmin)
+        console.log('datos errorRevenue', errorRevenue)
+        console.log('statusCodeRevenue', statusCodeRevenue)
         if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' ) {
+            console.log('ingreso aca errorRevenue',  errorRevenue.message)
             showAlert("Error en el proceso", errorRevenue?.message, "error",4000);
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
             updateCodeError(dispatch);
-        }
-
-        if (errorRevenue?.code !== undefined && validProcess === false ) {
+        } else if (errorRevenue.length > 0 && validProcess === false ) {
+            // console.log('errorRevenue', errorRevenue)
+            // console.log('validProcess', validProcess)
             showAlert("Error en el proceso", 'Error al realizar la transaccion', "error",4000);
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
             updateCodeError(dispatch);
+        }else if (statusCodeRevenue === '400') {
+            showAlert("Error en el proceso", 'Error al realizar la transaccion', "error",4000);
+            console.log('ingreso por aca')
+            setValidProcess(true);
+            setTimeout(() => {
+                setValidProcess(false);
+                updateCodeError(dispatch);
+            }, 5000);
+            updateCodeError(dispatch);
         }
         
-        console.log('statusCodeRevenue', statusCodeRevenue)
+        // console.log('statusCodeRevenue', statusCodeRevenue)
         if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
-            Swal.close()
-            validRedirect()
+            Swal.close();
+            validRedirect();
         }
         if (props.match.params._id) {
             if ( revenues === undefined || revenues?.length === 0) {
@@ -90,6 +104,10 @@ const RevenueCreate = (props) => {
             amountOther: data?.amountOther,
             amountSistem: data?.amountSistem,
             cashFund: data?.cashFund,
+            validAdmin: data?.validAdmin,
+            validDate: data?.validDate,
+            noteValid: data?.noteValid,
+            usersAdmin: data?.usersAdmin,
         }))
     }
 
@@ -353,8 +371,8 @@ const RevenueCreate = (props) => {
         watch, 
         reset,
         control } = useForm({mode:  "all", reValidateMode: "onChange"});
-    
-    const watchTotalAmount = watch("totalAmount");
+        const watchValidAdmin = watch("validAdmin");
+    // const watchTotalAmount = watch("totalAmount");
     
     const onSubmit = (dataInfo) => {
         if (dataInfo.files === undefined || dataInfo.files.length === 0) {
@@ -366,10 +384,10 @@ const RevenueCreate = (props) => {
                 return;
         }
         if (props.match.params._id) {
-            dispatch(updateRevenues(dispatch,'revenue/working-day', dataInfo, props.match.params._id));
+            dispatch(updateRevenueClosure(dispatch,'revenue/working-day', dataInfo, props.match.params._id));
             showLoading()
         } else {
-            dispatch(createRevenues(dispatch,'revenue/working-day', dataInfo));
+            dispatch(createRevenueClosure(dispatch,'revenue/working-day', dataInfo));
             showLoading()
         }
     }
@@ -416,6 +434,12 @@ const RevenueCreate = (props) => {
         document.body.removeChild(link)
     };
 
+    const TypeStatus = [
+        { id:1, type: "Verificado" },
+        { id:2, type: "por_verificar" },
+        { id:3, type: "con_error" },
+    ];
+
     return (
         <Aux>
             <Row>
@@ -423,10 +447,10 @@ const RevenueCreate = (props) => {
                 <Card>
                     <Card.Header>
                         <Row>
-                            <Col md={4} sm={4} xs={6}>
+                            <Col md={4} sm={4} xs={7}>
                                 <Card.Title as="h5">Registro Cierre Caja</Card.Title>
                             </Col>
-                            <Col md={{ span: 1, offset: 6  }} sm={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 3  }}>
+                            <Col md={{ span: 1, offset: 6  }} sm={{ span: 1, offset: 6  }} xs={{ span: 1, offset: 1 }}>
                             <Button variant="primary" onClick={handlerBack}>Volver</Button>
                             </Col>
                         </Row>
@@ -437,7 +461,8 @@ const RevenueCreate = (props) => {
                                 <Col md={6}>
                                     <Form.Group controlId="form.ControlAmountCash">
                                         <Form.Label>Monto Efectivo</Form.Label>
-                                        <Form.Control 
+                                        <Form.Control
+                                            disabled={roleUser === 'Admin' ? true : false} 
                                             type="text" 
                                             placeholder="Monto Efectivo" 
                                             className={errors.amountCash && "error"}
@@ -447,31 +472,28 @@ const RevenueCreate = (props) => {
                                                 onChange: (e) => {handlerChange(e)}
                                             })} 
                                         />
-                                        {/* <Controller 
-                                            control={control} 
-                                            name="amountCash"  
-                                            className={errors.amountCash && "error"}
-                                            rules={{ required: messages.required }}  
-                                            render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                            <Form.Control 
-                                                onBlur={(e) => handlderBlur(e)}
-                                                onChange={(e) => handlerChange(e)} 
-                                                // onChange={(e) => onChange(e)}
-                                                name="amountCash"
-                                                value={value}  
-                                                ref={ref}                         
-                                                isInvalid={errors.amountCash}                                                          
-                                                placeholder="Monto Efectivo" 
-                                                // {...register("amountCash")}
-
-                                            />)} 
-                                        />  */}
                                         {errors.amountCash && <p>{errors.amountCash.message}</p>}
+                                    </Form.Group>
+                                    <Form.Group controlId="form.ControlAmountPos">
+                                        <Form.Label>Monto Punto Venta</Form.Label>
+                                        <Form.Control 
+                                            type="text" 
+                                            disabled={roleUser === 'Admin' ? true : false}
+                                            placeholder="Monto Punto Venta" 
+                                            className={errors.amountPos && "error"}
+                                            name="amountPos"
+                                            {...register("amountPos", {
+                                                required: messages.required,
+                                                onChange: (e) => {handlerChange(e)}
+                                            })} 
+                                        />
+                                        {errors.amountPos && <p>{errors.amountPos.message}</p>}
                                     </Form.Group>
                                     <Form.Group controlId="form.ControlAmountTransfer">
                                         <Form.Label>Monto Transferencia</Form.Label>
                                         <Form.Control 
                                             type="text" 
+                                            disabled={roleUser === 'Admin' ? true : false}
                                             placeholder="Monto Transferencia" 
                                             className={errors.amountTransfer && "error"}
                                             name="amountTransfer"
@@ -480,29 +502,42 @@ const RevenueCreate = (props) => {
                                                 onChange: (e) => {handlerChange(e)}
                                             })} 
                                         />
-                                        {/* <Controller 
-                                            control={control} 
-                                            name="amountTransfer"  
-                                            className={errors.amountTransfer && "error"}     
-                                            rules={{ required: messages.required }}  
-                                            render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                            <Form.Control 
-                                                onChange={ (e) => handlerChange(e)}
-                                                onBlur={onBlur} 
-                                                name="amountTransfer"
-                                                value={value}  
-                                                inputRef={ref}                         
-                                                isInvalid={errors.amountTransfer}                                                          
-                                                placeholder="Monto Transferencia" 
-                                                {...register("amountTransfer")}
-                                            />)} 
-                                        />   */}
                                         {errors.amountTransfer && <p>{errors.amountTransfer.message}</p>}
+                                    </Form.Group>
+                                    <Form.Group controlId="form.ControlAmountOther">
+                                        <Form.Label>Monto Otros</Form.Label>
+                                        <Form.Control 
+                                            type="text" 
+                                            disabled={roleUser === 'Admin' ? true : false}
+                                            placeholder="Monto Otros" 
+                                            name="amountOther"
+                                            {...register("amountOther", {
+                                                onChange: (e) => {handlerChange(e)}
+                                            })} 
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group controlId="form.ControlCashFund">
+                                        <Form.Label>Fondo de caja</Form.Label>
+                                        <Form.Control 
+                                            type="text" 
+                                            disabled={roleUser === 'Admin' ? true : false}
+                                            placeholder="Monto Fondo de Caja" 
+                                            className={errors.cashFund && "error"}
+                                            name="amountOther"
+                                            {...register("cashFund", {
+                                                required: messages.required,
+                                                onChange: (e) => {handlerChange(e)}
+                                            })} 
+                                        />
+                                        {errors.cashFund && <p>{errors.cashFund.message}</p>}
                                     </Form.Group>
                                     <Form.Group controlId="form.ControlAmountSistem">
                                         <Form.Label>Monto Sistema</Form.Label>
                                         <Form.Control 
                                             type="text" 
+                                            disabled={roleUser === 'Admin' ? true : false}
                                             placeholder="Monto Sistema" 
                                             className={errors.amountSistem && "error"}
                                             name="amountSistem"
@@ -511,24 +546,6 @@ const RevenueCreate = (props) => {
                                                 onChange: (e) => {handlerChange(e)}
                                             })} 
                                         />
-                                        {/* <Controller 
-                                            control={control} 
-                                            name="amountSistem"  
-                                            className={errors.amountSistem && "error"}     
-                                            rules={{ required: messages.required }}  
-                                            render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                            <Form.Control 
-                                                onChange={ (e) => handlerChange(e)}
-                                                onBlur={onBlur} 
-                                                name="amountSistem"
-                                                value={value}  
-                                                inputRef={ref}                         
-                                                isInvalid={errors.amountSistem}                                                          
-                                                placeholder="Monto Sistema" 
-                                                {...register("amountSistem")}
-
-                                            />)} 
-                                        />  */}
                                         {errors.amountSistem && <p>{errors.amountSistem.message}</p>}
                                     </Form.Group>
                                     <Form.Group controlId="form.ControlDescrption">
@@ -536,12 +553,14 @@ const RevenueCreate = (props) => {
                                         <Controller 
                                             control={control} 
                                             name="description"  
+                                            disabled={roleUser === 'Admin' ? true : false}
                                             className={errors.description && "error"}     
                                             // rules={{ required: messages.required }}  
                                             render={({ field: { onChange, onBlur, value, ref } }) => (                             
                                             <Form.Control 
                                                 as="textarea" 
                                                 rows="3"
+                                                disabled={roleUser === 'Admin' ? true : false}
                                                 onChange={ onChange}
                                                 onBlur={onBlur} 
                                                 name="description"
@@ -555,98 +574,43 @@ const RevenueCreate = (props) => {
                                         />        
                                     </Form.Group>
                                 </Col>
-                                <Col md={6}>
-                                    <Form.Group controlId="form.ControlAmountPos">
-                                        <Form.Label>Monto Punto Venta</Form.Label>
-                                        <Form.Control 
-                                            type="text" 
-                                            placeholder="Monto Punto Venta" 
-                                            className={errors.amountPos && "error"}
-                                            name="amountPos"
-                                            {...register("amountPos", {
-                                                required: messages.required,
-                                                onChange: (e) => {handlerChange(e)}
-                                            })} 
-                                        />
-                                        {/* <Controller 
-                                            control={control} 
-                                            name="amountPos"  
-                                            className={errors.amountPos && "error"}     
-                                            rules={{ required: messages.required }}  
-                                            render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                            <Form.Control 
-                                                onChange={ (e) => handlerChange(e)}
-                                                onBlur={(e) => onBlur} 
-                                                name="amountPos"
-                                                value={value}  
-                                                inputRef={ref}                         
-                                                isInvalid={errors.amountPos}                                                          
-                                                placeholder="Monto Punto Venta"
-                                                {...register("amountPos")}  
-                                            />)} 
-                                        />  */}
-                                        {errors.amountPos && <p>{errors.amountPos.message}</p>}
-                                    </Form.Group>
-                                    <Form.Group controlId="form.ControlAmountOther">
-                                        <Form.Label>Monto Otros</Form.Label>
-                                        <Form.Control 
-                                            type="text" 
-                                            placeholder="Monto Otros" 
-                                            name="amountOther"
-                                            {...register("amountOther", {
-                                                onChange: (e) => {handlerChange(e)}
-                                            })} 
-                                        />
-                                        {/* <Controller 
-                                            control={control} 
-                                            name="amountOther"  
-                                            // className={errors.amountPos && "error"}     
-                                            // rules={{ required: messages.required }}  
-                                            render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                            <Form.Control 
-                                                onChange={ (e) => handlerChange(e)}
-                                                onBlur={onBlur} 
-                                                name="amountOther"
-                                                value={value}  
-                                                inputRef={ref}                         
-                                                isInvalid={errors.amountOther}                                                          
-                                                placeholder="Monto Otros" 
-                                                {...register("amountOther")} 
-                                            />)} 
-                                        />  */}
-                                    </Form.Group>
-                                    <Form.Group controlId="form.ControlCashFund">
-                                        <Form.Label>Fondo de caja</Form.Label>
-                                        <Form.Control 
-                                            type="text" 
-                                            placeholder="Monto Fondo de Caja" 
-                                            className={errors.cashFund && "error"}
-                                            name="amountOther"
-                                            {...register("cashFund", {
-                                                required: messages.required,
-                                                onChange: (e) => {handlerChange(e)}
-                                            })} 
-                                        />
-                                        {/* <Controller 
-                                            control={control} 
-                                            name="cashFund"  
-                                            className={errors.cashFund && "error"}     
-                                            rules={{ required: messages.required }}  
-                                            render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                            <Form.Control 
-                                                onChange={ onChange}
-                                                name="cashFund"
-                                                value={value}  
-                                                inputRef={ref}                         
-                                                isInvalid={errors.cashFund}                                                          
-                                                placeholder="Monto Punto Venta" 
-                                                {...register("cashFund")}
-
-                                            />)} 
-                                        />  */}
-                                        {errors.cashFund && <p>{errors.cashFund.message}</p>}
-                                    </Form.Group>
-                                </Col>
+                                {(roleUser === 'Admin' && roleUser !== '' )  && (
+                                    <Col className="mb-0" md={12}>
+                                        <h5 className="mt-3">Validacion de Cierre</h5>
+                                        <hr/>
+                                        <Row>
+                                            <Col md={6}>
+                                            <Form.Group controlId="form.ControlStatus">
+                                                <Form.Label>Estado Validacion</Form.Label>
+                                                <Form.Control 
+                                                    as="select" 
+                                                    name="validAdmin" 
+                                                    className={errors.status && "error"}
+                                                    {...register("validAdmin", {
+                                                    })}>
+                                                    <option  value="">selecciona...</option>
+                                                    {TypeStatus.map(status =>
+                                                        <option key={status?.id} value={status?.type}>{status?.type}</option>
+                                                    )}
+                                                </Form.Control>
+                                                {errors.validAdmin && <p>{errors.validAdmin.message}</p>}
+                                            </Form.Group> 
+                                            </Col>
+                                            <Col md={6}>
+                                                <Form.Group controlId="form.ControlNoteValid">
+                                                    <Form.Label>Nota Validacion</Form.Label>
+                                                    <Form.Control 
+                                                        as="textarea" 
+                                                        rows="3" 
+                                                        name="noteValid" 
+                                                        {...register("noteValid")}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                            
+                                        </Row>
+                                    </Col>
+                                )}
                                 <Col className="mb-5" md={12}>
                                     <h5 className="mt-5">Archivos</h5>
                                     <hr/>
@@ -654,6 +618,7 @@ const RevenueCreate = (props) => {
                                         <Col md={12}>
                                             <Form.Group as={Row}>
                                                 <Form.File
+                                                    disabled={roleUser === 'Admin' ? true : false}
                                                     type="file"
                                                     className="custom-file-label"
                                                     id="inputGroupFile0_8"
@@ -678,7 +643,9 @@ const RevenueCreate = (props) => {
                                                                 <Badge key={'card_badge_d'+file.filename} variant='primary' className='badge_position ml-5' onClick={() => download(file?.file, file?.flag)}>
                                                                     <i className="fa fa-download" />
                                                                 </Badge>
-                                                                <Badge key={'card_badge_'+file.filename} variant='danger' className='badge_position ml-5' onClick={() => deleteImg(file?.id)}>X</Badge>
+                                                                {roleUser !== 'Admin' && (
+                                                                    <Badge key={'card_badge_'+file.filename} variant='danger' className='badge_position ml-5' onClick={() => deleteImg(file?.id)}>X</Badge>
+                                                                )}
                                                             </Card.Title>
                                                             <Card.Img style={{ width: '15rem', height:'12rem' }} key={'card_img_'+file.filename} variant="top" src={file?.flag ? file?.file : URL.createObjectURL(file?.file)} />
                                                         </Card>
@@ -690,7 +657,7 @@ const RevenueCreate = (props) => {
                                     </Row>
                                 </Col>
                                 <Col md={6}>
-                                    <Button type='submit' variant="primary" >{titleButtom}</Button>                  
+                                    <Button disabled={roleUser === 'User' && watchValidAdmin === 'Verificado' ? true : false} type='submit' variant="primary" >{titleButtom}</Button>                  
                                 </Col>
                             </Row>
                         </Form>

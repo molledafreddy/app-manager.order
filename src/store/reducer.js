@@ -31,17 +31,27 @@ import {
         ERROR_ORDER,
         GET_SEARCH_ORDER,
         GET_SEARCH_ORDER_PAITOUT,
-        UPDATE_CODE_ERROR_ORDER  } from "./types/order";
+        UPDATE_CODE_ERROR_ORDER,
+        GET_ORDER_PAITOUT,
+        UPDATE_ORDER_CLOSURE
+          } from "./types/order";
 
 import {  
     CREATE_REVENUE,
+    CREATE_REVENUE_CLOSURE,
+    CREATE_REVENUE_OTHER,
     GET_REVENUE,
     GET_ALL_REVENUE,
     UPDATE_REVENUE,
+    UPDATE_REVENUE_CLOSURE,
+    UPDATE_REVENUE_OTHER,
     DELETE_REVENUE,
     LOADING_REVENUE, 
     ERROR_REVENUE,
     GET_SEARCH_REVENUE,
+    GET_SEARCH_REVENUE_CLOSURE,
+    GET_SEARCH_REVENUE_STADISTIC,
+    GET_SEARCH_REVENUE_OTHER,
     UPDATE_CODE_ERROR_REVENUES  } from "./types/revenue";
 
 import { GET_ALL_BANK  } from "./types/bank";
@@ -102,10 +112,14 @@ const initialState = {
     isLoadingOrder: false,
 
     revenues: [],
+    revenuesClosure: [],
+    revenueStadistic: [],
+    revenueOther: [],
     errorRevenue: [],
     statusCodeRevenue: '',
     isLoadingRevenue: false,
     sumRevenue: null,
+    paymentHasEgressPait: [],
 
     turns: [],
     turn: [],
@@ -432,6 +446,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 statusCodeOperationBill: '',
+                errorOperationBill: []
             }
         case ERROR_OPERATIONBILL:
             return {
@@ -444,7 +459,12 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 paymentHasEgress: action.payload.data,
-            }    
+            } 
+        // case GET_PAYMENTHASEGRESS_PAIT:
+        //     return {
+        //         ...state,
+        //         paymentHasEgressPait: action.payload.data,
+        //     }    
 
         case GET_SEARCH_PAYMENTTYPE:
             return {
@@ -461,6 +481,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 orders: action.payload.data,
+            }
+        case GET_ORDER_PAITOUT:
+            return {
+                ...state,
+                orderPaitOuts: action.payload.data,
             }
         case GET_ALL_ORDER:
             return {
@@ -484,7 +509,6 @@ const reducer = (state = initialState, action) => {
                 statusCodeOrder: '200'
             }
         case UPDATE_ORDER:
-            
             state.orders.docs.map(function(order){
                 if(order._id === action.payload._id){
                     order.descriptionOrder = action.payload.descriptionOrder
@@ -504,6 +528,21 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 statusCodeOrder: '200',
         }
+        case UPDATE_ORDER_CLOSURE:
+            state.orderPaitOuts.docs.map(function(order){
+                if(order._id === action.payload._id){
+                    order._id = action.payload._id;
+                    order.validDate = action.payload.validDate;
+                    order.noteValid = action.payload.noteValid;
+                    order.validAdmin = action.payload.validAdmin;
+                    order.usersAdmin = action.payload.usersAdmin;
+                }
+                return order;
+            });
+            return {
+                ...state,
+                statusCodeOrder: '200',
+        }
         case DELETE_ORDER:
             // const orderFound = state.orders.docs.find(order => order._id === action.payload._id);
             // if (orderFound) {
@@ -515,7 +554,6 @@ const reducer = (state = initialState, action) => {
             // }
         // eslint-disable-next-line no-fallthrough
         case LOADING_ORDER:
-            console.log('LOADING_ORDER', action.payload)
             return {
                 ...state,
                 isLoadingOrder: action.payload
@@ -525,6 +563,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 statusCodeOrder: '',
+                errorOrder: []
             }
         case ERROR_ORDER:
             return {
@@ -612,6 +651,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 statusCodeTurn: '',
+                errorTurn: []
             }
         case GET_REVENUE:
             return {
@@ -628,6 +668,21 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 revenues: action.payload.data,
             }
+        case GET_SEARCH_REVENUE_CLOSURE:
+            return {
+                ...state,
+                revenuesClosure: action.payload.data,
+            }
+        case GET_SEARCH_REVENUE_STADISTIC:
+            return {
+                ...state,
+                revenueStadistic: action.payload.data,
+            }
+        case GET_SEARCH_REVENUE_OTHER:
+            return {
+                ...state,
+                revenueOther: action.payload.data,
+            }
         case CREATE_REVENUE:
             // console.log('action.payload.data CREATE_REVENUE', action.payload)
             // state.revenues.push(payload);
@@ -636,8 +691,50 @@ const reducer = (state = initialState, action) => {
                 revenues: payload,
                 statusCodeRevenue: '200'
             }
+        case CREATE_REVENUE_OTHER:
+            return {
+                ...state,
+                revenueOther: payload,
+                statusCodeRevenue: '200'
+            }
+        case CREATE_REVENUE_CLOSURE:
+            // console.log('action.payload.data CREATE_REVENUE', action.payload)
+            // state.revenues.push(payload);
+            return {
+                ...state,
+                revenuesClosure: payload,
+                statusCodeRevenue: '200'
+            }
+        case UPDATE_REVENUE_OTHER:
+            state.revenueOther.docs.map(function(revenue){
+                if(revenue._id === action.payload._id){
+                    revenue.amountCash = action.payload.amountCash
+                    revenue.amountOther = action.payload.amountOther
+                    revenue.amountPos = action.payload.amountPos
+                    revenue.amountSistem = action.payload.amountSistem
+                    revenue.amountTransfer = action.payload.amountTransfer
+                    revenue.cashFund = action.payload.cashFund
+                    revenue.createdAt = action.payload.createdAt
+                    revenue.description = action.payload.description
+                    revenue.files = action.payload.files
+                    revenue.totalAmount = action.payload.totalAmount
+                    revenue.turn = action.payload.turn
+                    revenue.type = action.payload.type
+                    revenue.updatedAt = action.payload.updatedAt
+                    // revenue.users = action.payload.users
+                    revenue.workingDay = action.payload.workingDay
+                    revenue.validAdmin = action.payload.validAdmin
+                    revenue.noteValid = action.payload.noteValid
+                    revenue.usersAdmin = action.payload.usersAdmin
+                    revenue._id = action.payload._id
+                }
+                return revenue;
+                });
+            return {
+                ...state,
+                statusCodeRevenue: '200',
+            }
         case UPDATE_REVENUE:
-            console.log('datos', action.payload.users)
             state.revenues.docs.map(function(revenue){
                 if(revenue._id === action.payload._id){
                     revenue.amountCash = action.payload.amountCash
@@ -655,10 +752,42 @@ const reducer = (state = initialState, action) => {
                     revenue.updatedAt = action.payload.updatedAt
                     // revenue.users = action.payload.users
                     revenue.workingDay = action.payload.workingDay
+                    revenue.validAdmin = action.payload.validAdmin
+                    revenue.noteValid = action.payload.noteValid
+                    revenue.usersAdmin = action.payload.usersAdmin
                     revenue._id = action.payload._id
                 }
                 return revenue;
               });
+            return {
+                ...state,
+                statusCodeRevenue: '200',
+            }
+        case UPDATE_REVENUE_CLOSURE:
+            state.revenuesClosure.docs.map(function(revenue){
+                if(revenue._id === action?.payload?._id){
+                    revenue.amountCash = action?.payload?.amountCash
+                    revenue.amountOther = action?.payload?.amountOther
+                    revenue.amountPos = action?.payload?.amountPos
+                    revenue.amountSistem = action?.payload?.amountSistem
+                    revenue.amountTransfer = action?.payload?.amountTransfer
+                    revenue.cashFund = action?.payload?.cashFund
+                    revenue.createdAt = action?.payload?.createdAt
+                    revenue.description = action?.payload?.description
+                    revenue.files = action?.payload?.files
+                    revenue.totalAmount = action?.payload?.totalAmount
+                    revenue.turn = action?.payload?.turn
+                    revenue.type = action?.payload?.type
+                    revenue.updatedAt = action?.payload?.updatedAt
+                    // revenue.users = action.payload.users
+                    revenue.workingDay = action?.payload?.workingDay
+                    revenue.validAdmin = action?.payload?.validAdmin
+                    revenue.noteValid = action?.payload?.noteValid
+                    revenue.usersAdmin = action?.payload?.usersAdmin
+                    revenue._id = action?.payload?._id
+                }
+                return revenue;
+                });
             return {
                 ...state,
                 statusCodeRevenue: '200',
@@ -673,22 +802,22 @@ const reducer = (state = initialState, action) => {
                 revenues: state.revenues
             }
         case LOADING_REVENUE:
-            // console.log('LOADING_REVENUE', action.payload)
             return {
                 ...state,
                 isLoadingRevenue: action.payload
             }
         case UPDATE_CODE_ERROR_REVENUES:
-            console.log('llego por aca UPDATE_CODE_ERROR_REVENUE')
             return {
                 ...state,
                 statusCodeRevenue: '',
+                errorRevenue: []
             }
         case ERROR_REVENUE:
             // console.log('datos ERROR_REVENUE', action.payload)
+            // console.log('datos action.payload.codeHttp', action.payload.codeHttp)
             return {
                 ...state,
-                statusCode: action.payload.codeHttp,
+                statusCode: action.payload.codeHttp === undefined ? '400' : action.payload.codeHttp,
                 errorRevenue: action.payload,
                 statusCodeRevenue: '400',
             }
