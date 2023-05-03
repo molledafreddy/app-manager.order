@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Badge, Form} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { createRevenueClosure, updateRevenueClosure, getRevenue, updateCodeError } from '../../../store/actions/revenueAction';
+import { createRevenueClosure, updateRevenueClosure, getRevenue, updateCodeErrorClosure } from '../../../store/actions/revenueAction';
 import Swal from 'sweetalert2';
 import { Controller, useForm} from 'react-hook-form';
 import "./styles.css";
@@ -13,8 +13,8 @@ const RevenueCreate = (props) => {
     const dispatch = useDispatch()
     const revenues = useSelector(state => state.revenuesClosure.docs);
     const isLoadingRevenue = useSelector(state => state.isLoadingRevenue);
-    const errorRevenue = useSelector(state => state.errorRevenue);
-    const statusCodeRevenue = useSelector(state => state.statusCodeRevenue);
+    const errorRevenue = useSelector(state => state.errorRevenueClosure);
+    const statusCodeRevenue = useSelector(state => state.statusCodeRevenueClosure);
 
     let [validProcess, setValidProcess] = useState(false);
     let [roleUser, setRoleUser] = useState('');
@@ -49,31 +49,35 @@ const RevenueCreate = (props) => {
         console.log('datos errorRevenue', errorRevenue)
         console.log('statusCodeRevenue', statusCodeRevenue)
         if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' ) {
+           
             console.log('ingreso aca errorRevenue',  errorRevenue.message)
             showAlert("Error en el proceso", errorRevenue?.message, "error",4000);
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
+                dispatch(updateCodeErrorClosure(dispatch));
+                ;
             }, 5000);
-            updateCodeError(dispatch);
+            
         } else if (errorRevenue.length > 0 && validProcess === false ) {
             // console.log('errorRevenue', errorRevenue)
-            // console.log('validProcess', validProcess)
+            console.log('datos errorRevenue validProcess', validProcess)
+            dispatch(updateCodeErrorClosure(dispatch));
             showAlert("Error en el proceso", 'Error al realizar la transaccion', "error",4000);
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
-            updateCodeError(dispatch);
+            
         }else if (statusCodeRevenue === '400') {
+            dispatch(updateCodeErrorClosure(dispatch));
             showAlert("Error en el proceso", 'Error al realizar la transaccion', "error",4000);
             console.log('ingreso por aca')
             setValidProcess(true);
             setTimeout(() => {
                 setValidProcess(false);
-                updateCodeError(dispatch);
             }, 5000);
-            updateCodeError(dispatch);
+            
         }
         
         // console.log('statusCodeRevenue', statusCodeRevenue)
@@ -92,7 +96,7 @@ const RevenueCreate = (props) => {
                 addFiles(dataRevenue)
             }
         }
-    }, [dispatch, updateCodeError, revenues, isLoadingRevenue, errorRevenue, statusCodeRevenue, titleButt, validRedirect]);
+    }, [dispatch, updateCodeErrorClosure, revenues, isLoadingRevenue, errorRevenue, statusCodeRevenue, titleButt, validRedirect]);
 
     const setValuesRevenue = async (data) => {
         reset(formValues => ({
@@ -393,8 +397,8 @@ const RevenueCreate = (props) => {
     }
 
     const validRedirect = () => {
-        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
-        updateCodeError(dispatch);
+        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",9500);
+        dispatch(updateCodeErrorClosure(dispatch));
         props.history.push("/revenue");
         return;
     }

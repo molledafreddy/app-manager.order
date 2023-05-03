@@ -154,18 +154,18 @@ const ProviderIndex = (props) => {
 
     function pagination(number) {
         setActive(number);
-        dispatch(getSearchProviders(dispatch,'provider/search', 3, number, body.search))
+        dispatch(getSearchProviders(dispatch,'provider/search', 6, number, body.search))
     }
 
     const searchHandler = () => {
         setActive(1);
-        dispatch(getSearchProviders(dispatch,'provider/search', 3, 1, body.search));
+        dispatch(getSearchProviders(dispatch,'provider/search', 6, 1, body.search));
         createItem()
     }
 
     useEffect(() => {
         if (active === 1) {
-            dispatch(getSearchProviders(dispatch,'provider/search', 3, 1, ''));
+            dispatch(getSearchProviders(dispatch,'provider/search', 6, 1, ''));
             createItem()
         }
     }, [dispatch, createItem()]);
@@ -262,10 +262,6 @@ const ProviderIndex = (props) => {
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(provider._id)}>
                                         <i className="feather icon-edit-1" />
                                     </Button>
-                                    <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(provider._id)}>
-                                        <i className="feather icon-delete" />
-                                    </Button>
-                                    
                                 </td>
                                 </tr>
                             )}
@@ -273,7 +269,7 @@ const ProviderIndex = (props) => {
                         </Table>
                     </Card.Body>
                     <Row>
-                        <Col sm={{ span: 1, offset: 2 }} md={{ span: 6, offset: 5 }}>
+                        <Col xs={{ span: 7, offset: 2 }} sm={{ span: 6, offset: 2 }} md={{ span: 6, offset: 3 }}>
                             <Pagination size="sm" className="row justify-content-center">
                                 <Pagination.First
                                     onClick={() => {if (active > 1) {pagination(1);}}}

@@ -231,9 +231,9 @@ const RevenueOtherIndex = (props) => {
         props.history.push("/revenue-other/create");
     }
 
-    const handlerDelete = async (_id) => {
-        dispatch(deleteRevenues(dispatch,'revenue', _id))
-    }
+    // const handlerDelete = async (_id) => {
+    //     dispatch(deleteRevenues(dispatch,'revenue', _id))
+    // }
 
     const handlerUpdate = async (id) => {
         updateCodeError(dispatch);
@@ -264,7 +264,7 @@ const RevenueOtherIndex = (props) => {
                             </Row>
                             <Form onSubmit={driverSubmit}> 
                                 <Row>
-                                    <Col className="mt-2" md={{ span: 4, offset: 5 }}> 
+                                    <Col className="mt-2" md={{ span: 4, offset: 4 }}> 
                                         <Form.Label>Rango Fecha Ingreso</Form.Label>
                                         <DatePicker
                                             className="form-control input_width"
@@ -277,10 +277,10 @@ const RevenueOtherIndex = (props) => {
                                             isClearable={true}
                                         />
                                     </Col>
-                                    <Col className="mt-4"  md={{ span: 1, offset: 0 }} sm={6}> 
+                                    <Col className="mt-4"  md={{ span: 1, offset: 0 }} sm={4} xs={5}> 
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col className="mt-4"  md={{ span: 1, offset: 1 }}> 
+                                    <Col className="mt-4"  md={{ span: 1, offset: 1 }} sm={6} xs={6}> 
                                         <Button variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col> 
                                 </Row>

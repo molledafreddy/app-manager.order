@@ -40,6 +40,7 @@ const OperationBillCreate = (props) => {
         id: null,
         payments: "",
         paymentAmount: "",
+        originMoney: ""
     })
 
     const [buttomAmount, setButtomAmount] = useState(true);
@@ -64,6 +65,7 @@ const OperationBillCreate = (props) => {
             setTimeout(() => {
                 setValidProcess(false);
             }, 5000);
+            dispatch(updateCodeError(dispatch));
         }
         console.log('statusCodeOrder', statusCodeOperationBill)
         if (statusCodeOperationBill === '200' && errorOperationBill.length === 0) {
@@ -104,6 +106,7 @@ const OperationBillCreate = (props) => {
         await paymentHasEgressR.forEach(element => {
             dataPayment.push({
                 paymentAmount: element?.paymentAmount,
+                originMoney: element?.originMoney,
                 payments: element?.payments[0]?.name,
                 id: element?.payments[0]?.name
             })
@@ -214,10 +217,10 @@ const OperationBillCreate = (props) => {
     }
 
     const addAmount = async e => {
-        if ( paymentHasEgress.payments !== '' && paymentHasEgress.paymentAmount !== '' ) {
+        if ( paymentHasEgress.payments !== '' && paymentHasEgress.paymentAmount !== '' && paymentHasEgress.originMoney !== '' ) {
             let data = false;
             paymentContainer.forEach(element => {
-                if (paymentHasEgress.payments === element.payments) {
+                if (paymentHasEgress.payments === element.payments && paymentHasEgress.originMoney === element.originMoney) {
                     data = true;
                 }
             });
@@ -465,6 +468,7 @@ const OperationBillCreate = (props) => {
     }
 
     const handlerBack = async e => {
+        setPaymentContainer([])
         props.history.push("/operation-bill");
     }
 
@@ -552,6 +556,12 @@ const OperationBillCreate = (props) => {
         }
         showLoading();
     };
+
+    const TypeOrigin = [
+        { id:1, type: "caja" },
+        { id:2, type: "caja chica" },
+        { id:3, type: "prestamo" },
+    ];
 
     const showAlert = (title, text, icon, timer) => {
         Swal.fire({
@@ -678,6 +688,20 @@ const OperationBillCreate = (props) => {
                                                     )}
                                                 </Form.Control>
                                             </Form.Group>
+                                            <Form.Group controlId="form.ControlOriginMokey">
+                                                <Form.Label>Origen del Dinero</Form.Label>
+                                                <Form.Control 
+                                                    as="select" 
+                                                    name="originMoney"
+                                                    value={paymentHasEgress?.originMoney} 
+                                                    onChange={handlerAmount} 
+                                                    >
+                                                    <option key="-1" >selecciona...</option>
+                                                    { TypeOrigin.map(origin =>
+                                                        <option key={origin?.id} value={origin?.type}>{origin?.type}</option>
+                                                    )}
+                                                </Form.Control>
+                                            </Form.Group>
                                             <Form.Group controlId="form2.ControlPaymentAmount">
                                                 <Form.Label>Monto</Form.Label>
                                                 <Form.Control type="tel" autoComplete='off' placeholder="Monto Pago" name="paymentAmount" value={paymentHasEgress?.paymentAmount} onChange={handlerAmount} />
@@ -700,7 +724,7 @@ const OperationBillCreate = (props) => {
                                                 { paymentContainer?.map(payment =>
                                                     <ListGroup.Item key={'cardd_'+payment?.id} as="li" className="d-flex justify-content-between align-items-start">
                                                         <div className="ms-2 me-auto">
-                                                            <div className="fw-bold">{payment.payments}</div>
+                                                            <div className="fw-bold">{payment.payments} - {payment.originMoney}</div>
                                                             { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(payment.paymentAmount === undefined ? 0 : payment.paymentAmount)}
                                                         </div> 
                                                         <Badge variant='danger' className='badge_position ml-5' onClick={() => deletePaymentAmount(payment.id)}>X</Badge>  

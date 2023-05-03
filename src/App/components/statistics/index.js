@@ -400,18 +400,14 @@ const StatisticsIndex = (props) => {
         // if (providers === undefined || providers?.length === 0 ) {
         //     dispatch(getSearchEgress(dispatch,'provider'));
         // }
-        // if (active === 1) {
-        //     // dispatch(getSearchOrder(dispatch,'order/search/detail', body));
-        //     dispatch(getSearchEgress(dispatch,'egress/search', body));
-        //     createItem()
-        // }
-
+       
         if (isLoadingRevenue === false) {
             Swal.close()
         }
         if (isLoadingEgress === false) {
             Swal.close()
         }
+        validCashF()
 
         if (active === 1 && (egress === undefined ) && isLoadingEgress === false) {
             showLoading()
@@ -437,14 +433,12 @@ const StatisticsIndex = (props) => {
     }
 
     const validCashF = async ()=> {
-        // console.log('totalCash', totalCash)
-        // console.log('paymentWithBox', paymentWithBox)
         if (sumRevenue > 0 && sumEgress > 0) {
-            
-            let result = Math.sign(sumRevenue - sumEgress)
+            let sum = sumRevenue - sumEgress;
+            let result = Math.sign(sum)
+            console.log('result',result)
             setValidCash(result);
         }
-        console.log('setValidCash', validCash)
     }
 
     const driverSubmit =e=> {
@@ -506,7 +500,7 @@ const StatisticsIndex = (props) => {
                                     <Card.Title as="h5">Balance de Ingresos y Egresos</Card.Title>
                                 </Col>
                             </Row>
-                            <Form onSubmit={driverSubmit}>
+                            <Form className='mb-2' onSubmit={driverSubmit}>
                                 <Row>
                                     {/* <Col md={{ span: 4, offset: 0 }}> 
                                         <Form.Label>Rango de Fechas</Form.Label>
@@ -521,7 +515,7 @@ const StatisticsIndex = (props) => {
                                             isClearable={true}
                                         />
                                     </Col> */}
-                                    <Col md={{ span: 4, offset: 0 }}> 
+                                    <Col md={{ span: 4, offset: 6 }}> 
                                         <Form.Label>Fecha Pago</Form.Label>
                                         <DatePicker
                                             className="form-control input_width"
@@ -596,7 +590,7 @@ const StatisticsIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col> */}
-                                    <Col md={{ span: 1, offset: 0 }} sm={6}> 
+                                    <Col className='mb-2 mt-4' md={{ span: 1, offset: 0 }} sm={6}> 
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col> 
                                 </Row>

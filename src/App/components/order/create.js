@@ -4,7 +4,7 @@ import Aux from "../../../hoc/_Aux";
 import {Row, Col, Card, Button, Form, Badge, ListGroup} from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
 import { getOrder, createOrder, updateOrder, updateCodeError } from '../../../store/actions/orderAction';
-import { getPaymentTypes, getPaymentHasEgress } from '../../../store/actions/paymentTypeAction';
+import { getPaymentTypes, getPaymentHasEgress, ClearPaymentHasEgress } from '../../../store/actions/paymentTypeAction';
 import { getProviders } from '../../../store/actions/providerAction';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -111,8 +111,14 @@ const OrderCreate = (props) => {
             dispatch(getPaymentTypes(dispatch,'payment-type'));
         }
 
+        console.log('paymentHasEgressR', paymentHasEgressR)
+        console.log('paymentContainer', paymentContainer)
+
         if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
-            formatPaymentContainer();
+            // formatPaymentContainer();
+            setTimeout(() => {
+                formatPaymentContainer();
+            }, 450);
         }
         
     }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
@@ -121,6 +127,7 @@ const OrderCreate = (props) => {
         console.log('validRedirect')
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",6500);
         dispatch(updateCodeError(dispatch));
+        dispatch(ClearPaymentHasEgress(dispatch));
         props.history.push("/order");
         return;
     }
@@ -140,7 +147,6 @@ const OrderCreate = (props) => {
     }
 
     const formatDataUpdate = async () => {
-        console.log('llego por aca formatDataUpdate')
         dispatch(getOrder(dispatch,'order', props.match.params._id));
         if ((orders !== undefined || orders?.length > 0)) {
             console.log('formatDataUpdate', orders)
@@ -152,7 +158,7 @@ const OrderCreate = (props) => {
                 _id: data._id,
                 estimatedAmount: data?.estimatedAmount,
                 paymentMethod: data?.paymentMethod,
-                estimateReceptionDate: new Date(data.EstimateReceptionDate),
+                estimateReceptionDate: data.EstimateReceptionDate === null ? undefined :  new Date(data.EstimateReceptionDate),
                 orderDate: new Date(data.orderDate),
                 paymentDate: new Date(data.paymentDate),
                 receptionDate: new Date(data.receptionDate),
@@ -164,7 +170,7 @@ const OrderCreate = (props) => {
                 invoiceNumber: data?.egress[0]?.invoiceNumber,
                 providers: data?.providers[0]?._id,
                 _idEgress: data?.egress[0]?._id,
-                paymentHasEgress: data?.egress[0]?.operationBills,
+                paymentHasEgress: [],
                 files: data?.egress[0]?.files,
             }))
             
@@ -196,7 +202,6 @@ const OrderCreate = (props) => {
         const data = await orders.find(prov => prov._id === props.match.params._id);
         
         if (data._id !== undefined ) {
-            // console.log('llego por aca formatDataUpdate', data.paymentDate)
             // validDateFront(data);
             let filesD = [];
             reset(formValues => ({
@@ -204,16 +209,17 @@ const OrderCreate = (props) => {
                 _id: data?._id,
                 estimatedAmount: data?.estimatedAmount,
                 paymentMethod: data?.paymentMethod,
-                estimateReceptionDate: data.EstimateReceptionDate === undefined ? undefined : new Date(data.EstimateReceptionDate),
-                orderDate: data.paymentDate === undefined ? undefined : new Date(data.orderDate),
-                paymentDate: data.paymentDate === undefined ? undefined : new Date(data.paymentDate),
-                receptionDate: data.receptionDate === undefined ? undefined : new Date(data.receptionDate),
-                creditPaymentDate: data.creditPaymentDate === undefined ? undefined : new Date(data.creditPaymentDate),
+                estimateReceptionDate: data.EstimateReceptionDate === undefined ? undefined : data.EstimateReceptionDate === null ? undefined : new Date(data.EstimateReceptionDate),
+                orderDate: data.paymentDate === undefined ? undefined : data.paymentDate === null ? undefined : new Date(data.orderDate),
+                paymentDate: data.paymentDate === undefined ? undefined : data.paymentDate === null ? undefined : new Date(data.paymentDate),
+                receptionDate: data.receptionDate === undefined ? undefined : data.receptionDate === null ? undefined : new Date(data.receptionDate),
+                creditPaymentDate: data.creditPaymentDate === undefined ? undefined : data.creditPaymentDate === null ? undefined : new Date(data.creditPaymentDate),
                 status: data?.status,
                 descriptionOrder: data?.descriptionOrder,
                 amount: data?.egress[0]?.amount,
                 descriptionPayment: data?.egress[0]?.description,
                 invoiceNumber: data?.egress[0]?.invoiceNumber,
+                paymentHasEgress: [],
                 providers: data?.providers[0]?._id,
                 _idEgress: data?.egress[0]?._id,
                 files: data?.egress[0]?.files,
@@ -493,6 +499,9 @@ const OrderCreate = (props) => {
     }
 
     const handlerBack = async e => {
+        setPaymentContainer([]);
+        dispatch(updateCodeError(dispatch));
+        dispatch(ClearPaymentHasEgress(dispatch));
         props.history.push("/order");
     }
 

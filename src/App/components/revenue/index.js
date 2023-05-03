@@ -354,6 +354,8 @@ const RevenueIndex = (props) => {
         createItemPait()
     }
 
+    
+
     useEffect(() => {
         setRoleUser(localStorage.getItem('role'));
 
@@ -426,11 +428,10 @@ const RevenueIndex = (props) => {
     }
 
     const validCashF = async ()=> {
-        console.log('totalCash', totalCash)
-        console.log('paymentWithBox', paymentWithBox)
-        if (totalCash > 0 && paymentWithBox > 0) {
-            
-            let result = Math.sign(totalCash - paymentWithBox)
+        if (totalCash > 0 || paymentWithBox > 0) {
+            let sum = totalCash - paymentWithBox;
+            let result = Math.sign(sum)
+            console.log('result',result)
             setValidCash(result);
         }
     }
@@ -471,7 +472,8 @@ const RevenueIndex = (props) => {
                             </Row>
                             <Form onSubmit={driverSubmit}> 
                                 <Row>
-                                    <Col className="mt-2" md={{ span: 4, offset: 3 }} sm={{ span: 5, offset: 2 }}> 
+                                {/* className="mt-2"  */}
+                                    <Col md={{ span: 5, offset: 3 }} sm={{ span: 5, offset: 2 }} xs={12}> 
                                         <Form.Label>Rango Fecha</Form.Label>
                                         <DatePicker
                                             className="form-control input_width"
@@ -484,12 +486,15 @@ const RevenueIndex = (props) => {
                                             isClearable={true}
                                         />
                                     </Col>
-                                    <Col md={{ span: 2, offset: 0 }} sm={2}> 
-                                        <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
+                                    <Col className='margin_buttom' md={{ span: 2, offset: 0 }} sm={2} xs={4}> 
+                                        <Button variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col md={{ span: 2  , offset: 0 }} sm={2}> 
-                                        <Button disabled={roleUser === 'Admin' ? true : false} variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
-                                    </Col> 
+                                    {(roleUser !== 'Admin' && roleUser !== '' )  && (
+                                        <Col className='margin_buttom' md={{ span: 2  , offset: 0 }} sm={2} xs={4}> 
+                                            <Button variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
+                                        </Col>
+                                    )}
+                                     
                                 </Row>
                             </Form>
                         </Container>
@@ -519,6 +524,7 @@ const RevenueIndex = (props) => {
                                     <Col sm={12} md={12} xl={12}>
                                         <div className='text_card ubication_cash'>
                                             <span className='ubication_title'>Disponible Efectivo:</span>
+                                            {/* className={`${validCash === -1 ? 'egress_color' : 'positive_ingress_color'}`} */}
                                             <span className={`${validCash === -1 ? 'egress_color' : 'ingress'}`} >
                                                 { new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(totalCash - paymentWithBox)}
                                             </span>
@@ -533,7 +539,7 @@ const RevenueIndex = (props) => {
                             <Card.Body>
                                 <h6 className='mb-4 egress_title'>Egresos del Dia Pago Ordenes</h6>
                                 <Row>
-                                    <Col sm={7} md={7} xl={7}>
+                                    <Col sm={7} md={6} xl={5}>
                                         <div className='text_card'>
                                             <span className='ubication_title'>Pagados con Caja:</span>
                                             <span className='egress_color'>
@@ -541,7 +547,7 @@ const RevenueIndex = (props) => {
                                             </span>
                                         </div>
                                     </Col>
-                                    <Col sm={5} md={5} xl={5}>
+                                    <Col sm={5} md={6} xl={7}>
                                         <div className='text_card'>
                                         <span className='ubication_title'>Total Pagados:</span> 
                                             <span className='egress_color'>
@@ -550,9 +556,6 @@ const RevenueIndex = (props) => {
                                         </div>
                                     </Col>
                                 </Row>
-                               
-                                
-                               
                             </Card.Body>
                         </Card>
                     </Col>
@@ -592,7 +595,7 @@ const RevenueIndex = (props) => {
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountOther === undefined ? 0 : revenue?.amountOther)}</td>
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.cashFund === undefined ? 0 : revenue?.cashFund)}</td>
                                         <td >
-                                            <Badge className='badge_position text_tam' variant={`${revenue?.validAdmin === 'Verificado' ? 'success' :  'warning'}`} >
+                                            <Badge className='badge_position text_tam' variant={`${revenue?.validAdmin === 'Verificado' ? 'success' : revenue?.validAdmin === 'con_error' ? 'danger' :  'warning'}`} >
                                                 {revenue?.validAdmin}            
                                             </Badge>
                                         </td>
@@ -609,7 +612,7 @@ const RevenueIndex = (props) => {
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col xs={{ span: 4, offset: 2 }} sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 3 }}>
+                                    <Col xs={{ span: 6, offset: 2 }} sm={{ span: 4, offset: 4 }} md={{ span: 6, offset: 3 }}>
                                         <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (active > 1) {pagination(1);}}}
@@ -651,11 +654,11 @@ const RevenueIndex = (props) => {
                                                 <td>{order?.status}</td>
                                                 <td>{order?.providers[0]?.businessName}</td>
                                                 <td>{order?.paymentMethod}</td>
-                                                <td>{moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
-                                                <td>{moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
-                                                <td>{moment(order?.orderDate).format("YYYY-MM-DD")}</td>
+                                                <td>{order?.paymentDate === undefined ? '' : order?.paymentDate === null ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
+                                                <td>{order?.receptionDate === undefined ? '' : order?.receptionDate === null ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
+                                                <td>{order?.orderDate === undefined ? '' : order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
                                                 <td >
-                                                    <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : 'warning'}`} >
+                                                    <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`} >
                                                         {order?.validAdmin}            
                                                     </Badge>
                                                 </td>
@@ -670,7 +673,7 @@ const RevenueIndex = (props) => {
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col xs={{ span: 4, offset: 2 }} sm={{ span: 4, offset: 2 }} md={{ span: 4, offset: 2 }}>
+                                    <Col xs={{ span: 6, offset: 2 }} sm={{ span: 4, offset: 2 }} md={{ span: 4, offset: 2 }}>
                                         <Pagination size="sm" className="row justify-content-center">
                                             <Pagination.First
                                                 onClick={() => {if (activePait > 1) {paginationPait(1);}}}

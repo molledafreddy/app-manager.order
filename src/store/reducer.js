@@ -1,6 +1,6 @@
 import * as actionTypes from './actions';
 import config from './../config';
-import { LOADING_PROVIDER, ERROR_PROVIDER, GET_SEARCH_PROVIDER } from "./types/provider";
+import { LOADING_PROVIDER, ERROR_PROVIDER, GET_SEARCH_PROVIDER, UPDATE_CODE_ERROR_PROVIDER } from "./types/provider";
 import {  
     CREATE_ACCOUNT,
     GET_ACCOUNT,
@@ -48,17 +48,19 @@ import {
     DELETE_REVENUE,
     LOADING_REVENUE, 
     ERROR_REVENUE,
+    ERROR_REVENUE_CLOSURE,
     GET_SEARCH_REVENUE,
     GET_SEARCH_REVENUE_CLOSURE,
     GET_SEARCH_REVENUE_STADISTIC,
     GET_SEARCH_REVENUE_OTHER,
-    UPDATE_CODE_ERROR_REVENUES  } from "./types/revenue";
+    UPDATE_CODE_ERROR_REVENUES,
+    UPDATE_CODE_ERROR_REVENUE_CLOSURE  } from "./types/revenue";
 
 import { GET_ALL_BANK  } from "./types/bank";
 
 import { GET_SEARCH_EGRESS, LOADING_EGRESS, ERROR_EGRESS  } from "./types/egress";
 
-import { GET_ALL_PAYMENTTYPE, GET_SEARCH_PAYMENTTYPE, GET_PAYMENTHASEGRESS  } from "./types/paymentType";
+import { GET_ALL_PAYMENTTYPE, GET_SEARCH_PAYMENTTYPE, GET_PAYMENTHASEGRESS, CLEAN_PAYMENTHASEGRESS  } from "./types/paymentType";
 
 import {  
     CREATE_TURN,
@@ -116,8 +118,11 @@ const initialState = {
     revenueStadistic: [],
     revenueOther: [],
     errorRevenue: [],
+    errorRevenueClosure: [],
     statusCodeRevenue: '',
+    statusCodeRevenueClosure: '',
     isLoadingRevenue: false,
+    isLoadingRevenueClosure: false,
     sumRevenue: null,
     paymentHasEgressPait: [],
 
@@ -242,17 +247,11 @@ const reducer = (state = initialState, action) => {
                 provider: action.payload.data,
             }
         case actionTypes.GET_ALL_PROVIDER:
-            // console.log('llego por aca GET_SEARCH_PROVIDER', action.payload.data)
-            // return {
-            //     ...state,
-            //     operationBills: action.payload.data,
-            // }
             return {
                 ...state,
                 provider: action.payload.data,
             }
         case GET_SEARCH_PROVIDER:
-            console.log('llego por aca GET_SEARCH_PROVIDER')
             return {
                 ...state,
                 provider: action.payload.data,
@@ -260,34 +259,15 @@ const reducer = (state = initialState, action) => {
                 prevPageProvider:action.payload.data.prevPage
             }
         case actionTypes.CREATE_PROVIDER:
-            
-            state.provider.push(payload);
-        // break;
+            return {
+                ...state,
+                provider: payload,
+                statusCodeProvider: '200',
+            }
         // eslint-disable-next-line no-fallthrough
         case actionTypes.UPDATE_PROVIDER:
-            
-            // const {_id} = action.payload;
-            
-            // const provider = state.provider.find((provider) => provider._id === _id);
-            // if (provider) {
-            //     provider.address = action.payload.address
-            //     provider.rut = action.payload.rut
-            //     provider.businessName = action.payload.businessName
-            //     provider.web = action.payload.web
-            //     provider.type = action.payload.type
-            //     provider.contactName = action.payload.contactName
-            //     provider.phone = action.payload.phone
-            //     provider.instagran = action.payload.instagran
-            //     provider.description = action.payload.description
-            //     provider.email = action.payload.email
-            //     provider.merchandiseType = action.payload.merchandiseType
-            // }
-            // console.log('state.provider', state.provider)
             state.provider.docs.map(function(prov){
                 if(prov._id === action.payload._id){
-                    // console.log('action.payload', action.payload._id)
-                    // console.log('provider', prov._id)
-                    // console.log('contactName', action.payload.contactName)
                     prov.address = action.payload.address
                     prov.rut = action.payload.rut
                     prov.businessName = action.payload.businessName
@@ -300,7 +280,6 @@ const reducer = (state = initialState, action) => {
                     prov.email = action.payload.email
                     prov.merchandiseType = action.payload.merchandiseType
                 }
-                // console.log('prov', prov)
                 return prov;
             });
             return {
@@ -317,16 +296,22 @@ const reducer = (state = initialState, action) => {
                 provider: state.provider
             }
         case LOADING_PROVIDER:
+            console.log('LOADING_PROVIDER',action.payload)
             return {
                 ...state,
                 isLoadingProvider: action.payload
             }
-
+        case UPDATE_CODE_ERROR_PROVIDER:
+            return {
+                ...state,
+                statusCodeProvider: '',
+                errorProvider: []
+            }
         case ERROR_PROVIDER:
             return {
                 ...state,
-                statusCode: action.payload.status,
-                errorProvider: action.payload.message
+                statusCodeProvider: '500',
+                errorProvider: action.payload
             }
 
         case GET_ACCOUNT:
@@ -459,6 +444,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 paymentHasEgress: action.payload.data,
+            } 
+        case CLEAN_PAYMENTHASEGRESS:
+            return {
+                ...state,
+                paymentHasEgress: [],
             } 
         // case GET_PAYMENTHASEGRESS_PAIT:
         //     return {
@@ -703,7 +693,8 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 revenuesClosure: payload,
-                statusCodeRevenue: '200'
+                statusCodeRevenueClosure: '200',
+                errorRevenueClosure: []
             }
         case UPDATE_REVENUE_OTHER:
             state.revenueOther.docs.map(function(revenue){
@@ -790,7 +781,8 @@ const reducer = (state = initialState, action) => {
                 });
             return {
                 ...state,
-                statusCodeRevenue: '200',
+                statusCodeRevenueClosure: '200',
+                errorRevenueClosure: []
             }
         case DELETE_REVENUE:
             const revenueFound = state.revenues.find(revenue => revenue._id === action.payload._id);
@@ -812,6 +804,12 @@ const reducer = (state = initialState, action) => {
                 statusCodeRevenue: '',
                 errorRevenue: []
             }
+        case UPDATE_CODE_ERROR_REVENUE_CLOSURE:
+            return {
+                ...state,
+                statusCodeRevenueClosure: '',
+                errorRevenueClosure: []
+            }
         case ERROR_REVENUE:
             // console.log('datos ERROR_REVENUE', action.payload)
             // console.log('datos action.payload.codeHttp', action.payload.codeHttp)
@@ -820,6 +818,15 @@ const reducer = (state = initialState, action) => {
                 statusCode: action.payload.codeHttp === undefined ? '400' : action.payload.codeHttp,
                 errorRevenue: action.payload,
                 statusCodeRevenue: '400',
+            }
+        case ERROR_REVENUE_CLOSURE:
+            // console.log('datos ERROR_REVENUE', action.payload)
+            // console.log('datos action.payload.codeHttp', action.payload.codeHttp)
+            return {
+                ...state,
+                statusCodeClosure: action.payload.codeHttp === undefined ? '400' : action.payload.codeHttp,
+                errorRevenueClosure: action.payload,
+                statusCodeRevenueClosure: '400',
             }
         case GET_SEARCH_EGRESS:
             return {

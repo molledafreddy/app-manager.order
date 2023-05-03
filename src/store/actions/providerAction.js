@@ -8,7 +8,8 @@ import  { LOADING_PROVIDER,
           UPDATE_PROVIDER,
           DELETE_PROVIDER,
           GET_ALL_PROVIDER,
-          GET_SEARCH_PROVIDER } from "../types/provider";
+          GET_SEARCH_PROVIDER,
+          UPDATE_CODE_ERROR_PROVIDER } from "../types/provider";
 
 const ProviderService = new providerService();
 
@@ -16,6 +17,7 @@ export const getProvider = (dispatch, extens, _id) => {
     return dispat => {
         dispatch(actionCreator(LOADING_PROVIDER, "payload")(true))
         ProviderService.getProviderId(extens, _id).then(data => {
+            console.log('getProviderId', data)
             dispatch(actionCreator(GET_PROVIDER, "payload")(data))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
@@ -24,6 +26,12 @@ export const getProvider = (dispatch, extens, _id) => {
             dispatch(actionCreator(ERROR_PROVIDER, "payload")(error))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))
         })
+    }
+}
+
+export const updateCodeErrorProvider = (dispatch) => {
+    return dispat => {
+        dispatch(actionCreator(UPDATE_CODE_ERROR_PROVIDER, "payload")(''));
     }
 }
 
@@ -61,6 +69,7 @@ export const getProviders = (dispatch, extens) => {
 
 export const createProviders = (dispatch, extens, payload) => {
     return dispat => {
+        // console.log('payload', payload)
         dispatch(actionCreator(LOADING_PROVIDER, "payload")(true))
         ProviderService.createProvider(extens, payload).then(data => {
             dispatch(actionCreator(CREATE_PROVIDER, "payload")(data.data))

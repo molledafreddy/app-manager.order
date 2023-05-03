@@ -250,7 +250,7 @@ const OperationBillIndex = (props) => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={{ span: 4, offset: 0 }}> 
+                                <Col md={{ span: 4, offset: 0 }} > 
                                     <Form.Label>Fecha Registro</Form.Label>
                                     <DatePicker
                                         className="form-control input_width"

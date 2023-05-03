@@ -261,9 +261,9 @@ const AccountIndex = (props) => {
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(account._id)}>
                                         <i className="feather icon-edit-1" />
                                     </Button>
-                                    <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(account._id)}>
+                                    {/* <Button variant="outline-danger" size="sm" onClick={() => handlerDelete(account._id)}>
                                         <i className="feather icon-delete" />
-                                    </Button>
+                                    </Button> */}
                                 </td>
                                 </tr>
                             )}

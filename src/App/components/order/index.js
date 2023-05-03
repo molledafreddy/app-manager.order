@@ -19,7 +19,10 @@ const OrderIndex = (props) => {
     const orders = useSelector(state => state.orders.docs)
     let totalPages = useSelector(state => state.orders.totalPages)
     let isLoadingOrder = useSelector(state => state.isLoadingOrder)
+    let isLoadingProvider = useSelector(state => state.isLoadingProvider)
+    
     let [active, setActive] = useState(1);
+    let [roleUser, setRoleUser] = useState('');
 
     const dispatch = useDispatch()
     let pages = [];
@@ -108,7 +111,7 @@ const OrderIndex = (props) => {
                             active={number === active-1}
                             onClick={() => pagination(active-1)}
                         >
-                            {active-1}
+                            {(active-1)}
                         </Pagination.Item>
                     );
                     pages.push(
@@ -249,23 +252,22 @@ const OrderIndex = (props) => {
     }
 
     useEffect(() => {
+
+        setRoleUser(localStorage.getItem('role'));
         
         if (isLoadingOrder === false) {
             Swal.close()
         }
-        if (providers === undefined || providers?.length === 0 ) {
+        if ((providers === undefined || providers.length === 0) && isLoadingProvider === false ) {
             dispatch(getProviders(dispatch,'provider'));
         }
-        
         if (active === 1 && (orders === undefined ) && isLoadingOrder === false) {
-            console.log('ingreso active', active)
-            
             dispatch(getSearchOrder(dispatch,'order/search/detail', body));
             showLoading()
             createItem()
         }
 
-    }, [dispatch,  createItem(), providers, orders, isLoadingOrder]);
+    }, [dispatch,  createItem(), providers, orders, isLoadingOrder, isLoadingProvider]);
 
     const driverSubmit =e=> {
         e.preventDefault();
@@ -276,9 +278,9 @@ const OrderIndex = (props) => {
         props.history.push("/order/create");
     }
 
-    const handlerDelete = async (_id) => {
-        dispatch(deleteOrder(dispatch,'order', _id))
-    }
+    // const handlerDelete = async (_id) => {
+    //     dispatch(deleteOrder(dispatch,'order', _id))
+    // }
 
     const handlerUpdate = async (id) => {
         props.history.push(`/order/edit/${id}`);
@@ -372,19 +374,22 @@ const OrderIndex = (props) => {
                                             isClearable={true}
                                         />
                                     </Col>
-                                    <Col md={{ span: 4, offset: 0 }}> 
-                                        <Form.Label>Fecha de Pedido</Form.Label>
-                                        <DatePicker
-                                            className="form-control input_width"
-                                            selectsRange={true}
-                                            startDate={orderDateStart}
-                                            endDate={orderDateEnd}
-                                            onChange={(update) => {
-                                                setOrderDateRange(update);
-                                            }}
-                                            isClearable={true}
-                                        />
-                                    </Col>
+                                    {(roleUser === 'Admin' && roleUser !== '' )  && (
+                                        <Col md={{ span: 4, offset: 0 }}> 
+                                            <Form.Label>Fecha de Pedido</Form.Label>
+                                            <DatePicker
+                                                className="form-control input_width"
+                                                selectsRange={true}
+                                                startDate={orderDateStart}
+                                                endDate={orderDateEnd}
+                                                onChange={(update) => {
+                                                    setOrderDateRange(update);
+                                                }}
+                                                isClearable={true}
+                                            />
+                                        </Col>
+                                    )}
+                                    
                                     <Col md={{ span: 4, offset: 0 }}> 
                                         <Form.Group controlId="form.ControlType">
                                             <Form.Label>Proveedor</Form.Label>
@@ -397,7 +402,7 @@ const OrderIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col>
-                                    <Col md={{ span: 2, offset: 0 }}> 
+                                    <Col md={{ span: 4, offset: 0 }}> 
                                         <Form.Group controlId="form.ControlType">
                                             <Form.Label>Estado</Form.Label>
                                             <Form.Control as="select" name="status" value={body?.status} onChange={handlerChangeSearch}>
@@ -409,22 +414,25 @@ const OrderIndex = (props) => {
                                         </Form.Group>
                                         
                                     </Col>
-                                    <Col md={{ span: 2, offset: 0 }}> 
-                                        <Form.Group controlId="form.ControlType">
-                                            <Form.Label>Metodo Pago</Form.Label>
-                                            <Form.Control as="select" name="paymentMethod" value={body?.paymentMethod} onChange={handlerChangeSearch}>
-                                                <option  value="">todos</option>
-                                                {TypePaymentMethod.map(method =>
-                                                    <option key={method?._id} value={method?._id}>{method?.type}</option>
-                                                )}
-                                            </Form.Control>
-                                        </Form.Group>
-                                        
-                                    </Col>
-                                    <Col md={{ span: 1, offset: 0 }} sm={6}> 
+                                    {(roleUser === 'Admin' && roleUser !== '' )  && (
+                                        <Col md={{ span: 4, offset: 0 }}> 
+                                            <Form.Group controlId="form.ControlType">
+                                                <Form.Label>Metodo Pago</Form.Label>
+                                                <Form.Control as="select" name="paymentMethod" value={body?.paymentMethod} onChange={handlerChangeSearch}>
+                                                    <option  value="">todos</option>
+                                                    {TypePaymentMethod.map(method =>
+                                                        <option key={method?._id} value={method?._id}>{method?.type}</option>
+                                                    )}
+                                                </Form.Control>
+                                            </Form.Group>
+                                            
+                                        </Col>
+                                    )}
+                                    
+                                    <Col className='mt-4' md={{ span: 1, offset: 0 }} sm={6} xs={4}> 
                                         <Button  variant="primary" onClick={searchHandler}><UcFirst text="Buscar"/></Button>
                                     </Col>
-                                    <Col md={{ span: 1, offset: 1 }} sm={6}> 
+                                    <Col className='mt-4' md={{ span: 1, offset: 1 }} xs={6}> 
                                         <Button variant="primary" onClick={driverButtomCreate}><UcFirst text="crear"/></Button>
                                     </Col> 
                                 </Row>
@@ -456,10 +464,10 @@ const OrderIndex = (props) => {
                                 <td>{order?.status}</td>
                                 <td>{ order?.providers[0]?.businessName}</td>
                                 <td>{ order?.paymentMethod}</td>
-                                <td>{order?.EstimateReceptionDate === undefined ? '' : moment(order?.EstimateReceptionDate).format("YYYY-MM-DD")}</td>
-                                <td>{order?.receptionDate === undefined ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
-                                <td>{order?.orderDate === undefined ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
-                                <td>{order?.paymentDate === undefined ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.EstimateReceptionDate === undefined ? '' : order?.EstimateReceptionDate === null ? '' : moment(order?.EstimateReceptionDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.receptionDate === undefined ? '' : order?.receptionDate === null ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.orderDate === undefined ? '': order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
+                                <td>{order?.paymentDate === undefined ? '' : order?.paymentDate === null ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
                                 <td>
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(order?._id)}>
                                         <i className="feather icon-edit-1" />

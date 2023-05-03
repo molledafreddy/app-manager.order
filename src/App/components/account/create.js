@@ -145,7 +145,7 @@ const AccountCreate = (props) => {
                                 <Form.Control as="select" name="banks" value={body?.banks} onChange={handlerChange}>
                                 <option  >selecciona...</option>
                                 {banks.map(bank =>
-                                    <option key={bank?._id} value={bank?.name}>{bank?.name}</option>
+                                    <option key={bank?._id} value={bank?._id}>{bank?.name}</option>
                                 )}
                                 </Form.Control>
                             </Form.Group>

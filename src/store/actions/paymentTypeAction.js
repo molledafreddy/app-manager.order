@@ -9,6 +9,7 @@ import  { LOADING_PAYMENTTYPE,
           DELETE_PAYMENTTYPE,
           GET_ALL_PAYMENTTYPE,
           GET_SEARCH_PAYMENTTYPE,
+          CLEAN_PAYMENTHASEGRESS,
           GET_PAYMENTHASEGRESS } from "../types/paymentType";
 
 const PaymentTypeService = new paymentTypeService();
@@ -25,6 +26,13 @@ export const getPaymentType = (dispatch, extens, _id) => {
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
+    }
+}
+
+export const ClearPaymentHasEgress = (dispatch) => {
+    return dispat => {
+        dispatch(actionCreator(CLEAN_PAYMENTHASEGRESS, "payload")([]))
+        
     }
 }
 

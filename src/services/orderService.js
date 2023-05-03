@@ -9,7 +9,12 @@ export default class orderService {
 
     async getOrder(extend, limit, page, search, startDate = '', endDate = '') {
         try {
-            const data = await axios.get(`${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`);
+            let  headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
+            }
+            const data = await axios.get(`${this.url}/${extend}?limit=${limit}&page=${page}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
+                                        { headers: headers });
         //    console.log('data servicio', data)
             return data;
             // return await axios.get(`${this.url}/${extend}`);
@@ -21,7 +26,12 @@ export default class orderService {
     async getSearchOrder(extend, payload) {
         try {
             console.log('payload', payload)
-            return await axios.post(`${this.url}/${extend}`, payload);
+            let  headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
+            }
+            return await axios.post(`${this.url}/${extend}`, payload,
+            { headers: headers });
         } catch (error) {
             throw error;
         }
@@ -36,6 +46,7 @@ export default class orderService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
             }
+            console.log('headers', {headers})
             return await axios.get(
                                     `${this.url}/${extend}?limit=${limit}&page=${page}&status=${status}&startDate=${startDate}&endDate=${endDate}`,
                                     { headers: headers });
@@ -54,13 +65,10 @@ export default class orderService {
 
     async getOrderId(extend, _id) {
         try {
-            // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzJhOTI0MzJjZTNlMmJhMmEyNmEwZTQiLCJyb2xlIjoiVXNlciIsImlhdCI6MTY3ODQ2NzEyMCwiZXhwIjoxNjc4NDc0MzIwfQ.mbNv3a4fXe0VQaVq_pgSvZbWEL75dIN_OPVFx-OOO0Q';
-              
             let  headers = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}` //the token is a variable which holds the token
             }
-               
             return await axios.get(`${this.url}/${extend}/${_id}`,{ headers: headers });
         } catch (error) {
             throw error;

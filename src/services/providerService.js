@@ -26,7 +26,10 @@ export default class providerService {
 
     async getProviderId(extend, _id) {
         try {
-            return await axios.get(`${this.url}/${extend}/${_id}`);
+            // return await axios.get(`${this.url}/${extend}/${_id}`);
+            let data = await axios.get(`${this.url}/${extend}/${_id}`);
+            // console.log('data', data)
+            return data;
         } catch (error) {
             throw error;
         }
@@ -34,6 +37,7 @@ export default class providerService {
 
     async createProvider(extend, payload) {
         try {
+            console.log('createProvider payload', payload)
             return await axios.post(`${this.url}/${extend}`, payload);
         } catch (error) {
             throw error;
