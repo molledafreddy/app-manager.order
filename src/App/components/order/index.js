@@ -1,10 +1,10 @@
 import React, { useEffect, useState} from 'react';
 
 import Aux from "../../../hoc/_Aux";
-import {Row, Col, Card, Table, Button, Form, Container, Pagination} from 'react-bootstrap';
+import {Row, Col, Card, Table, Button, Form, Container, Pagination, Badge} from 'react-bootstrap';
 import UcFirst from "../UcFirst";
 import { useDispatch, useSelector } from "react-redux";
-import { getSearchOrder, deleteOrder, updateCodeError } from '../../../store/actions/orderAction';
+import { getSearchOrder, updateCodeError } from '../../../store/actions/orderAction';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import { getProviders } from '../../../store/actions/providerAction';
@@ -278,10 +278,6 @@ const OrderIndex = (props) => {
         props.history.push("/order/create");
     }
 
-    // const handlerDelete = async (_id) => {
-    //     dispatch(deleteOrder(dispatch,'order', _id))
-    // }
-
     const handlerUpdate = async (id) => {
         props.history.push(`/order/edit/${id}`);
     }
@@ -452,6 +448,7 @@ const OrderIndex = (props) => {
                                 <th>Fecha Recepcion</th>
                                 <th>Fecha Pedido</th>
                                 <th>Fecha Pago</th>
+                                <th>Validacion Orden</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
@@ -460,14 +457,19 @@ const OrderIndex = (props) => {
                                 <tr key={order._id} onClick={() => handlerUpdate(order?._id)}>
                                 
                                 <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.estimatedAmount === undefined ? 0: order?.estimatedAmount)}</td>
-                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.amountPaid === undefined ? 0: order?.amountPaid)}</td>
-                                <td>{order?.status}</td>
+                                <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(order?.amountPaid === undefined ? 0 : order?.amountPaid)}</td>
+                                <td>{ order?.status}</td>
                                 <td>{ order?.providers[0]?.businessName}</td>
                                 <td>{ order?.paymentMethod}</td>
-                                <td>{order?.EstimateReceptionDate === undefined ? '' : order?.EstimateReceptionDate === null ? '' : moment(order?.EstimateReceptionDate).format("YYYY-MM-DD")}</td>
-                                <td>{order?.receptionDate === undefined ? '' : order?.receptionDate === null ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
-                                <td>{order?.orderDate === undefined ? '': order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
-                                <td>{order?.paymentDate === undefined ? '' : order?.paymentDate === null ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
+                                <td>{ order?.EstimateReceptionDate === undefined ? '' : order?.EstimateReceptionDate === null ? '' : moment(order?.EstimateReceptionDate).format("YYYY-MM-DD")}</td>
+                                <td>{ order?.receptionDate === undefined ? '' : order?.receptionDate === null ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
+                                <td>{ order?.orderDate === undefined ? '': order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
+                                <td>{ order?.paymentDate === undefined ? '' : order?.paymentDate === null ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
+                                <td >
+                                    <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`} >
+                                        {order?.validAdmin}            
+                                    </Badge>
+                                </td>
                                 <td>
                                     <Button variant="outline-warning" size="sm" onClick={() => handlerUpdate(order?._id)}>
                                         <i className="feather icon-edit-1" />

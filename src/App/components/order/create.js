@@ -165,13 +165,14 @@ const OrderCreate = (props) => {
                 creditPaymentDate: new Date(data.creditPaymentDate),
                 status: data?.status,
                 descriptionOrder: data?.descriptionOrder,
-                amount: data?.egress[0]?.amount,
-                descriptionPayment: data?.egress[0]?.description,
-                invoiceNumber: data?.egress[0]?.invoiceNumber,
-                providers: data?.providers[0]?._id,
-                _idEgress: data?.egress[0]?._id,
+                // amount: data?.egress[0]?.amount,
+                amount: data?.amountPaid,
+                descriptionPayment: data?.egress !== undefined ? data?.egress[0]?.description : '',
+                invoiceNumber: data?.egress !== undefined ? data?.egress[0]?.invoiceNumber : '',
                 paymentHasEgress: [],
-                files: data?.egress[0]?.files,
+                providers: data?.egress !== undefined ? data?.providers[0]?._id : '',
+                _idEgress: data?.egress !== undefined ? data?.egress[0]?._id : null,
+                files: data?.egress !== undefined ? data?.egress[0]?.files: [],
             }))
             
             if (data?.egress[0]?._id !== undefined && validPaimentHas) {
@@ -179,7 +180,7 @@ const OrderCreate = (props) => {
                 setValidPaimentHas(false);
             }
 
-            if (data?.egress[0]?.fileslength > 0) {
+            if (data?.egress !== undefined && data?.egress[0]?.fileslength > 0) {
                 data.egress[0].files.forEach((element, index) => {
                     filesD.push({
                         id: index,
@@ -216,21 +217,22 @@ const OrderCreate = (props) => {
                 creditPaymentDate: data.creditPaymentDate === undefined ? undefined : data.creditPaymentDate === null ? undefined : new Date(data.creditPaymentDate),
                 status: data?.status,
                 descriptionOrder: data?.descriptionOrder,
-                amount: data?.egress[0]?.amount,
-                descriptionPayment: data?.egress[0]?.description,
-                invoiceNumber: data?.egress[0]?.invoiceNumber,
+                // amount: data?.egress[0]?.amount,
+                amount: data?.amountPaid,
+                descriptionPayment: data?.egress !== undefined ? data?.egress[0]?.description : '',
+                invoiceNumber: data?.egress !== undefined ? data?.egress[0]?.invoiceNumber : '',
                 paymentHasEgress: [],
-                providers: data?.providers[0]?._id,
-                _idEgress: data?.egress[0]?._id,
-                files: data?.egress[0]?.files,
+                providers: data?.egress !== undefined ? data?.providers[0]?._id : '',
+                _idEgress: data?.egress !== undefined ? data?.egress[0]?._id : null,
+                files: data?.egress !== undefined ? data?.egress[0]?.files: [],
 
               }));
            
-            if ((data?.egress[0]?._id !== undefined) &&  validPaimentHas) {
+            if ((data?.egress !== undefined) &&  validPaimentHas) {
                 dispatch(getPaymentHasEgress(dispatch,'operation-bills/payment-has-egress', data?.egress[0]?._id));
                 setValidPaimentHas(false);
             }
-            if (data?.egress[0]?.files.length > 0) {
+            if (data?.egress !== undefined && data?.egress[0]?.files.length > 0) {
                 data.egress[0].files.forEach((element, index) => {
                     filesD.push({
                         id: index,

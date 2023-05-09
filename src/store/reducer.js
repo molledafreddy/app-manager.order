@@ -501,16 +501,16 @@ const reducer = (state = initialState, action) => {
         case UPDATE_ORDER:
             state.orders.docs.map(function(order){
                 if(order._id === action.payload._id){
-                    order.descriptionOrder = action.payload.descriptionOrder
-                    order.estimatedAmount = action.payload.estimatedAmount
-                    order.address = action.payload.address
-                    order.description = action.payload.description
-                    order.egress= action.payload.egress
-                    order.orderDate = action.payload.orderDate
-                    order.paymentMethod = action.payload.paymentMethod
-                    order.providers = action.payload.providers
-                    order.status = action.payload.status
-                    order._id = action.payload._id
+                    order.descriptionOrder = action?.payload?.descriptionOrder
+                    order.estimatedAmount = action?.payload?.estimatedAmount
+                    order.address = action?.payload?.address
+                    order.description = action?.payload?.description
+                    order.egress= action?.payload?.egress
+                    order.orderDate = action?.payload?.orderDate
+                    order.paymentMethod = action?.payload?.paymentMethod
+                    order.providers = action?.payload?.providers
+                    order.status = action?.payload?.status
+                    order._id = action?.payload?._id
                 }
                 return order;
             });
@@ -646,7 +646,7 @@ const reducer = (state = initialState, action) => {
         case GET_REVENUE:
             return {
                 ...state,
-                revenues: action.payload.data,
+                revenuesClosure: action.payload.data,
             }
         case GET_ALL_REVENUE:
             return {

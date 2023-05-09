@@ -644,7 +644,9 @@ const RevenueIndex = (props) => {
                                             <th>Fecha Pedido</th>
                                             <th>Validacion Cierre</th>
                                             <th>Nota Validacion</th> 
-                                            <th>Acciones</th>
+                                            {(roleUser === 'Admin' )  && (
+                                                <th>Acciones</th>
+                                            )}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -657,17 +659,20 @@ const RevenueIndex = (props) => {
                                                 <td>{order?.paymentDate === undefined ? '' : order?.paymentDate === null ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
                                                 <td>{order?.receptionDate === undefined ? '' : order?.receptionDate === null ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
                                                 <td>{order?.orderDate === undefined ? '' : order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
-                                                <td >
+                                                <td>
                                                     <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`} >
                                                         {order?.validAdmin}            
                                                     </Badge>
                                                 </td>
                                                 <td>{order?.noteValid}</td>
-                                                <td>
-                                                    <Button disabled={roleUser === 'Admin' ? false : true}  variant="outline-warning" size="sm" onClick={() => handlerVieworder(order?._id)}>
-                                                        <i className="feather icon-edit-1" />
-                                                    </Button>
-                                                </td>
+                                                {(roleUser === 'Admin' )  && ( 
+                                                    <td>
+                                                        <Button   variant="outline-warning" size="sm" onClick={() => handlerVieworder(order?._id)}>
+                                                            <i className="feather icon-edit-1" />
+                                                        </Button>
+                                                    </td>
+                                                )}
+                                                
                                             </tr>
                                         )}
                                     </tbody>

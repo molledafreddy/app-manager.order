@@ -7,7 +7,7 @@ import { createRevenueClosure, updateRevenueClosure, getRevenue, updateCodeError
 import Swal from 'sweetalert2';
 import { Controller, useForm} from 'react-hook-form';
 import "./styles.css";
-//  
+
 const RevenueCreate = (props) => {
    
     const dispatch = useDispatch()
@@ -46,8 +46,6 @@ const RevenueCreate = (props) => {
         titleButt();
         setRoleUser(localStorage.getItem('role'));
         // console.log('datos watchValidAdmin', watchValidAdmin)
-        console.log('datos errorRevenue', errorRevenue)
-        console.log('statusCodeRevenue', statusCodeRevenue)
         if (errorRevenue?.code !== undefined && errorRevenue?.codeHttp === '400' ) {
            
             console.log('ingreso aca errorRevenue',  errorRevenue.message)
@@ -81,12 +79,13 @@ const RevenueCreate = (props) => {
         }
         
         // console.log('statusCodeRevenue', statusCodeRevenue)
-        if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
+         if (statusCodeRevenue === '200' && errorRevenue.length === 0) {
             Swal.close();
             validRedirect();
         }
         if (props.match.params._id) {
             if ( revenues === undefined || revenues?.length === 0) {
+                console.log('ingreso aca revenues',revenues)
                 dispatch(getRevenue(dispatch,'revenue', props.match.params._id));
             }
 
@@ -501,10 +500,7 @@ const RevenueCreate = (props) => {
                                             placeholder="Monto Transferencia" 
                                             className={errors.amountTransfer && "error"}
                                             name="amountTransfer"
-                                            {...register("amountTransfer", {
-                                                required: messages.required,
-                                                onChange: (e) => {handlerChange(e)}
-                                            })} 
+                                            {...register("amountTransfer")} 
                                         />
                                         {errors.amountTransfer && <p>{errors.amountTransfer.message}</p>}
                                     </Form.Group>
@@ -559,7 +555,6 @@ const RevenueCreate = (props) => {
                                             name="description"  
                                             disabled={roleUser === 'Admin' ? true : false}
                                             className={errors.description && "error"}     
-                                            // rules={{ required: messages.required }}  
                                             render={({ field: { onChange, onBlur, value, ref } }) => (                             
                                             <Form.Control 
                                                 as="textarea" 
