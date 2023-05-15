@@ -247,11 +247,13 @@ const reducer = (state = initialState, action) => {
                 provider: action.payload.data,
             }
         case actionTypes.GET_ALL_PROVIDER:
+            console.log('GET_ALL_PROVIDER', action.payload.data)
             return {
                 ...state,
                 provider: action.payload.data,
             }
         case GET_SEARCH_PROVIDER:
+            console.log('GET_SEARCH_PROVIDER', action.payload.data)
             return {
                 ...state,
                 provider: action.payload.data,

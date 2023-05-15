@@ -14,9 +14,12 @@ const AccountCreate = (props) => {
    
     const dispatch = useDispatch()
     const accounts = useSelector(state => state.accounts.docs)
-    const providers = useSelector(state => state.provider)
+    const providers = useSelector(state => state.provider.docs)
     const banks = useSelector(state => state.banks)
+
     let [titleButtom, setTitleButtom] = useState('Crear');
+    let [flagProvider, setFlagProvider] = useState(false);
+    let [flagBank, setFlagBank] = useState(false);
     
     const [body, setBody] = useState({
         _id: null,
@@ -36,20 +39,22 @@ const AccountCreate = (props) => {
                 dispatch(getAccount(dispatch,'account', props.match.params._id));
             }
 
-            if (accounts != undefined || accounts?.length > 0) {
+            if (accounts !== undefined || accounts?.length > 0) {
                 setBody(accounts.find(prov => prov._id === props.match.params._id));
             }
         }
-
-        if (providers === undefined || providers.length === 0) {
+        console.log('provider', providers)
+        if ((providers === undefined || providers.length === 0) && (!flagProvider)) {
             dispatch(getProviders(dispatch,'provider'));
+            setFlagProvider(true);
         }
 
-        if (banks === undefined || banks.length === 0) {
+        if ((banks === undefined || banks.length === 0) && (!flagBank)) {
             dispatch(getBanks(dispatch,'bank'));
+            setFlagBank(true)
         }
 
-    }, [dispatch, accounts, providers, banks, titleButt])
+    }, [dispatch, accounts, providers, banks, flagProvider, flagBank, titleButt])
 
     const typeAccounts = [
         { id:1, type: "corriente" },
@@ -135,7 +140,7 @@ const AccountCreate = (props) => {
                                 <Form.Label>Proveedor</Form.Label>
                                 <Form.Control as="select" name="providers" value={body?.providers} onChange={handlerChange}>
                                 <option  >selecciona...</option>
-                                {providers.map(provider =>
+                                {providers?.map(provider =>
                                     <option key={provider?._id} value={provider?._id}>{provider?.businessName}</option>
                                 )}
                                 </Form.Control>
@@ -144,7 +149,7 @@ const AccountCreate = (props) => {
                                 <Form.Label>Banco</Form.Label>
                                 <Form.Control as="select" name="banks" value={body?.banks} onChange={handlerChange}>
                                 <option  >selecciona...</option>
-                                {banks.map(bank =>
+                                {banks?.map(bank =>
                                     <option key={bank?._id} value={bank?._id}>{bank?.name}</option>
                                 )}
                                 </Form.Control>

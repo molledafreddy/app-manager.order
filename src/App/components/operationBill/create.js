@@ -23,6 +23,7 @@ const OperationBillCreate = (props) => {
     const statusCodeOperationBill = useSelector(state => state.statusCodeOperationBill);
 
     let [validProcess, setValidProcess] = useState(false);
+    let [flagPaymentType, setFlagPaymentType] = useState(false);
 
     const [body, setBody] = useState({
         _id: null,
@@ -51,10 +52,6 @@ const OperationBillCreate = (props) => {
         files: []
     });
 
-    // const [addFile, setAddFile] = useState({
-    //     file: null
-    // })
-
     useEffect( () => {
         titleButt()
         console.log('errorOrder', errorOperationBill?.length)
@@ -82,8 +79,9 @@ const OperationBillCreate = (props) => {
             }  
         }
 
-        if (paymentTypes === undefined || paymentTypes.length === 0) {
+        if ((paymentTypes === undefined || paymentTypes.length === 0) && (!flagPaymentType)) {
             dispatch(getPaymentTypes(dispatch,'payment-type'));
+            setFlagPaymentType(true);
         }
 
         if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
@@ -92,7 +90,7 @@ const OperationBillCreate = (props) => {
             }, 200);
         }
         
-    }, [dispatch, operationBills, isLoadingOperationBill, paymentTypes, paymentHasEgressR, statusCodeOperationBill, errorOperationBill, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, operationBills, isLoadingOperationBill, paymentTypes, flagPaymentType, paymentHasEgressR, statusCodeOperationBill, errorOperationBill, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
 
     const validRedirect = () => {
         showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
@@ -288,25 +286,26 @@ const OperationBillCreate = (props) => {
             console.log('paymentHasEgress', paymentContainer)
         }, 9000);
     }
-    
+   
     const typeOperationBills = [
-        { id:1, type: "salary" },
-        { id:2, type: "administrative" },
-        { id:3, type: "accountant" },
-        { id:4, type: "investment" },
-        { id:5, type: "light_service" },
-        { id:6, type: "water_service" },
-        { id:7, type: "common_expense" },
-        { id:8, type: "rent" },
-        { id:9, type: "cleaning_products" },
-        { id:10, type: "profits" },
-        { id:11, type: "construction_materials" },
-        { id:12, type: "workforce" },
-        { id:13, type: "implements" },
-        { id:14, type: "remodeling" },
-        { id:15, type: "publicity" },
-        { id:16, type: "innovation" },
-        { id:17, type: "other" },
+        { id:1, type: "salario" },
+        { id:2, type: "administrativo" },
+        { id:3, type: "contador" },
+        { id:4, type: "inversion" },
+        { id:5, type: "servicio_electrico" },
+        { id:6, type: "servicio_agua" },
+        { id:7, type: "gastos_comunes" },
+        { id:8, type: "alquiler" },
+        { id:9, type: "productos_limpieza" },
+        { id:10, type: "beneficios" },
+        { id:11, type: "materiales_contruccion" },
+        { id:12, type: "personal" },
+        { id:13, type: "implementos" },
+        { id:14, type: "remodelacion" },
+        { id:15, type: "publicidad" },
+        { id:16, type: "innovación" },
+        { id:17, type: "ganancia" },
+        { id:18, type: "otros" },
     ];
 
     const handlerChange = async e => {

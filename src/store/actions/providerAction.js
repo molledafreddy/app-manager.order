@@ -37,6 +37,7 @@ export const updateCodeErrorProvider = (dispatch) => {
 
 export const getSearchProviders = (dispatch, extens, limit, page, search) => {
     return dispat => {
+        console.log('getSearchProviders')
         dispatch(actionCreator(LOADING_PROVIDER, "payload")(true))
         ProviderService.getProvider(extens, limit, page, search).then(data => {
             dispatch(actionCreator(GET_SEARCH_PROVIDER, "payload")(data))
@@ -55,6 +56,7 @@ export const getSearchProviders = (dispatch, extens, limit, page, search) => {
 export const getProviders = (dispatch, extens) => {
     return dispat => {
         dispatch(actionCreator(LOADING_PROVIDER, "payload")(true))
+        console.log('llego por aca getProviders')
         ProviderService.getProviders(extens).then(data => {
             dispatch(actionCreator(GET_ALL_PROVIDER, "payload")(data))
             dispatch(actionCreator(LOADING_PROVIDER, "payload")(false))

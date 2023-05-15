@@ -12,6 +12,7 @@ const AccountIndex = (props) => {
     const providers = useSelector(state => state.provider.docs)
     let totalPages = useSelector(state => state.accounts.totalPages)
     let [active, setActive] = useState(1);
+    let [flagProvider, setFlagProvider] = useState(false);
 
     const dispatch = useDispatch()
     let pages = [];
@@ -159,21 +160,21 @@ const AccountIndex = (props) => {
 
     const searchHandler = () => {
         setActive(1);
-        dispatch(getAccounts(dispatch,'account', 3, 1, body?.search));
+        dispatch(getAccounts(dispatch,'account', 5, 1, body?.search));
         createItem()
     }
 
     useEffect(() => {
-        if (providers === undefined || providers?.length === 0 ) {
+        if ((providers === undefined || providers?.length === 0) && ( flagProvider === false)) {
             dispatch(getProviders(dispatch,'provider'));
+            setFlagProvider(true)
         }
         if (active === 1) {
-            dispatch(getAccounts(dispatch,'account', 3, 1, ''));
-            
+            dispatch(getAccounts(dispatch,'account', 5, 1, ''));
             createItem();
         }
         
-    }, [dispatch, createItem(), providers, getProviders]);
+    }, [dispatch, createItem(), providers, flagProvider, getProviders]);
 
     const driverSubmit =e=> {
         e.preventDefault();

@@ -21,7 +21,7 @@ const OrderCreate = (props) => {
    
     const dispatch = useDispatch()
 
-    const providers = useSelector(state => state.provider);
+    const providers = useSelector(state => state.provider.docs);
     const orders = useSelector(state => state.orders.docs);
     const paymentTypes = useSelector(state => state.paymentTypes);
     const paymentHasEgressR = useSelector(state => state.paymentHasEgress);
@@ -31,7 +31,9 @@ const OrderCreate = (props) => {
 
     let [validProcess, setValidProcess] = useState(false);
     let [titleButtom, setTitleButtom] = useState('Crear');
-  
+    let [flagProvider, setFlagProvider] = useState(false);
+    let [flagPaymentType, setFlagPaymentType] = useState(false);
+
     const [body, setBody] = useState({
         _id: null,
         paymentMethod: "",
@@ -95,8 +97,9 @@ const OrderCreate = (props) => {
             validRedirect()
         }
         titleButt()
-        if (providers === undefined || providers?.length === 0 ) {
+        if ((providers === undefined || providers?.length === 0) && (!flagProvider) ) {
             dispatch(getProviders(dispatch,'provider'));
+            setFlagProvider(true);
         }
         if (props.match.params._id) {
             if ( orders === undefined || orders?.length === 0) {
@@ -107,8 +110,9 @@ const OrderCreate = (props) => {
             }  
         }
 
-        if (paymentTypes === undefined || paymentTypes.length === 0) {
+        if ((paymentTypes === undefined || paymentTypes.length === 0) && (!flagPaymentType)) {
             dispatch(getPaymentTypes(dispatch,'payment-type'));
+            setFlagPaymentType(true)
         }
 
         console.log('paymentHasEgressR', paymentHasEgressR)
@@ -121,7 +125,7 @@ const OrderCreate = (props) => {
             }, 450);
         }
         
-    }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, flagPaymentType, flagProvider, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
 
     const validRedirect = () => {
         console.log('validRedirect')
@@ -584,21 +588,21 @@ const OrderCreate = (props) => {
     }
 
     const TypePaymentMethod = [
-        { id:1, type: "discounted" },
-        { id:2, type: "credit" },
-        { id:3, type: "partial" },
-        { id:4, type: "consignment" }
+        { id:1, type: "descontado" },
+        { id:2, type: "credito" },
+        { id:3, type: "parcial" },
+        { id:4, type: "consignacion" }
     ];
 
     const TypeStatus = [
-        { id:1, type: "requested" },
-        { id:2, type: "received" },
-        { id:3, type: "verified" },
-        { id:4, type: "pending_for_payment" },
-        { id:5, type: "paid_out" },
-        { id:6, type: "no_received" },
-        { id:7, type: "cancelled_provider" },
-        { id:8, type: "cancelled" }
+        { id:1, type: "solicitado" },
+        { id:2, type: "recibido" },
+        { id:3, type: "verificado" },
+        { id:4, type: "pendiente_por_pago" },
+        { id:5, type: "pagado" },
+        { id:6, type: "no_recibido" },
+        { id:7, type: "cancelado_proveedor" },
+        { id:8, type: "cancelado" }
     ];
 
     const TypeOrigin = [
@@ -636,36 +640,44 @@ const OrderCreate = (props) => {
 
     const onSubmit = (dataInfo) => {
         console.log('dataInfo', dataInfo.amount)
-        if (dataInfo.status === 'requested' && (dataInfo.estimateReceptionDate === undefined )) {
+        if (dataInfo.status === 'solicitado' && (dataInfo.estimateReceptionDate === undefined )) {
             showAlert(
                 'validacion factura', 
-                "Si el estado de la orden es 'paid_out' debe indicar Fecha de pago y Fecha de Recepcion", 
+                "Si el estado de la orden es 'solicitado' debe indicar Fecha estimada de Recepcion", 
                 "warning",
                 4000);
                 return;
         }
-        if (dataInfo.status === 'paid_out' && (dataInfo.paymentDate === undefined || dataInfo.receptionDate === undefined)) {
+        if (dataInfo.status === 'solicitado' && (dataInfo.orderDate === undefined )) {
             showAlert(
                 'validacion factura', 
-                "Si el estado de la orden es 'paid_out' debe indicar Fecha de pago y Fecha de Recepcion", 
+                "Si el estado de la orden es 'solicitado' debe indicar Fecha en que solicito la orden", 
+                "warning",
+                4000);
+                return;
+        }
+        if (dataInfo.status === 'pagado' && (dataInfo.paymentDate === undefined || dataInfo.receptionDate === undefined)) {
+            showAlert(
+                'validacion factura', 
+                "Si el estado de la orden es 'pagado' debe indicar Fecha de pago y Fecha de Recepcion", 
                 "warning",
                 4000);
                 return;
         }
         
-        if (dataInfo.paymentMethod === 'credit' && ( dataInfo.creditPaymentDate === undefined )) {
+        if (dataInfo.paymentMethod === 'credito' && ( dataInfo.creditPaymentDate === undefined )) {
             showAlert(
                 'validacion factura', 
-                "Si el Metodo de Pago es 'credit' debe indicar Fecha de pago del credito", 
+                "Si el Metodo de Pago es 'credito' debe indicar Fecha de pago del credito", 
                 "warning",
                 4000);
                 return;
         }
 
-        if (dataInfo.status === 'paid_out' && (dataInfo.amount === '' || dataInfo.amount === undefined)) {
+        if (dataInfo.status === 'pagado' && (dataInfo.amount === '' || dataInfo.amount === undefined)) {
             showAlert(
                 'validacion factura', 
-                "Si el estado de la orden es 'paid_out' debe ingresar el Monto pagado", 
+                "Si el estado de la orden es 'pagado' debe ingresar el Monto pagado", 
                 "warning",
                 4000);
                 return;
@@ -739,6 +751,39 @@ const OrderCreate = (props) => {
                                             </Form.Control>
                                             {errors.paymentMethod && <p>{errors.paymentMethod.message}</p>}
                                         </Form.Group> 
+                                        <Form.Group controlId="form.ControlStatus">
+                                            <Form.Label>Estado</Form.Label>
+                                            <Form.Control 
+                                                as="select" 
+                                                name="status" 
+                                                className={errors.status && "error"}
+                                                {...register("status", {
+                                                    required: messages.required,
+                                                })}>
+                                                <option  value="">selecciona...</option>
+                                                {TypeStatus.map(status =>
+                                                    <option key={status?.id} value={status?.type}>{status?.type}</option>
+                                                )}
+                                            </Form.Control>
+                                            {errors.status && <p>{errors.status.message}</p>}
+                                        </Form.Group> 
+                                        <Form.Group controlId="form.ControlProvider">
+                                            <Form.Label>Proveedor</Form.Label>
+                                            <Form.Control 
+                                                as="select" 
+                                                name="providers"
+                                                className={errors.providers && "error"}
+                                                {...register("providers", {
+                                                    required: messages.required,
+                                                })} 
+                                            >
+                                                <option value="" >selecciona...</option>
+                                                {providers?.map(provider =>
+                                                    <option key={provider?._id} value={provider?._id}>{provider?.businessName}</option>
+                                                )}
+                                            </Form.Control>
+                                            {errors.providers && <p>{errors.providers.message}</p>}
+                                        </Form.Group>
                                         <Form.Group controlId="form.ControlEstimatedAmount">
                                             <Form.Label>Monto Estimado pago</Form.Label>
                                             <Form.Control 
@@ -751,36 +796,6 @@ const OrderCreate = (props) => {
                                                 })} 
                                             />
                                             {errors.estimatedAmount && <p>{errors.estimatedAmount.message}</p>}
-                                        </Form.Group>
-                                        <Form.Group controlId="form.ControlEstimatedReceptionDate">
-                                            <Form.Label>Fecha Estimada Recepcion</Form.Label>
-                                            <Controller 
-                                                control={control} 
-                                                name="estimateReceptionDate"                                            
-                                                render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                                    <DatePicker
-                                                    className="form-control input_width"
-                                                    selected={value}
-                                                    onChange={onChange}
-                                                    ref={ref}
-                                                    isClearable={true}
-                                                />)} 
-                                            />  
-                                        </Form.Group>
-                                        <Form.Group controlId="form.ControlReceptionDate">
-                                            <Form.Label>Fecha Recepcion</Form.Label>
-                                            <Controller 
-                                                control={control} 
-                                                name="receptionDate"                                            
-                                                render={({ field: { onChange, onBlur, value, ref } }) => (                             
-                                                    <DatePicker
-                                                    className="form-control input_width"
-                                                    selected={value}
-                                                    onChange={onChange}
-                                                    ref={ref}
-                                                    isClearable={true}
-                                                />)} 
-                                            /> 
                                         </Form.Group>
                                         {watchPaymentMethod === 'credit' && (
                                             <Form.Group controlId="form.ControlPaymentCredit">
@@ -810,38 +825,35 @@ const OrderCreate = (props) => {
                                         </Form.Group>
                                     </Col>
                                     <Col md={6}>
-                                        <Form.Group controlId="form.ControlStatus">
-                                            <Form.Label>Estado</Form.Label>
-                                            <Form.Control 
-                                                as="select" 
-                                                name="status" 
-                                                className={errors.status && "error"}
-                                                {...register("status", {
-                                                    required: messages.required,
-                                                })}>
-                                                <option  value="">selecciona...</option>
-                                                {TypeStatus.map(status =>
-                                                    <option key={status?.id} value={status?.type}>{status?.type}</option>
-                                                )}
-                                            </Form.Control>
-                                            {errors.status && <p>{errors.status.message}</p>}
-                                        </Form.Group> 
-                                        <Form.Group controlId="form.ControlProvider">
-                                            <Form.Label>Proveedor</Form.Label>
-                                            <Form.Control 
-                                                as="select" 
-                                                name="providers"
-                                                className={errors.providers && "error"}
-                                                {...register("providers", {
-                                                    required: messages.required,
-                                                })} 
-                                            >
-                                                <option value="" >selecciona...</option>
-                                                {providers.map(provider =>
-                                                    <option key={provider?._id} value={provider?._id}>{provider?.businessName}</option>
-                                                )}
-                                            </Form.Control>
-                                            {errors.providers && <p>{errors.providers.message}</p>}
+                                    <Form.Group controlId="form.ControlEstimatedReceptionDate">
+                                            <Form.Label>Fecha Estimada Recepcion</Form.Label>
+                                            <Controller 
+                                                control={control} 
+                                                name="estimateReceptionDate"                                            
+                                                render={({ field: { onChange, onBlur, value, ref } }) => (                             
+                                                    <DatePicker
+                                                    className="form-control input_width"
+                                                    selected={value}
+                                                    onChange={onChange}
+                                                    ref={ref}
+                                                    isClearable={true}
+                                                />)} 
+                                            />  
+                                        </Form.Group>
+                                        <Form.Group controlId="form.ControlReceptionDate">
+                                            <Form.Label>Fecha Recepcion</Form.Label>
+                                            <Controller 
+                                                control={control} 
+                                                name="receptionDate"                                            
+                                                render={({ field: { onChange, onBlur, value, ref } }) => (                             
+                                                    <DatePicker
+                                                    className="form-control input_width"
+                                                    selected={value}
+                                                    onChange={onChange}
+                                                    ref={ref}
+                                                    isClearable={true}
+                                                />)} 
+                                            /> 
                                         </Form.Group>
                                         <Form.Group controlId="form.ControlOrderDate">
                                             <Form.Label>Fecha de solicitud orden</Form.Label>
@@ -885,7 +897,7 @@ const OrderCreate = (props) => {
                                             />
                                         </Form.Group>
                                     </Col>
-                                    {watchStatus !== 'requested' && watchStatus !== ''   && (
+                                    {watchStatus !== 'solicitado' && watchStatus !== ''   && (
                                         <Col className="mb-0" md={12}>
                                             <h5 className="mt-3">Registro Pago</h5>
                                             <hr/>
@@ -909,7 +921,7 @@ const OrderCreate = (props) => {
                                                             {...register("descriptionPayment")}
                                                         />
                                                     </Form.Group>
-                                                    {watchStatus === 'paid_out' && (
+                                                    {watchStatus === 'pagado' && (
                                                         <div>
                                                             <Form.Group controlId="form.ControlPayments">
                                                                 <Form.Label>Tipo Pago</Form.Label>

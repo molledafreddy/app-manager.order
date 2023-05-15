@@ -15,12 +15,12 @@ import "../../../../src/styles/datepiker.css";
 
 
 const OrderIndex = (props) => {
-    const providers = useSelector(state => state.provider)
+    const providers = useSelector(state => state.provider.docs)
     const orders = useSelector(state => state.orders.docs)
     let totalPages = useSelector(state => state.orders.totalPages)
     let isLoadingOrder = useSelector(state => state.isLoadingOrder)
     let isLoadingProvider = useSelector(state => state.isLoadingProvider)
-    
+    let [flagProvider, setFlagProvider] = useState(false);
     let [active, setActive] = useState(1);
     let [roleUser, setRoleUser] = useState('');
 
@@ -252,22 +252,28 @@ const OrderIndex = (props) => {
     }
 
     useEffect(() => {
-
+        // console.log('lego por aca providers',providers)
         setRoleUser(localStorage.getItem('role'));
         
         if (isLoadingOrder === false) {
             Swal.close()
         }
-        if ((providers === undefined || providers.length === 0) && isLoadingProvider === false ) {
+        
+        if ((providers === undefined || providers.length === 0) && isLoadingProvider === false  && flagProvider === false) {
+            // console.log('lego por aca providers',providers)
+            // console.log('lego por aca providers',providers)
+            setFlagProvider(true);
+            console.log('lego por aca providers',providers)
             dispatch(getProviders(dispatch,'provider'));
         }
+        // dispatch(getProviders(dispatch,'provider'));
         if (active === 1 && (orders === undefined ) && isLoadingOrder === false) {
             dispatch(getSearchOrder(dispatch,'order/search/detail', body));
             showLoading()
             createItem()
         }
 
-    }, [dispatch,  createItem(), providers, orders, isLoadingOrder, isLoadingProvider]);
+    }, [dispatch,  createItem(), providers, orders, flagProvider, isLoadingOrder, isLoadingProvider]);
 
     const driverSubmit =e=> {
         e.preventDefault();
@@ -290,21 +296,21 @@ const OrderIndex = (props) => {
     }
 
     const TypePaymentMethod = [
-        { id:1, type: "discounted" },
-        { id:2, type: "credit" },
-        { id:3, type: "partial" },
-        { id:4, type: "consignment" }
+        { id:1, type: "descontado" },
+        { id:2, type: "credito" },
+        { id:3, type: "parcial" },
+        { id:4, type: "consignacion" }
     ];
 
     const TypeStatus = [
-        { id:1, type: "requested" },
-        { id:2, type: "received" },
-        { id:3, type: "verified" },
-        { id:4, type: "pending_for_payment" },
-        { id:5, type: "paid_out" },
-        { id:6, type: "no_received" },
-        { id:7, type: "cancelled_provider" },
-        { id:8, type: "cancelled" }
+        { id:1, type: "solicitado" },
+        { id:2, type: "recibido" },
+        { id:3, type: "verificado" },
+        { id:4, type: "pendiente_por_pago" },
+        { id:5, type: "pagado" },
+        { id:6, type: "no_recibido" },
+        { id:7, type: "cancelado_proveedor" },
+        { id:8, type: "cancelado" }
     ];
 
     const showLoading = () => {

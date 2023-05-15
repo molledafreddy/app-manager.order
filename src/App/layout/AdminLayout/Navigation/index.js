@@ -14,15 +14,26 @@ class Navigation extends Component {
 
     resize = () => {
         const contentWidth = document.getElementById('root').clientWidth;
-
         if (this.props.layout === 'horizontal' && contentWidth < 992) {
             this.props.onChangeLayout('vertical');
         }
     };
 
+    validRuoteuser() {
+        const role = localStorage.getItem('role');
+        if (role !== "Admin") {
+            const filteredLibraries = navigation?.items[1]?.children?.filter((item) => item.id !== 'revenue-other' && item.id !== 'statistics')
+            navigation.items[1].children = filteredLibraries
+        }
+    }
+
     componentDidMount() {
         this.resize();
         window.addEventListener('resize', this.resize)
+    }
+
+    componentWillMount() {
+        this.validRuoteuser();
     }
 
     componentWillUnmount() {
