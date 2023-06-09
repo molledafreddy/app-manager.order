@@ -66,7 +66,7 @@ export default {
                 },
                 {
                     id: 'account',
-                    title: 'Cuestas proveedores',
+                    title: 'Cuentas proveedores',
                     type: 'item',
                     icon: 'feather icon-copy',
                     url: '/account'

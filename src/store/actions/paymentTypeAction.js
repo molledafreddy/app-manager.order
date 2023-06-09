@@ -22,7 +22,7 @@ export const getPaymentType = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
@@ -44,7 +44,7 @@ export const getPaymentHasEgress = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
@@ -59,7 +59,7 @@ export const getSearchPaymentTypes = (dispatch, extens, limit, page, search) => 
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
@@ -76,7 +76,7 @@ export const getPaymentTypes = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
@@ -91,7 +91,7 @@ export const createPaymentTypes = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
@@ -107,7 +107,7 @@ export const updatePaymentTypes = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
@@ -123,7 +123,7 @@ export const deletePaymentTypes = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_PAYMENTTYPE, "payload")(error))
             dispatch(actionCreator(LOADING_PAYMENTTYPE, "payload")(false))
         })

@@ -91,7 +91,7 @@ const TurnCreate = (props) => {
             let DStart = fechaStart[1];
             dateStr = new Date(YStart, MStart-1, DStart, HStar, MNStar, SStar,0);
         }
-        console.log('data', data)
+        
         if (data.endDate !== null && data.endDate !== undefined ) {
             console.log('ingreso a la fecha end')
             let convertFechaEnd = data.endDate.toString();
@@ -109,6 +109,8 @@ const TurnCreate = (props) => {
             let DEnd = fechaEnd[1];
             dateEnd = new Date(YEnd, MSEnd-1, DEnd, HEnd, MNEnd, SEnd,0);
         }
+        console.log('data', data)
+        
         reset(formValues => ({
             _id: data._id,
             type: data?.type,

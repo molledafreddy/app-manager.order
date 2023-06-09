@@ -331,7 +331,7 @@ const RevenueIndex = (props) => {
         setActivePait(number)
         validDateSearch();
         showLoading()
-        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, number, 'paid_out', body.startDate, body.endDate));
+        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, number, 'pagado', body.startDate, body.endDate));
         
     }
 
@@ -349,7 +349,7 @@ const RevenueIndex = (props) => {
         validDateSearch();
         showLoading()
         dispatch(getSearchRevenuesClosure(dispatch,'revenue/get-revenue-turn', 10, 1, body.startDate, body.endDate, 'closure'));
-        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
+        dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'pagado', body.startDate, body.endDate));
         createItem()
         createItemPait()
     }
@@ -363,7 +363,7 @@ const RevenueIndex = (props) => {
             Swal.close()
         }
 
-        
+        validCashF()
         // console.log('datos paymentHasEgress', paymentHasEgress)
         // if (paymentWithBox === 0) {
             moneyOrigin()
@@ -385,7 +385,7 @@ const RevenueIndex = (props) => {
         
         if (activePait === 1 && (orderPaitOuts === undefined ) && isLoadingOrder === false) {
             validDateSearch()
-            dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'paid_out', body.startDate, body.endDate));
+            dispatch(getSearchOrderPaitOut(dispatch,'order/search-order-paitout', 10, 1, 'pagado', body.startDate, body.endDate));
             createItemPait()
         }
 
@@ -429,10 +429,14 @@ const RevenueIndex = (props) => {
 
     const validCashF = async ()=> {
         if (totalCash > 0 || paymentWithBox > 0) {
+            console.log('paymentWithBox if', paymentWithBox)
             let sum = totalCash - paymentWithBox;
             let result = Math.sign(sum)
             console.log('result',result)
             setValidCash(result);
+        } else {
+            console.log('paymentWithBox else', paymentWithBox)
+            paymentWithBox = 0;
         }
     }
 

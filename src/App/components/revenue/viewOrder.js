@@ -18,7 +18,7 @@ const OrderCreate = (props) => {
    
     const dispatch = useDispatch()
 
-    const providers = useSelector(state => state.provider);
+    const providers = useSelector(state => state.provider.docs);
     // const orders = useSelector(state => state.orders.docs);
     const orderPaitOuts = useSelector(state => state.orderPaitOuts.docs)
     const paymentTypes = useSelector(state => state.paymentTypes);
@@ -576,16 +576,29 @@ const OrderCreate = (props) => {
         { id:4, type: "consignment" }
     ];
 
+    // const TypeStatus = [
+    //     { id:1, type: "requested" },
+    //     { id:2, type: "received" },
+    //     { id:3, type: "verified" },
+    //     { id:4, type: "pending_for_payment" },
+    //     { id:5, type: "paid_out" },
+    //     { id:6, type: "no_received" },
+    //     { id:7, type: "cancelled_provider" },
+    //     { id:8, type: "cancelled" }
+    // ];
+
     const TypeStatus = [
-        { id:1, type: "requested" },
-        { id:2, type: "received" },
-        { id:3, type: "verified" },
-        { id:4, type: "pending_for_payment" },
-        { id:5, type: "paid_out" },
-        { id:6, type: "no_received" },
-        { id:7, type: "cancelled_provider" },
-        { id:8, type: "cancelled" }
+        { id:1, type: "solicitado" },
+        { id:2, type: "recibido" },
+        { id:3, type: "verificado" },
+        { id:4, type: "pendiente_por_pago" },
+        { id:5, type: "pagado" },
+        { id:6, type: "no_recibido" },
+        { id:7, type: "cancelado_proveedor" },
+        { id:8, type: "cancelado" }
     ];
+
+    
 
     const TypeOrigin = [
         { id:1, type: "caja" },
@@ -625,15 +638,15 @@ const OrderCreate = (props) => {
         if (dataInfo.status === 'requested' && (dataInfo.estimateReceptionDate === undefined )) {
             showAlert(
                 'validacion factura', 
-                "Si el estado de la orden es 'paid_out' debe indicar Fecha de pago y Fecha de Recepcion", 
+                "Si el estado de la orden es 'pagado' debe indicar Fecha de pago y Fecha de Recepcion", 
                 "warning",
                 4000);
                 return;
         }
-        if (dataInfo.status === 'paid_out' && (dataInfo.paymentDate === undefined || dataInfo.receptionDate === undefined)) {
+        if (dataInfo.status === 'pagado' && (dataInfo.paymentDate === undefined || dataInfo.receptionDate === undefined)) {
             showAlert(
                 'validacion factura', 
-                "Si el estado de la orden es 'paid_out' debe indicar Fecha de pago y Fecha de Recepcion", 
+                "Si el estado de la orden es 'pagado' debe indicar Fecha de pago y Fecha de Recepcion", 
                 "warning",
                 4000);
                 return;
@@ -648,10 +661,10 @@ const OrderCreate = (props) => {
                 return;
         }
 
-        if (dataInfo.status === 'paid_out' && (dataInfo.amount === '' || dataInfo.amount === undefined)) {
+        if (dataInfo.status === 'pagado' && (dataInfo.amount === '' || dataInfo.amount === undefined)) {
             showAlert(
                 'validacion factura', 
-                "Si el estado de la orden es 'paid_out' debe ingresar el Monto pagado", 
+                "Si el estado de la orden es 'pagado' debe ingresar el Monto pagado", 
                 "warning",
                 4000);
                 return;
@@ -819,7 +832,7 @@ const OrderCreate = (props) => {
                                                 })} 
                                             >
                                                 <option value="" >selecciona...</option>
-                                                {providers.map(provider =>
+                                                {providers?.map(provider =>
                                                     <option key={provider?._id} value={provider?._id}>{provider?.businessName}</option>
                                                 )}
                                             </Form.Control>
@@ -891,7 +904,7 @@ const OrderCreate = (props) => {
                                                             {...register("descriptionPayment")}
                                                         />
                                                     </Form.Group>
-                                                    {watchStatus === 'paid_out' && (
+                                                    {watchStatus === 'pagado' && (
                                                         <div>
                                                             <Form.Group controlId="form.ControlPayments">
                                                                 <Form.Label>Tipo Pago</Form.Label>

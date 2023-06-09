@@ -6,7 +6,7 @@ COPY . /app
 
 ENV REACT_APP_API_BASE=https://api-manager-o3iu9.ondigitalocean.app
 
-RUN npm install
+RUN npm install sass-migrator
 
 RUN npm i -g serve
 

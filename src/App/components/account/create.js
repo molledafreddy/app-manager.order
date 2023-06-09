@@ -24,6 +24,7 @@ const AccountCreate = (props) => {
     const [body, setBody] = useState({
         _id: null,
         number: "",
+        rut: "",
         type: "",
         email: "",
         banks: "",
@@ -115,6 +116,10 @@ const AccountCreate = (props) => {
                         <Row>
                             <Col md={6}>
                                 <Form onSubmit={driverSubmit}>
+                                    <Form.Group controlId="form.ControlRut">
+                                        <Form.Label>Rut</Form.Label>
+                                        <Form.Control type="text" placeholder="Rut" name="rut" value={body?.rut} onChange={handlerChange} />
+                                    </Form.Group>
                                     <Form.Group controlId="form.ControlRut">
                                         <Form.Label>Numero</Form.Label>
                                         <Form.Control type="text" placeholder="Numero" name="number" value={body?.number} onChange={handlerChange} />

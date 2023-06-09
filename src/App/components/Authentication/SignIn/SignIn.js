@@ -39,6 +39,7 @@ const SignUp = (props) => {
     const driverButtom = async (e) => {
 
         let url = `${process.env.REACT_APP_API_BASE}/auth/login`;
+        console.log('email', body.email)
         axios.post(url, {email:body.email, password:body.password})
         .then( res => {
             if (res.status && res.data !== "NOT_FOUND_USER") {
@@ -89,7 +90,7 @@ const SignUp = (props) => {
                                         className="form-control" 
                                         name="email" 
                                         placeholder="Email" 
-                                        value={body.email} 
+                                        value={body.email || ''} 
                                         onChange={driverChange} />
                                 </div>
                                 <div className="input-group mb-4">
@@ -98,7 +99,7 @@ const SignUp = (props) => {
                                         className="form-control" 
                                         name="password" 
                                         placeholder="password" 
-                                        value={body.password} 
+                                        value={body.password || ''} 
                                         onChange={driverChange}/>
                                 </div>
                                 <div className="form-group text-left">

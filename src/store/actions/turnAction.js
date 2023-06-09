@@ -21,7 +21,8 @@ export const getTurn = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('turnos getTurn', error)
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -37,7 +38,7 @@ export const getSearchTurns = (dispatch, extens, limit, page, type, paymentType,
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -52,7 +53,8 @@ export const getTurnForUser = (dispatch, extens, limit, page, type, paymentType,
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('llego por aca getTurnForUser service', error.code)
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -67,7 +69,7 @@ export const getTurns = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -102,7 +104,7 @@ export const createTurn = (dispatch, extens, payload) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -131,7 +133,7 @@ export const updateTurn = (dispatch, extens, payload, id) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
@@ -153,7 +155,7 @@ export const deleteTurn = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_TURN, "payload")(error))
             dispatch(actionCreator(LOADING_TURN, "payload")(false))
         })

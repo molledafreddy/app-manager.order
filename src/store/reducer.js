@@ -336,13 +336,17 @@ const reducer = (state = initialState, action) => {
             
             const {idAccount} = action.payload;
             
-            const account = state.accounts.find((account) => account._id == idAccount);
+            const account = state.accounts.find((account) => account._id === idAccount);
             if (account) {
                 account.number = action.payload.number
                 account.type = action.payload.type
                 account.email = action.payload.email
                 account.banks = action.payload.banks
                 account.provider = action.payload.provider
+            }
+            return {
+                ...state,
+                isLoadingAccount: '200'
             }
         case DELETE_ACCOUNT:
             const accountFound = state.accounts.find(account => account._id === action.payload._id);

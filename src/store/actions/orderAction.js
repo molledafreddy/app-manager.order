@@ -24,7 +24,7 @@ export const getOrder = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -39,7 +39,7 @@ export const getOrderPaitOut = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -56,7 +56,7 @@ export const getSearchOrder = (dispatch, extens, data) => {
         })
         .catch(error => {
             // console.log('getSearchOrder error', error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -75,7 +75,7 @@ export const getSearchOrderPaitOut = (dispatch, extend, limit, page, status, sta
         })
         .catch(error => {
             console.log('error.response.data', error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -98,7 +98,7 @@ export const getOrders = (dispatch, extens) => {
             })
         })
         .catch(error => {
-            if (error.response.data === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
             Swal.fire({
@@ -133,7 +133,7 @@ export const createOrder= (dispatch, extens, payload) => {
         })
         .catch(error => {
             console.log('datos errorssssssss', error)
-            if(error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -164,7 +164,7 @@ export const updateOrder = (dispatch, extens, payload, id) => {
         })
         .catch(error => {
             console.log('datos', error )
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -189,7 +189,7 @@ export const updateOrderClosure = (dispatch, extens, payload, id) => {
         })
         .catch(error => {
             console.log('datos', error )
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
@@ -205,7 +205,7 @@ export const deleteOrder = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_ORDER, "payload")(error))
             dispatch(actionCreator(LOADING_ORDER, "payload")(false))
         })

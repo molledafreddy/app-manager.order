@@ -73,10 +73,6 @@ const OrderCreate = (props) => {
         files: []
     });
 
-    // const [addFile, setAddFile] = useState({
-    //     file: null
-    // })
-
     useEffect( () => {
         console.log('errorOrder', errorOrder)
         // if (isLoadingOrder === false) {
@@ -797,7 +793,7 @@ const OrderCreate = (props) => {
                                             />
                                             {errors.estimatedAmount && <p>{errors.estimatedAmount.message}</p>}
                                         </Form.Group>
-                                        {watchPaymentMethod === 'credit' && (
+                                        {watchPaymentMethod === 'credito' && (
                                             <Form.Group controlId="form.ControlPaymentCredit">
                                                 <Form.Label>Fecha Pago Credito</Form.Label>
                                                 <Controller 

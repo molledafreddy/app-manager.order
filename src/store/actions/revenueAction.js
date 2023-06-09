@@ -30,7 +30,8 @@ export const getRevenue = (dispatch, extens, _id) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            if (error.response.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            console.log('error.response', error.response)
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -49,7 +50,7 @@ export const getSearchRevenues = (dispatch, extens, limit, page, startDate = '',
         })
         .catch(error => {
             console.log('llego por aca getSearchRevenues', error.response)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -68,7 +69,7 @@ export const getSearchRevenuesOther = (dispatch, extens, limit, page, startDate 
         })
         .catch(error => {
             console.log('llego por aca getSearchRevenues', error.response)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -87,7 +88,7 @@ export const getSearchRevenuesStadistics = (dispatch, extens, limit, page, start
         })
         .catch(error => {
             console.log('llego por aca getSearchRevenues', error.response)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -106,7 +107,7 @@ export const getSearchRevenuesClosure = (dispatch, extens, limit, page, startDat
         })
         .catch(error => {
             console.log('llego por aca getSearchRevenues', error.response)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -121,7 +122,7 @@ export const getRevenues = (dispatch, extens) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0]=== 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -146,15 +147,7 @@ export const createRevenues = (dispatch, extens, payload) => {
         })
         .catch(error => {
             console.log('datos revenue catch', error)
-            // Swal.fire({
-            //     position: 'top',
-            //     icon: icon,
-            //     title: title,
-            //     text: text,
-            //     showConfirmButton: false,
-            //     timer: timer
-            // })
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error));
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
         })
@@ -188,7 +181,7 @@ export const createRevenueClosure = (dispatch, extens, payload) => {
             //     showConfirmButton: false,
             //     timer: timer
             // })
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE_CLOSURE, "payload")(error));
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
         })
@@ -221,7 +214,7 @@ export const createRevenueOther = (dispatch, extens, payload) => {
             //     showConfirmButton: false,
             //     timer: timer
             // })
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error));
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false));
         })
@@ -248,7 +241,7 @@ export const updateRevenues = (dispatch, extens, payload, id) => {
         })
         .catch(error => {
             console.log('error', error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -275,7 +268,7 @@ export const updateRevenueOther = (dispatch, extens, payload, id) => {
         })
         .catch(error => {
             console.log('error', error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -302,7 +295,7 @@ export const updateRevenueClosure = (dispatch, extens, payload, id) => {
         })
         .catch(error => {
             console.log('error', error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE_CLOSURE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
@@ -338,7 +331,7 @@ export const deleteRevenues = (dispatch, extens, id) => {
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
+            if (error?.code === 'ERR_BAD_REQUEST' || error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
             dispatch(actionCreator(ERROR_REVENUE, "payload")(error))
             dispatch(actionCreator(LOADING_REVENUE, "payload")(false))
         })

@@ -108,9 +108,9 @@ const TurnIndex = (props) => {
         props.history.push("/turn/create");
     }
 
-    const handlerDelete = async (_id) => {
-        dispatch(deleteTurn(dispatch,'turn', _id))
-    }
+    // const handlerDelete = async (_id) => {
+    //     dispatch(deleteTurn(dispatch,'turn', _id))
+    // }
 
     const handlerUpdate = async (id) => {
         props.history.push(`/turn/edit/${id}`);
@@ -217,7 +217,8 @@ const TurnIndex = (props) => {
                             {turns?.map(turn =>
                                 <tr key={turn._id}>
                                 <td>{turn?.type}</td>
-                                <td>{moment(turn?.createdAt).format("YYYY-MM-DD")}</td>
+                                {/* <td>{moment(turn?.createdAt).format("YYYY-MM-DD")}</td> */}
+                                <td>{moment(turn?.startDate).format("YYYY-MM-DD")}</td>
                                 <td>{moment(turn?.endDate).format("YYYY-MM-DD")}</td>
                                 <td>{turn?.status}</td>
                                 <td>{turn?.description}</td>

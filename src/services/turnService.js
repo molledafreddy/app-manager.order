@@ -1,6 +1,7 @@
 import axios from "axios";
 import moment from 'moment';
-
+// import { actionCreator } from "template-redux-helpers";
+// import  { redirectNoLogin }  from "../../helpers/redirect-no-login";
 export default class providerService {
     constructor(){
         this.url = process.env.REACT_APP_API_BASE;
@@ -20,6 +21,7 @@ export default class providerService {
         try {
             return await axios.get(`${this.url}/${extend}`);
         } catch (error) {
+            console.log('llego por aca getTurns service', error)
             throw error;
         }
     }
@@ -36,6 +38,7 @@ export default class providerService {
                 { headers: headers }
             );
         } catch (error) {
+            // console.log('llego por aca getTurnForUser service', error)
             throw error;
         }
     }
