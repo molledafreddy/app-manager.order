@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
     items: [
         {
@@ -77,6 +78,20 @@ export default {
                     type: 'item',
                     icon: 'feather icon-filter',
                     url: '/statistics'
+                },
+                {
+                    id: 'products',
+                    title: 'Productos',
+                    type: 'item',
+                    icon: 'feather icon-filter',
+                    url: '/product'
+                },
+                {
+                    id: 'productDelivery',
+                    title: 'Delivery',
+                    type: 'item',
+                    icon: 'feather icon-filter',
+                    url: '/productDelivery'
                 }
             ]
         },

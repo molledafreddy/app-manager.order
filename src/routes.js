@@ -30,6 +30,14 @@ const Nvd3Chart = React.lazy(() => import('./Demo/Charts/Nvd3Chart/index'));
 const indexProvider = React.lazy(() => import('./App/components/provider/index'));
 const createProvider = React.lazy(() => import('./App/components/provider/create'));
 
+//product
+const indexProduct = React.lazy(() => import('./App/components/products/index'));
+const createProduct = React.lazy(() => import('./App/components/products/create'));
+
+//productDelivery
+const indexProductDelivery = React.lazy(() => import('./App/components/productDelivery/index'));
+const createProductDelivery = React.lazy(() => import('./App/components/productDelivery/create'));
+
 //account
 const indexAccount = React.lazy(() => import('./App/components/account/index'));
 const createAccount = React.lazy(() => import('./App/components/account/create'));
@@ -75,6 +83,14 @@ const routes = [
     { path: '/provider', exact: true, name: 'provider', component: indexProvider },
     { path: '/provider/create', exact: true, name: 'providerCreate', component: createProvider },
     { path: '/provider/edit/:_id', exact: true, name: 'providerEdit', component: createProvider },
+    
+    { path: '/product', exact: true, name: 'product', component: indexProduct },
+    { path: '/product/create', exact: true, name: 'productCreate', component: createProduct },
+    { path: '/product/edit/:_id', exact: true, name: 'productEdit', component: createProduct },
+
+    { path: '/productDelivery', exact: true, name: 'product', component: indexProductDelivery },
+    { path: '/productDelivery/create', exact: true, name: 'productCreate', component: createProductDelivery },
+    { path: '/productDelivery/edit/:_id', exact: true, name: 'productEdit', component: createProductDelivery },
 
     { path: '/account', exact: true, name: 'account', component: indexAccount },
     { path: '/account/create', exact: true, name: 'accountCreate', component: createAccount },

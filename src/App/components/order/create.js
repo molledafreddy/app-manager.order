@@ -204,6 +204,7 @@ const OrderCreate = (props) => {
         
         if (data._id !== undefined ) {
             // validDateFront(data);
+            console.log('data', data)
             let filesD = [];
             reset(formValues => ({
                 // ...formValues,

@@ -1,0 +1,114 @@
+  
+  h1 {
+    font-weight: 100;
+    color: white;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgb(79, 98, 148);
+  }
+  
+  p {
+    color: #bf1650;
+    font-size: 17px;
+    text-align: left;
+  }
+  
+  p::before {
+    display: inline;
+    content: "⚠ ";
+  }
+  
+  input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid rgb(221, 218, 218);
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  
+  .error {
+    border: 1px solid #bf1650 !important;
+  }
+  
+  label {
+    line-height: 2;
+    text-align: left;
+    display: block;
+    margin-bottom: 13px;
+    margin-top: 20px;
+    color: rgb(0, 0, 0);
+    font-size: 15px;
+    font-weight: 200;
+  }
+
+  .text_tam {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .color_success {
+    color: aquamarine;
+    
+  }
+
+  .color_warning {
+    color: blue;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  input[type="submit"] {
+    background: #5a66a4;
+    color: white;
+    text-transform: uppercase;
+    border: none;
+    margin-top: 40px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 100;
+    letter-spacing: 5px;
+  }
+
+  .egress_title {
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  .margin_buttom {
+    margin-top: 4rem;
+  }
+
+  .text_card {
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .ingress_title {
+    font-weight: 500;
+    font-size: 20px;
+    margin-left: 5px;
+  }
+  
+  .ubication_cash {
+    margin-top: 10px;
+  }
+
+  .ubication_title {
+    margin-right: 5px;
+  } 
+
+  .egress_color {
+    color: #f44236;
+    font-weight: 400;
+  }
+
+  .border_card_egress {
+    border-color: #f44236;
+  }
+  .ingress {
+    color: #007bff ;
+    font-weight: 400;
+  }

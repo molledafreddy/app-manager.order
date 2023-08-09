@@ -1,6 +1,7 @@
 import * as actionTypes from './actions';
 import config from './../config';
 import { LOADING_PROVIDER, ERROR_PROVIDER, GET_SEARCH_PROVIDER, UPDATE_CODE_ERROR_PROVIDER } from "./types/provider";
+import { LOADING_PRODUCT, GET_PRODUCT, DELETE_PRODUCT, GET_ALL_PRODUCT, CREATE_PRODUCT, UPDATE_PRODUCT, ERROR_PRODUCT, GET_SEARCH_PRODUCT, UPDATE_CODE_ERROR_PRODUCT } from "./types/product";
 import {  
     CREATE_ACCOUNT,
     GET_ACCOUNT,
@@ -76,6 +77,19 @@ import {
 
     import { GET_AUTH, LOADING_AUTH, ERROR_AUTH  } from "./types/auth";
 
+    import  { GET_ALL_CATEGORY_PRODUCT } from "./types/categoryProduct";
+
+    import  { LOADING_PRODUCT_DELIVERY, 
+        GET_PRODUCT_DELIVERY, 
+        ERROR_PRODUCT_DELIVERY, 
+        CREATE_PRODUCT_DELIVERY, 
+        UPDATE_PRODUCT_DELIVERY,
+        DELETE_PRODUCT_DELIVERY,
+        GET_ALL_PRODUCT_DELIVERY,
+        GET_SEARCH_PRODUCT_DELIVERY,
+        GET_PRODUCT_HAS_DELIVERY,
+        UPDATE_CODE_ERROR_PRODUCT_DELIVERY } from "./types/productDelivery";
+
 const initialState = {
     isOpen: [], //for active default menu
     users: [1,2], // manejo usuarios
@@ -88,6 +102,21 @@ const initialState = {
     statusCodeProvider: '',
     isLoadingProvider: false,
 
+    product: [],
+    nextPageProduct:0,
+    prevPageProduct: 0,
+    errorProduct: '',
+    statusCodeProduct: '',
+    isLoadingProduct: false,
+
+    productDelivery: [],
+    productHasDelivery: [],
+    nextPageProductDelivery:0,
+    prevPageProductDelivery: 0,
+    errorProductDelivery: '',
+    statusCodeProductDelivery: '',
+    isLoadingProductDelivery: false,
+
     accounts: [],
     errorAccount: '',
     statusCodeAccount: '',
@@ -97,6 +126,11 @@ const initialState = {
     errorBank: '',
     statusCodeBank: '',
     isLoadingBank: false,
+
+    categoryProducts: [],
+    errorcategoryProduct: '',
+    statusCodecategoryProduct: '',
+    isLoadingcategoryProduct: false,
 
     operationBills: [],
     operationBill: [],
@@ -247,7 +281,6 @@ const reducer = (state = initialState, action) => {
                 provider: action.payload.data,
             }
         case actionTypes.GET_ALL_PROVIDER:
-            console.log('GET_ALL_PROVIDER', action.payload.data)
             return {
                 ...state,
                 provider: action.payload.data,
@@ -298,7 +331,6 @@ const reducer = (state = initialState, action) => {
                 provider: state.provider
             }
         case LOADING_PROVIDER:
-            console.log('LOADING_PROVIDER',action.payload)
             return {
                 ...state,
                 isLoadingProvider: action.payload
@@ -314,6 +346,152 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 statusCodeProvider: '500',
                 errorProvider: action.payload
+            }
+        
+        case GET_PRODUCT:
+            return {
+                ...state,
+                product: action.payload.data,
+            }
+        case GET_ALL_PRODUCT:
+            return {
+                ...state,
+                product: action.payload.data,
+            }
+        case GET_SEARCH_PRODUCT:
+            console.log('GET_SEARCH_PRODUCT', action.payload.data)
+            return {
+                ...state,
+                product: action.payload.data,
+                nextPageProduct:action.payload.data.nextPage,
+                prevPageProduct:action.payload.data.prevPage
+            }
+        case CREATE_PRODUCT:
+            return {
+                ...state,
+                product: payload,
+                statusCodeProduct: '200',
+            }
+        // eslint-disable-next-line no-fallthrough
+        case UPDATE_PRODUCT:
+            state.product.docs.map(function(prov){
+                if(prov._id === action.payload._id){
+                    prov.name = action.payload.name
+                    prov.description = action.payload.description
+                    prov.price = action.payload.price
+                    prov.clasification = action.payload.clasification
+                    prov.type = action.payload.type
+                    prov.status = action.payload.status
+                    prov.categoryProducts = action.payload.categoryProducts
+                }
+                return prov;
+            });
+            return {
+                ...state,
+                statusCodeProduct: '200'
+            }
+        case DELETE_PRODUCT:
+            const productFound = state.product.find(product => product._id === action.payload._id);
+            if (productFound) {
+                state.product.splice(state.product.indexOf(productFound), 1)
+            }
+            return {
+                ...state,
+                product: state.product
+            }
+        case LOADING_PRODUCT:
+            return {
+                ...state,
+                isLoadingProduct: action.payload
+            }
+        case UPDATE_CODE_ERROR_PRODUCT:
+            return {
+                ...state,
+                statusCodeProduct: '',
+                errorProduct: []
+            }
+        case ERROR_PRODUCT:
+            return {
+                ...state,
+                statusCodeProduct: '500',
+                errorProduct: action.payload
+            }
+        
+        case GET_PRODUCT_DELIVERY:
+            // console.log('GET_PRODUCT_DELIVERY', action.payload.data)
+            return {
+                ...state,
+                productDelivery: action.payload.data,
+            }
+        case GET_PRODUCT_HAS_DELIVERY:
+            console.log('action.payload.data', action.payload.data)
+            return {
+                ...state,
+                productHasDelivery: action.payload.data,
+            }
+        case GET_ALL_PRODUCT_DELIVERY:
+            console.log('GET_ALL_PROduct', action.payload.data)
+            return {
+                ...state,
+                productDelivery: action.payload.data,
+            }
+        case GET_SEARCH_PRODUCT_DELIVERY:
+            console.log('GET_SEARCH_PRODUCT', action.payload.data)
+            return {
+                ...state,
+                productDelivery: action.payload.data,
+                nextPageProductDelivery:action.payload.data.nextPage,
+                prevPageProductDelivery:action.payload.data.prevPage
+            }
+        case CREATE_PRODUCT_DELIVERY:
+            return {
+                ...state,
+                productDelivery: payload,
+                statusCodeProductDelivery: '200',
+            }
+        // eslint-disable-next-line no-fallthrough
+        case UPDATE_PRODUCT_DELIVERY:
+            state.productDelivery.docs.map(function(prov){
+                if(prov._id === action.payload._id){
+                    prov.name = action.payload.name
+                    prov.description = action.payload.description
+                    prov.price = action.payload.price
+                    prov.clasification = action.payload.clasification
+                    prov.type = action.payload.type
+                    prov.status = action.payload.status
+                    prov.categoryProducts = action.payload.categoryProducts
+                }
+                return prov;
+            });
+            return {
+                ...state,
+                statusCodeProductDelivery: '200'
+            }
+        case DELETE_PRODUCT_DELIVERY:
+            const productDeliveryFound = state.productDelivery.find(product => product._id === action.payload._id);
+            if (productDeliveryFound) {
+                state.productDelivery.splice(state.product.indexOf(productDeliveryFound), 1)
+            }
+            return {
+                ...state,
+                productDelivery: state.productDelivery
+            }
+        case LOADING_PRODUCT_DELIVERY:
+            return {
+                ...state,
+                isLoadingProductDelivery: action.payload
+            }
+        case UPDATE_CODE_ERROR_PRODUCT_DELIVERY:
+            return {
+                ...state,
+                statusCodeProductDelivery: '',
+                errorProductDelivery: []
+            }
+        case ERROR_PRODUCT_DELIVERY:
+            return {
+                ...state,
+                statusCodeProductDelivery: '500',
+                errorProductDelivery: action.payload
             }
 
         case GET_ACCOUNT:
@@ -373,6 +551,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 banks: action.payload.data,
+            }
+        case GET_ALL_CATEGORY_PRODUCT:
+            return {
+                ...state,
+                categoryProducts: action.payload.data,
             }
         case GET_OPERATIONBILL:
             return {
