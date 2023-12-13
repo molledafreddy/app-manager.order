@@ -191,9 +191,9 @@ const AccountIndex = (props) => {
         props.history.push("/account/create");
     }
 
-    const handlerDelete = async (_id) => {
-        dispatch(deleteAccounts(dispatch,'account', _id))
-    }
+    // const handlerDelete = async (_id) => {
+    //     dispatch(deleteAccounts(dispatch,'account', _id))
+    // }
 
     const handlerUpdate = async (id) => {
         props.history.push(`/account/edit/${id}`);

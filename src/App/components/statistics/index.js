@@ -452,6 +452,11 @@ const StatisticsIndex = (props) => {
         })
     }
 
+    const renderMonthContent = (month, shortMonth, longMonth) => {
+        const tooltipText = `Tooltip for month: ${longMonth}`;
+        return <span title={tooltipText}>{shortMonth}</span>;
+    };
+
     // const driverButtomCreate = async (e) => {
     //     console.log('llego')
     //     props.history.push("/order/create");
@@ -517,7 +522,7 @@ const StatisticsIndex = (props) => {
                                     </Col> */}
                                     <Col md={{ span: 4, offset: 6 }}> 
                                         <Form.Label>Fecha Pago</Form.Label>
-                                        <DatePicker
+                                        {/* <DatePicker
                                             className="form-control input_width"
                                             selectsRange={true}
                                             startDate={paymentDateStart}
@@ -526,7 +531,14 @@ const StatisticsIndex = (props) => {
                                                 setPaymentDateRange(update);
                                             }}
                                             isClearable={true}
-                                        />
+                                        /> */}
+                                        <DatePicker
+                                        className="form-control input_width"
+                                            selected={new Date()}
+                                            renderMonthContent={renderMonthContent}
+                                            showMonthYearPicker
+                                            dateFormat="MM/yyyy"
+                                            />
                                     </Col>
                                     {/* <Col md={{ span: 4, offset: 0 }}> 
                                         <Form.Label>Fecha Recepcion</Form.Label>
