@@ -8,7 +8,7 @@ import App from './App/index';
 import * as serviceWorker from './serviceWorker';
 // import reducer from './store/reducer';
 // import reducer from './store/reducers/index';
-import store from './store';
+import { store } from './store';
 import config from './config';
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
