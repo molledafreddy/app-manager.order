@@ -10,8 +10,6 @@ class MinimarketLanding extends React.Component {
         return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(whatsappUrl)}`;
     };
 
-    // ...existing code...
-
     componentDidMount() {
         document.title = "TODO MARKET CHILE SpA - Delivery Gratis | Tu tienda de barrio";
         
@@ -252,16 +250,9 @@ class MinimarketLanding extends React.Component {
                 transform: translateX(5px);
                 box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
             }
-            
-            .minimarket-bg {
-                background: linear-gradient(rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1)), 
-                           url("https://images.unsplash.com/photo-1601598851547-4302969d0669?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80") center/cover;
-            }
         `;
         document.head.appendChild(style);
     }
-
-// ...existing code...
 
     render() {
         const minimarketData = {
@@ -279,7 +270,7 @@ class MinimarketLanding extends React.Component {
         
         return (
             <Aux>
-                {/* Navbar mejorado con logo */}
+                {/* Navbar mejorado con logo SIN FONDO */}
                 <nav className="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
                     <div className="container">
                         <a className="navbar-brand d-flex align-items-center" href="/">
@@ -552,8 +543,7 @@ class MinimarketLanding extends React.Component {
                     </div>
                 </section>
 
-                {/* Resto de las secciones mantienen la misma estructura pero con las nuevas clases de tipografía */}
-                {/* Mapa y Contacto con iconos mejorados */}
+                {/* Mapa y Contacto con MAPA REAL */}
                 <section className="bg-light py-5">
                     <div className="container">
                         <h2 className="section-title text-center mb-5" style={{fontSize: '2.8rem'}}>
@@ -568,19 +558,21 @@ class MinimarketLanding extends React.Component {
                                             ¡Encuéntranos!
                                         </h4>
                                         
-                                        {/* Mapa placeholder con imagen de supermercado */}
+                                        {/* Mapa REAL con dirección del local */}
                                         <div className="embed-responsive embed-responsive-16by9 mb-3">
-                                            <div className="embed-responsive-item d-flex align-items-center justify-content-center" 
-                                                 style={{
-                                                     borderRadius: '20px', 
-                                                     border: '3px solid #FFD700',
-                                                     background: 'linear-gradient(rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1)), url("https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80") center/cover'
-                                                 }}>
-                                                <div className="text-center p-3" style={{background: 'rgba(255, 255, 255, 0.9)', borderRadius: '15px'}}>
-                                                    <i className="feather icon-map-pin" style={{fontSize: '3rem', color: '#FFD700'}}/>
-                                                    <p className="mt-2 mb-0" style={{color: '#2c3e50', fontWeight: '600', fontFamily: 'Poppins, sans-serif'}}>Mapa Interactivo</p>
-                                                </div>
-                                            </div>
+                                            <iframe
+                                                className="embed-responsive-item"
+                                                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dRWTU7wRuIwlOg&q=${encodeURIComponent(minimarketData.direccion)}&zoom=16`}
+                                                style={{
+                                                    borderRadius: '20px',
+                                                    border: '3px solid #FFD700',
+                                                    minHeight: '250px'
+                                                }}
+                                                allowFullScreen=""
+                                                loading="lazy"
+                                                referrerPolicy="no-referrer-when-downgrade"
+                                                title="Ubicación TodoMarket"
+                                            />
                                         </div>
                                         
                                         <div className="contact-info">
@@ -697,20 +689,18 @@ class MinimarketLanding extends React.Component {
                     </div>
                 </section>
 
-                {/* Footer mejorado */}
+                {/* Footer mejorado SIN FONDO EN LOGO */}
                 <footer className="bg-dark text-white py-5">
                     <div className="container">
                         <div className="row align-items-center">
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center mb-3">
-                                    <div className="logo-container">
-                                        <svg width="35" height="35" viewBox="0 0 100 100">
-                                            <circle cx="50" cy="50" r="45" fill="#FF8C00" stroke="white" strokeWidth="2"/>
-                                            <text x="50" y="60" textAnchor="middle" fontSize="32" fontWeight="bold" fill="white">75</text>
-                                            <circle cx="25" cy="75" r="6" fill="white"/>
-                                            <circle cx="75" cy="75" r="6" fill="white"/>
-                                        </svg>
-                                    </div>
+                                    <svg width="35" height="35" viewBox="0 0 100 100" style={{marginRight: '12px'}}>
+                                        <circle cx="50" cy="50" r="45" fill="#FF8C00" stroke="white" strokeWidth="2"/>
+                                        <text x="50" y="60" textAnchor="middle" fontSize="32" fontWeight="bold" fill="white">75</text>
+                                        <circle cx="25" cy="75" r="6" fill="white"/>
+                                        <circle cx="75" cy="75" r="6" fill="white"/>
+                                    </svg>
                                     <h4 className="logo-text mb-0 text-white">{minimarketData.nombre}</h4>
                                 </div>
                                 <p className="text-muted mb-1" style={{fontFamily: 'Poppins, sans-serif'}}>Tu supermercado de barrio de confianza</p>
