@@ -6,29 +6,134 @@ const TermsOfService = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
+    // Contenido estático como fallback
+    const staticContent = `
+        <div class="header">
+            <h1>Términos de Servicio</h1>
+            <p class="last-updated">Última actualización: ${new Date().toLocaleDateString('es-CL')}</p>
+        </div>
+
+        <div class="section">
+            <h2>1. ACEPTACIÓN DE TÉRMINOS</h2>
+            <p>Al utilizar los servicios de <strong>TODO MARKET CHILE SpA</strong>, usted acepta estos términos y condiciones en su totalidad. Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestros servicios.</p>
+        </div>
+
+        <div class="section">
+            <h2>2. DESCRIPCIÓN DEL SERVICIO</h2>
+            <p>TODO MARKET es una plataforma de comercio electrónico que ofrece:</p>
+            <ul>
+                <li>Venta de productos de supermercado y abarrotes</li>
+                <li>Servicio de entrega a domicilio</li>
+                <li>Gestión de pedidos online</li>
+                <li>Atención al cliente especializada</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>3. REGISTRO Y CUENTA DE USUARIO</h2>
+            <ul>
+                <li>Debe proporcionar información veraz y actualizada</li>
+                <li>Es responsable de mantener la confidencialidad de su contraseña</li>
+                <li>Debe notificar inmediatamente cualquier uso no autorizado</li>
+                <li>Solo personas mayores de 18 años pueden crear cuentas</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>4. PEDIDOS Y PAGOS</h2>
+            <p><strong>Proceso de pedidos:</strong></p>
+            <ul>
+                <li>Los precios están sujetos a cambios sin previo aviso</li>
+                <li>Nos reservamos el derecho de cancelar pedidos por falta de stock</li>
+                <li>Los tiempos de entrega son estimados y pueden variar</li>
+                <li>El pago debe realizarse al momento de confirmar el pedido</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>5. ENTREGAS</h2>
+            <ul>
+                <li>Entregamos en horarios de 9:00 AM a 8:00 PM</li>
+                <li>Se requiere la presencia del titular o persona autorizada</li>
+                <li>Los productos perecederos deben ser recibidos inmediatamente</li>
+                <li>Verificar el estado de los productos al momento de la entrega</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>6. DEVOLUCIONES Y REEMBOLSOS</h2>
+            <ul>
+                <li>Productos defectuosos pueden ser devueltos en 24 horas</li>
+                <li>Los productos perecederos no admiten devolución salvo defecto</li>
+                <li>Reembolsos procesados en 3-5 días hábiles</li>
+                <li>Se requiere comprobante de compra para devoluciones</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>7. LIMITACIÓN DE RESPONSABILIDAD</h2>
+            <p>TODO MARKET CHILE SpA no será responsable por:</p>
+            <ul>
+                <li>Daños indirectos o consecuentes</li>
+                <li>Pérdidas de datos o interrupciones del servicio</li>
+                <li>Demoras debido a casos fortuitos o fuerza mayor</li>
+                <li>Uso inadecuado de los productos adquiridos</li>
+            </ul>
+        </div>
+
+        <div class="contact">
+            <h2>8. CONTACTO Y SOPORTE</h2>
+            <p>Para consultas, reclamos o soporte técnico:</p>
+            <ul>
+                <li><strong>Email:</strong> soporte@todomarket.cl</li>
+                <li><strong>Teléfono:</strong> +56 2 2345 6789</li>
+                <li><strong>WhatsApp:</strong> +56 9 8765 4321</li>
+                <li><strong>Horario:</strong> Lunes a Sábado 8:00 - 20:00 hrs</li>
+            </ul>
+        </div>
+    `;
+
     useEffect(() => {
-        // Cargar el contenido HTML directamente
-        fetch('/terms-of-service.html')
-            .then(response => {
+        // Intentar cargar el contenido HTML con manejo robusto de errores
+        const loadContent = async () => {
+            try {
+                const response = await fetch('/terms-of-service.html', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/html',
+                    },
+                    cache: 'no-cache'
+                });
+                
                 if (!response.ok) {
-                    throw new Error('No se pudo cargar los términos de servicio');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.text();
-            })
-            .then(html => {
-                // Extraer solo el contenido del body
+                
+                const html = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 const bodyContent = doc.body.innerHTML;
-                setHtmlContent(bodyContent);
+                
+                if (bodyContent.trim()) {
+                    setHtmlContent(bodyContent);
+                } else {
+                    throw new Error('Contenido vacío');
+                }
+                
                 setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error cargando términos de servicio:', error);
-                setError(true);
+            } catch (error) {
+                console.warn('Error cargando archivo HTML, usando contenido estático:', error);
+                // Usar contenido estático como fallback
+                setHtmlContent(staticContent);
                 setLoading(false);
-            });
-    }, []);
+                setError(false); // No mostrar error, ya que tenemos fallback
+            }
+        };
+
+        // Delay pequeño para evitar problemas de timing
+        const timer = setTimeout(loadContent, 100);
+        return () => clearTimeout(timer);
+    }, [staticContent]);
 
     if (loading) {
         return (

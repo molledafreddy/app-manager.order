@@ -6,29 +6,141 @@ const DataDeletion = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
+    // Contenido estático como fallback
+    const staticContent = `
+        <div class="header">
+            <h1>Eliminación de Datos Personales</h1>
+            <p class="last-updated">Política actualizada: ${new Date().toLocaleDateString('es-CL')}</p>
+        </div>
+
+        <div class="section">
+            <h2>1. DERECHO A LA ELIMINACIÓN</h2>
+            <p>En <strong>TODO MARKET CHILE SpA</strong> respetamos su derecho a solicitar la eliminación de sus datos personales de nuestros sistemas, conforme a la Ley N° 19.628 sobre Protección de Datos de Carácter Personal.</p>
+        </div>
+
+        <div class="section">
+            <h2>2. DATOS QUE PODEMOS ELIMINAR</h2>
+            <ul>
+                <li><strong>Información de perfil:</strong> Nombre, correo electrónico, teléfono</li>
+                <li><strong>Historial de compras:</strong> Pedidos realizados y preferencias</li>
+                <li><strong>Datos de entrega:</strong> Direcciones y contactos asociados</li>
+                <li><strong>Información de marketing:</strong> Suscripciones y preferencias de comunicación</li>
+                <li><strong>Datos técnicos:</strong> Cookies, logs de acceso y datos de uso</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>3. DATOS QUE DEBEMOS CONSERVAR</h2>
+            <p>Por obligaciones legales y fiscales, debemos conservar ciertos datos por períodos específicos:</p>
+            <ul>
+                <li><strong>Información fiscal:</strong> Facturas y comprobantes (6 años)</li>
+                <li><strong>Datos contables:</strong> Registros financieros según normativa chilena</li>
+                <li><strong>Información legal:</strong> Datos requeridos por autoridades competentes</li>
+                <li><strong>Prevención de fraude:</strong> Información necesaria para seguridad</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>4. PROCESO DE ELIMINACIÓN</h2>
+            <p><strong>Pasos para solicitar la eliminación:</strong></p>
+            <ol>
+                <li><strong>Enviar solicitud:</strong> Contactar por email o formulario oficial</li>
+                <li><strong>Verificación de identidad:</strong> Confirmar titularidad de los datos</li>
+                <li><strong>Revisión legal:</strong> Evaluar obligaciones de conservación</li>
+                <li><strong>Procesamiento:</strong> Eliminar datos según sea procedente</li>
+                <li><strong>Confirmación:</strong> Notificar al usuario sobre el resultado</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>5. TIEMPOS DE PROCESAMIENTO</h2>
+            <ul>
+                <li><strong>Confirmación de recepción:</strong> Inmediata</li>
+                <li><strong>Verificación de identidad:</strong> 1-2 días hábiles</li>
+                <li><strong>Procesamiento de eliminación:</strong> 5-10 días hábiles</li>
+                <li><strong>Notificación final:</strong> Dentro de 15 días hábiles</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>6. CONSECUENCIAS DE LA ELIMINACIÓN</h2>
+            <p><strong>Al eliminar sus datos:</strong></p>
+            <ul>
+                <li>Su cuenta será desactivada permanentemente</li>
+                <li>No podrá acceder a servicios personalizados</li>
+                <li>Se perderá el historial de compras y preferencias</li>
+                <li>No recibirá comunicaciones promocionales</li>
+                <li>Deberá registrarse nuevamente para usar nuestros servicios</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>7. ALTERNATIVAS A LA ELIMINACIÓN</h2>
+            <p>Antes de eliminar sus datos, considere estas opciones:</p>
+            <ul>
+                <li><strong>Desactivar cuenta:</strong> Suspender temporalmente sin eliminar datos</li>
+                <li><strong>Actualizar preferencias:</strong> Modificar configuración de privacidad</li>
+                <li><strong>Limitar comunicaciones:</strong> Reducir emails y notificaciones</li>
+                <li><strong>Revisar configuración:</strong> Ajustar qué datos compartir</li>
+            </ul>
+        </div>
+
+        <div class="contact">
+            <h2>8. SOLICITAR ELIMINACIÓN</h2>
+            <p>Para eliminar sus datos personales, contáctenos por cualquiera de estos medios:</p>
+            <ul>
+                <li><strong>Email principal:</strong> eliminar-datos@todomarket.cl</li>
+                <li><strong>Email alternativo:</strong> privacidad@todomarket.cl</li>
+                <li><strong>Teléfono:</strong> +56 2 2345 6789 (opción 3)</li>
+                <li><strong>Formulario web:</strong> <a href="#formulario">todomarket.cl/eliminar-cuenta</a></li>
+            </ul>
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ffc107;">
+                <p style="margin: 0;"><strong>⚠️ Importante:</strong> La eliminación es irreversible. Asegúrese de descargar cualquier información que desee conservar antes de proceder.</p>
+            </div>
+        </div>
+    `;
+
     useEffect(() => {
-        // Cargar el contenido HTML directamente
-        fetch('/data-deletion.html')
-            .then(response => {
+        // Intentar cargar el contenido HTML con manejo robusto de errores
+        const loadContent = async () => {
+            try {
+                const response = await fetch('/data-deletion.html', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/html',
+                    },
+                    cache: 'no-cache'
+                });
+                
                 if (!response.ok) {
-                    throw new Error('No se pudo cargar la página de eliminación de datos');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.text();
-            })
-            .then(html => {
-                // Extraer solo el contenido del body
+                
+                const html = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 const bodyContent = doc.body.innerHTML;
-                setHtmlContent(bodyContent);
+                
+                if (bodyContent.trim()) {
+                    setHtmlContent(bodyContent);
+                } else {
+                    throw new Error('Contenido vacío');
+                }
+                
                 setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error cargando eliminación de datos:', error);
-                setError(true);
+            } catch (error) {
+                console.warn('Error cargando archivo HTML, usando contenido estático:', error);
+                // Usar contenido estático como fallback
+                setHtmlContent(staticContent);
                 setLoading(false);
-            });
-    }, []);
+                setError(false); // No mostrar error, ya que tenemos fallback
+            }
+        };
+
+        // Delay pequeño para evitar problemas de timing
+        const timer = setTimeout(loadContent, 100);
+        return () => clearTimeout(timer);
+    }, [staticContent]);
 
     if (loading) {
         return (

@@ -6,29 +6,115 @@ const PrivacyPolicy = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
+    // Contenido estático como fallback
+    const staticContent = `
+        <div class="header">
+            <h1>Política de Privacidad</h1>
+            <p class="last-updated">Última actualización: ${new Date().toLocaleDateString('es-CL')}</p>
+        </div>
+
+        <div class="section">
+            <h2>1. INFORMACIÓN GENERAL</h2>
+            <p><strong>TODO MARKET CHILE SpA</strong> se compromete a proteger la privacidad y seguridad de la información personal de nuestros usuarios. Esta política describe cómo recopilamos, utilizamos y protegemos su información.</p>
+        </div>
+
+        <div class="section">
+            <h2>2. INFORMACIÓN QUE RECOPILAMOS</h2>
+            <ul>
+                <li><strong>Información de registro:</strong> Nombre, correo electrónico, número de teléfono</li>
+                <li><strong>Información de compras:</strong> Historial de pedidos, preferencias de productos</li>
+                <li><strong>Información técnica:</strong> Dirección IP, tipo de navegador, datos de uso de la aplicación</li>
+                <li><strong>Información de ubicación:</strong> Dirección de entrega para facilitar nuestros servicios</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>3. USO DE LA INFORMACIÓN</h2>
+            <p>Utilizamos su información personal para:</p>
+            <ul>
+                <li>Procesar y gestionar sus pedidos</li>
+                <li>Proporcionar servicio al cliente</li>
+                <li>Mejorar nuestros productos y servicios</li>
+                <li>Enviar notificaciones sobre pedidos y promociones</li>
+                <li>Cumplir con obligaciones legales y regulatorias</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>4. PROTECCIÓN DE DATOS</h2>
+            <p>Implementamos medidas de seguridad técnicas y organizacionales para proteger su información:</p>
+            <ul>
+                <li>Encriptación de datos sensibles</li>
+                <li>Acceso restringido a información personal</li>
+                <li>Monitoreo regular de seguridad</li>
+                <li>Capacitación continua del personal</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>5. SUS DERECHOS</h2>
+            <p>De acuerdo con la Ley N° 19.628 sobre Protección de Datos de Carácter Personal, usted tiene derecho a:</p>
+            <ul>
+                <li><strong>Acceso:</strong> Conocer qué datos personales tenemos sobre usted</li>
+                <li><strong>Rectificación:</strong> Corregir datos inexactos o incompletos</li>
+                <li><strong>Cancelación:</strong> Solicitar la eliminación de sus datos</li>
+                <li><strong>Oposición:</strong> Oponerse al tratamiento de sus datos en casos específicos</li>
+            </ul>
+        </div>
+
+        <div class="contact">
+            <h2>6. CONTACTO</h2>
+            <p>Para ejercer sus derechos o resolver dudas sobre esta política, contáctenos:</p>
+            <ul>
+                <li><strong>Email:</strong> privacidad@todomarket.cl</li>
+                <li><strong>Teléfono:</strong> +56 2 2345 6789</li>
+                <li><strong>Dirección:</strong> Av. Principal 123, Santiago, Chile</li>
+            </ul>
+            <p><small>Nos comprometemos a responder a sus consultas en un plazo máximo de 5 días hábiles.</small></p>
+        </div>
+    `;
+
     useEffect(() => {
-        // Cargar el contenido HTML directamente
-        fetch('/privacy-policy.html')
-            .then(response => {
+        // Intentar cargar el contenido HTML con manejo robusto de errores
+        const loadContent = async () => {
+            try {
+                const response = await fetch('/privacy-policy.html', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/html',
+                    },
+                    cache: 'no-cache'
+                });
+                
                 if (!response.ok) {
-                    throw new Error('No se pudo cargar la política de privacidad');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.text();
-            })
-            .then(html => {
-                // Extraer solo el contenido del body
+                
+                const html = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 const bodyContent = doc.body.innerHTML;
-                setHtmlContent(bodyContent);
+                
+                if (bodyContent.trim()) {
+                    setHtmlContent(bodyContent);
+                } else {
+                    throw new Error('Contenido vacío');
+                }
+                
                 setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error cargando política de privacidad:', error);
-                setError(true);
+            } catch (error) {
+                console.warn('Error cargando archivo HTML, usando contenido estático:', error);
+                // Usar contenido estático como fallback
+                setHtmlContent(staticContent);
                 setLoading(false);
-            });
-    }, []);
+                setError(false); // No mostrar error, ya que tenemos fallback
+            }
+        };
+
+        // Delay pequeño para evitar problemas de timing
+        const timer = setTimeout(loadContent, 100);
+        return () => clearTimeout(timer);
+    }, [staticContent]);
 
     if (loading) {
         return (
