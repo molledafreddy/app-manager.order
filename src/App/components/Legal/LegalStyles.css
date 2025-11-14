@@ -56,15 +56,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
+             url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover;
   padding: 20px;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
 }
 
-/* Logo de TodoMarket */
+.legal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+      rgba(255, 215, 0, 0.1) 0%, 
+      rgba(255, 165, 0, 0.1) 25%, 
+      rgba(255, 140, 0, 0.05) 50%, 
+      transparent 75%);
+  opacity: 0.8;
+}
+
+/* Logo de TodoMarket con SVG integrado */
 .todomarket-logo {
   text-align: center;
   margin-bottom: 30px;
+  position: relative;
+  z-index: 10;
+}
+
+.todomarket-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
 }
 
 .todomarket-logo h1 {
@@ -74,29 +100,36 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin: 0;
-  font-weight: 700;
+  font-weight: var(--font-weight-extrabold);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.02em;
 }
 
 .todomarket-logo p {
   font-size: 1.1rem;
   color: var(--todomarket-dark);
   margin: 5px 0 0 0;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 1px;
 }
 
-/* Estados de carga */
+/* Estados de carga con efectos de MinimarketLanding */
 .legal-loading {
-  background: white;
-  border-radius: var(--border-radius);
+  backdrop-filter: blur(20px);
+  background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 248, 220, 0.95) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 30px;
   padding: 60px 40px;
-  box-shadow: var(--shadow-heavy);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
   text-align: center;
   max-width: 500px;
   width: 100%;
   position: relative;
   overflow: hidden;
+  z-index: 10;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .legal-loading::before {
@@ -106,7 +139,7 @@
   left: -100%;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, transparent, var(--todomarket-primary), transparent);
+  background: linear-gradient(90deg, transparent, var(--todomarket-primary), var(--todomarket-secondary), transparent);
   animation: shimmer 2s infinite;
 }
 
@@ -124,27 +157,60 @@
   font-size: 0.9rem;
 }
 
-/* Spinner de carga */
+/* Spinner de carga estilo TodoMarket */
 .legal-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--todomarket-primary);
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(255, 215, 0, 0.2);
+  border-top: 5px solid var(--todomarket-primary);
+  border-right: 5px solid var(--todomarket-secondary);
   border-radius: 50%;
   margin: 20px auto;
-  animation: spin 1s linear infinite;
+  animation: spin 1.2s linear infinite;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
 }
 
-/* Estados de error */
+/* Spinner adicional con efecto de pulso */
+.legal-spinner::after {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border: 2px solid rgba(255, 165, 0, 0.1);
+  border-radius: 50%;
+  top: -7px;
+  left: -7px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+/* Estados de error con efectos cohesivos */
 .legal-error {
-  background: white;
-  border-radius: var(--border-radius);
+  backdrop-filter: blur(20px);
+  background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 248, 220, 0.95) 100%);
+  border: 2px solid rgba(220, 53, 69, 0.3);
+  border-radius: 30px;
   padding: 60px 40px;
-  box-shadow: var(--shadow-heavy);
+  box-shadow: 0 25px 70px rgba(220, 53, 69, 0.15);
   text-align: center;
   max-width: 600px;
   width: 100%;
   border-top: 5px solid var(--todomarket-error);
+  position: relative;
+  z-index: 10;
+  animation: shake 0.5s ease-in-out, fadeInUp 0.6s ease-out;
 }
 
 .legal-error-content h2 {
@@ -180,43 +246,47 @@
   margin-top: 30px;
 }
 
-/* Botones */
+/* Botones con estilo MinimarketLanding */
 .legal-button {
   display: inline-flex;
   align-items: center;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 15px 30px;
+  border-radius: 25px;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-poppins);
+  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
   transition: var(--transition);
   border: none;
   cursor: pointer;
-  min-width: 150px;
+  min-width: 180px;
   justify-content: center;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
 }
 
 .legal-button.primary {
-  background: linear-gradient(135deg, var(--todomarket-primary), var(--todomarket-secondary));
-  color: var(--todomarket-dark);
+  background: linear-gradient(45deg, var(--todomarket-primary), var(--todomarket-secondary));
+  color: var(--todomarket-dark) !important;
 }
 
 .legal-button.primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-  background: linear-gradient(135deg, var(--todomarket-secondary), var(--todomarket-primary));
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+  background: linear-gradient(45deg, var(--todomarket-secondary), #FF8C00);
+  text-decoration: none;
 }
 
 .legal-button.secondary {
-  background: #6c757d;
-  color: white;
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
 }
 
 .legal-button.secondary:hover {
-  background: #5a6268;
+  background: linear-gradient(135deg, #5a6268, #495057);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+  text-decoration: none;
 }
 
 /* Wrapper principal para contenido */
@@ -227,28 +297,44 @@
   color: #2c3e50 !important;
 }
 
-/* Navegación superior */
+/* Navegación con el mismo estilo que MinimarketLanding navbar */
 .legal-navigation {
-  background: white;
-  padding: 15px 30px;
-  box-shadow: var(--shadow-light);
-  border-bottom: 3px solid var(--todomarket-primary);
+  background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 248, 220, 0.95) 100%) !important;
+  backdrop-filter: blur(20px);
+  padding: 20px 30px;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+  border-bottom: 2px solid rgba(255, 215, 0, 0.2);
   position: sticky;
   top: 0;
-  z-index: 100;
-}
-
-.nav-home {
-  color: var(--todomarket-dark);
-  text-decoration: none;
-  font-weight: 600;
-  padding: 8px 15px;
-  border-radius: 6px;
+  z-index: 1000;
   transition: var(--transition);
 }
 
+.legal-navigation:hover {
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.nav-home {
+  display: inline-flex;
+  align-items: center;
+  color: var(--todomarket-dark);
+  text-decoration: none;
+  font-family: var(--font-poppins);
+  font-weight: var(--font-weight-bold);
+  padding: 12px 20px;
+  border-radius: 20px;
+  transition: var(--transition);
+  background: linear-gradient(45deg, var(--todomarket-primary), var(--todomarket-secondary));
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+}
+
 .nav-home:hover {
-  background: var(--todomarket-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+  background: linear-gradient(45deg, var(--todomarket-secondary), #FF8C00);
   color: var(--todomarket-dark);
   text-decoration: none;
 }
@@ -264,12 +350,40 @@
   font-weight: 600;
 }
 
-/* Wrapper del contenido HTML */
+/* Wrapper del contenido HTML con el mismo fondo que MinimarketLanding */
 .legal-content-wrapper {
-  padding: 0;
-  background: #ffffff !important;
+  padding: 30px 20px;
+  background: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.02)),
+             url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover !important;
   position: relative;
   color: #2c3e50 !important;
+  min-height: 100vh;
+}
+
+.legal-content-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+      rgba(255, 215, 0, 0.08) 0%, 
+      rgba(255, 165, 0, 0.06) 25%, 
+      rgba(255, 140, 0, 0.03) 50%, 
+      transparent 75%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Container principal con el mismo estilo que MinimarketLanding */
+.legal-content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 25px;
+  position: relative;
+  z-index: 10;
 }
 
 /* Estilos para el contenido HTML importado */
@@ -277,40 +391,108 @@
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
   line-height: 1.7 !important;
   color: #2c3e50 !important;
-  background: #ffffff !important;
+  background: transparent !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
-/* Mejorar la presentación del contenido HTML */
+/* Cards con efecto cristal esmerilado como MinimarketLanding */
+.legal-content-card {
+  backdrop-filter: blur(20px) !important;
+  background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 248, 220, 0.95) 100%) !important;
+  border: 2px solid rgba(255, 215, 0, 0.3) !important;
+  border-radius: var(--border-radius-large) !important;
+  padding: 40px !important;
+  margin-bottom: 30px !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15) !important;
+  transition: var(--transition) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.legal-content-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 5px !important;
+  background: linear-gradient(90deg, var(--todomarket-primary), var(--todomarket-secondary), var(--todomarket-tertiary)) !important;
+}
+
+.legal-content-card:hover {
+  transform: translateY(-5px) scale(1.01) !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2) !important;
+  border-color: rgba(255, 215, 0, 0.5) !important;
+  backdrop-filter: blur(25px) !important;
+}
+
+/* Header principal en card especial */
 .legal-content-wrapper .header {
   background: linear-gradient(135deg, var(--todomarket-primary), var(--todomarket-secondary)) !important;
   color: var(--todomarket-dark) !important;
-  padding: 40px 30px !important;
+  padding: 50px 40px !important;
   text-align: center !important;
-  margin-bottom: 0 !important;
-  border-radius: 0 !important;
+  margin-bottom: 30px !important;
+  border-radius: var(--border-radius-large) !important;
+  box-shadow: 0 10px 35px rgba(255, 165, 0, 0.25) !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
+.legal-content-wrapper .header::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(44,62,80,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>') !important;
+  opacity: 0.3 !important;
+}
+
+/* Secciones organizadas en cards */
 .legal-content-wrapper .section {
-  margin: 0 !important;
-  padding: 30px !important;
-  border-left: none !important;
-  background: #ffffff !important;
-  border-bottom: 1px solid #e8e8e8 !important;
+  margin: 0 0 25px 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
   color: #2c3e50 !important;
 }
 
-.legal-content-wrapper .section:nth-child(even) {
-  background: #fafafa !important;
-  color: #2c3e50 !important;
+/* Aplicar estilo de card a cada sección */
+.legal-content-wrapper .section > * {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa) !important;
+  padding: 35px !important;
+  border-radius: var(--border-radius-large) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(255, 215, 0, 0.15) !important;
+  margin-bottom: 20px !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
+.legal-content-wrapper .section > *::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, var(--todomarket-primary), var(--todomarket-secondary)) !important;
+}
+
+/* Sección de contacto especial */
 .legal-content-wrapper .contact {
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  padding: 40px 30px !important;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.15)) !important;
+  border-radius: var(--border-radius-large) !important;
+  margin: 30px 0 0 0 !important;
+  padding: 40px !important;
+  box-shadow: 0 10px 35px rgba(255, 165, 0, 0.15) !important;
+  border: 2px solid rgba(255, 215, 0, 0.25) !important;
+  position: relative !important;
 }
 
 .legal-content-wrapper h1 {
@@ -355,19 +537,38 @@
   font-weight: 600 !important;
 }
 
-/* Footer */
+/* Footer con estilo MinimarketLanding */
 .legal-footer {
   background: var(--todomarket-dark);
   color: white;
   text-align: center;
-  padding: 30px;
-  margin-top: 0;
+  padding: 40px 30px;
+  margin-top: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.legal-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--todomarket-primary), var(--todomarket-secondary), var(--todomarket-tertiary));
 }
 
 .legal-footer p {
   margin: 0;
-  font-size: 0.95rem;
-  opacity: 0.9;
+  font-size: 1rem;
+  opacity: 0.95;
+  font-family: var(--font-poppins);
+  font-weight: var(--font-weight-medium);
+}
+
+.legal-footer small {
+  font-family: var(--font-poppins);
+  font-weight: var(--font-weight-regular);
 }
 
 /* Animaciones */
@@ -432,20 +633,40 @@
     max-width: 250px;
   }
   
-  .legal-content-wrapper .section {
+  /* Responsive para nuevas cards */
+  .legal-content-wrapper {
+    padding: 20px 15px !important;
+  }
+  
+  .legal-content-card {
     padding: 25px 20px !important;
+    margin-bottom: 20px !important;
   }
   
   .legal-content-wrapper .header {
     padding: 30px 20px !important;
+    margin-bottom: 20px !important;
   }
   
   .legal-content-wrapper h1 {
-    font-size: 2rem !important;
+    font-size: 2.2rem !important;
   }
   
   .legal-content-wrapper h2 {
-    font-size: 1.5rem !important;
+    font-size: 1.6rem !important;
+  }
+  
+  .legal-content-wrapper h3 {
+    font-size: 1.3rem !important;
+  }
+  
+  .legal-content-wrapper .section > * {
+    padding: 25px 20px !important;
+  }
+  
+  .legal-content-wrapper ul,
+  .legal-content-wrapper ol {
+    padding: 15px 20px 15px 35px !important;
   }
 }
 
@@ -458,12 +679,44 @@
     font-size: 1.8rem;
   }
   
-  .legal-content-wrapper .section {
+  .legal-content-wrapper {
+    padding: 15px 10px !important;
+  }
+  
+  .legal-content-card {
     padding: 20px 15px !important;
+    margin-bottom: 15px !important;
   }
   
   .legal-content-wrapper .header {
     padding: 25px 15px !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .legal-content-wrapper h1 {
+    font-size: 1.8rem !important;
+  }
+  
+  .legal-content-wrapper h2 {
+    font-size: 1.4rem !important;
+  }
+  
+  .legal-content-wrapper h3 {
+    font-size: 1.2rem !important;
+  }
+  
+  .legal-content-wrapper .section > * {
+    padding: 20px 15px !important;
+  }
+  
+  .legal-content-wrapper ul,
+  .legal-content-wrapper ol {
+    padding: 12px 15px 12px 30px !important;
+  }
+  
+  .legal-content-wrapper .contact,
+  .legal-content-wrapper .important-note {
+    padding: 20px 15px !important;
   }
   
   .legal-footer {
@@ -811,26 +1064,28 @@
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
 }
 
-/* Mejoras específicas para navegación entre componentes */
+/* Botones de navegación con estilo CTA de MinimarketLanding */
 .legal-nav-button {
   display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, var(--todomarket-primary), var(--todomarket-secondary));
+  padding: 12px 20px;
+  background: linear-gradient(45deg, var(--todomarket-primary), var(--todomarket-secondary));
+  border: none;
   color: var(--todomarket-dark) !important;
   text-decoration: none;
-  border-radius: var(--border-radius);
   font-family: var(--font-poppins);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
   transition: var(--transition);
-  box-shadow: var(--shadow-light);
-  margin: 0 5px;
+  border-radius: 20px;
+  margin: 0 8px 5px 0;
 }
 
 .legal-nav-button:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-  background: linear-gradient(135deg, var(--todomarket-secondary), #FF6347);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+  background: linear-gradient(45deg, var(--todomarket-secondary), #FF8C00);
   color: var(--todomarket-dark) !important;
   text-decoration: none;
 }
@@ -951,6 +1206,147 @@
 }
 
 /* =======================================================================
+   ICONOS FEATHER Y ELEMENTOS ESPECIALES
+   ======================================================================= */
+
+/* Asegurar que los iconos Feather estén disponibles */
+.feather {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Iconos especiales para loading y error states */
+.loading-icon-container {
+  position: relative;
+  display: inline-block;
+  margin: 20px 0;
+}
+
+.error-icon-animated {
+  font-size: 4rem;
+  animation: shake 0.5s ease-in-out;
+  filter: drop-shadow(3px 3px 6px rgba(220, 53, 69, 0.3));
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Animación para los logos SVG */
+.todomarket-logo svg {
+  transition: var(--transition);
+}
+
+.todomarket-logo:hover svg {
+  transform: scale(1.05) rotate(2deg);
+  filter: drop-shadow(2px 4px 8px rgba(255, 165, 0, 0.3));
+}
+
+/* Mejoras para la navegación con iconos */
+.legal-navigation svg {
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.1));
+  transition: var(--transition);
+}
+
+.legal-navigation:hover svg {
+  transform: scale(1.05);
+}
+
+/* Efectos especiales para botones con iconos */
+.legal-button i,
+.legal-nav-button i {
+  transition: var(--transition);
+}
+
+.legal-button:hover i,
+.legal-nav-button:hover i {
+  transform: scale(1.1);
+}
+
+/* Estados de focus mejorados con iconos */
+.nav-home:focus {
+  outline: 2px solid var(--todomarket-primary);
+  outline-offset: 3px;
+  border-radius: var(--border-radius);
+}
+
+/* Animaciones de entrada mejoradas como MinimarketLanding */
+.legal-wrapper {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.legal-navigation {
+  animation: slideDown 0.5s ease-out;
+}
+
+.legal-content-card {
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.legal-footer {
+  animation: fadeIn 1s ease-out 0.4s both;
+}
+
+/* Efectos de pulso para elementos destacados */
+.legal-nav-button {
+  animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { 
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  }
+  50% { 
+    box-shadow: 0 6px 25px rgba(255, 215, 0, 0.4);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Hover effects especiales para elementos interactivos */
+.legal-navigation a:hover,
+.legal-nav-button:hover {
+  background: linear-gradient(135deg, var(--todomarket-primary), var(--todomarket-secondary));
+  color: var(--todomarket-dark) !important;
+  transform: translateY(-2px);
+  text-shadow: none;
+}
+
+/* Breadcrumb mejorado */
+.nav-separator {
+  color: var(--todomarket-primary);
+  margin: 0 10px;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.nav-current {
+  color: var(--todomarket-secondary);
+  font-weight: var(--font-weight-semibold);
+  padding: 5px 10px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: var(--border-radius);
+}
+
+/* =======================================================================
    OVERRIDE PARA FORZAR FONDO BLANCO Y TEXTO LEGIBLE
    ======================================================================= */
 
@@ -984,24 +1380,85 @@
   color: var(--todomarket-dark) !important;
 }
 
-/* Asegurar legibilidad en párrafos y texto principal */
-.legal-content-wrapper p,
-.legal-content-wrapper li,
+/* Párrafos y texto principal con mejor legibilidad */
+.legal-content-wrapper p {
+  color: #2c3e50 !important;
+  background: transparent !important;
+  margin-bottom: 18px !important;
+  line-height: 1.8 !important;
+  font-size: 1rem !important;
+  font-weight: var(--font-weight-regular) !important;
+}
+
+.legal-content-wrapper li {
+  color: #2c3e50 !important;
+  background: transparent !important;
+  margin-bottom: 10px !important;
+  line-height: 1.7 !important;
+  padding-left: 8px !important;
+}
+
 .legal-content-wrapper span,
 .legal-content-wrapper div {
   color: #2c3e50 !important;
   background: transparent !important;
 }
 
-/* Títulos y subtítulos */
-.legal-content-wrapper h1,
-.legal-content-wrapper h2,
-.legal-content-wrapper h3,
+/* Títulos con efectos de gradiente como MinimarketLanding */
+.legal-content-wrapper h1 {
+  font-size: 3rem !important;
+  margin: 0 0 20px 0 !important;
+  font-weight: var(--font-weight-extrabold) !important;
+  background: linear-gradient(135deg, var(--todomarket-dark), #34495e) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1) !important;
+  position: relative !important;
+  z-index: 2 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.1 !important;
+}
+
+.legal-content-wrapper h2 {
+  color: var(--todomarket-dark) !important;
+  background: transparent !important;
+  border-bottom: 3px solid var(--todomarket-primary) !important;
+  padding-bottom: 15px !important;
+  margin: 0 0 25px 0 !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: 1.8rem !important;
+  position: relative !important;
+}
+
+.legal-content-wrapper h2::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -3px !important;
+  left: 0 !important;
+  width: 60px !important;
+  height: 3px !important;
+  background: var(--todomarket-secondary) !important;
+}
+
+.legal-content-wrapper h3 {
+  color: var(--todomarket-secondary) !important;
+  background: transparent !important;
+  margin: 25px 0 15px 0 !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-size: 1.4rem !important;
+  padding: 10px 0 !important;
+  border-left: 4px solid var(--todomarket-primary) !important;
+  padding-left: 15px !important;
+}
+
 .legal-content-wrapper h4,
 .legal-content-wrapper h5,
 .legal-content-wrapper h6 {
-  color: #2c3e50 !important;
+  color: var(--todomarket-dark) !important;
   background: transparent !important;
+  font-weight: var(--font-weight-semibold) !important;
+  margin: 20px 0 10px 0 !important;
 }
 
 /* Enlaces mantienen color dorado para visibilidad */
@@ -1014,31 +1471,132 @@
   color: var(--todomarket-primary) !important;
 }
 
-/* Listas y elementos de texto */
+/* Listas mejoradas con mejor organización */
 .legal-content-wrapper ul,
 .legal-content-wrapper ol {
   color: #2c3e50 !important;
-  background: transparent !important;
+  background: rgba(248, 249, 250, 0.5) !important;
+  padding: 20px 25px 20px 45px !important;
+  border-radius: var(--border-radius) !important;
+  border-left: 4px solid var(--todomarket-primary) !important;
+  margin: 20px 0 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+.legal-content-wrapper ul li,
+.legal-content-wrapper ol li {
+  margin-bottom: 12px !important;
+  position: relative !important;
+}
+
+.legal-content-wrapper ul li::marker {
+  color: var(--todomarket-secondary) !important;
+}
+
+.legal-content-wrapper ol li::marker {
+  color: var(--todomarket-secondary) !important;
+  font-weight: var(--font-weight-semibold) !important;
 }
 
 /* Contenedores especiales con fondos ligeros */
 .legal-content-wrapper .contact,
 .legal-content-wrapper .important-note {
-  background: #f8f9fa !important;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05)) !important;
   color: #2c3e50 !important;
+  border: 2px solid rgba(255, 215, 0, 0.2) !important;
+  border-radius: var(--border-radius-large) !important;
+  padding: 30px !important;
+  margin: 25px 0 !important;
+  position: relative !important;
+}
+
+.legal-content-wrapper .contact::before,
+.legal-content-wrapper .important-note::before {
+  content: '📞' !important;
+  position: absolute !important;
+  top: -10px !important;
+  left: 20px !important;
+  background: var(--todomarket-primary) !important;
+  color: var(--todomarket-dark) !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.2rem !important;
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3) !important;
+}
+
+.legal-content-wrapper .important-note::before {
+  content: '⚠️' !important;
 }
 
 /* Strong y elementos enfatizados */
 .legal-content-wrapper strong,
 .legal-content-wrapper b {
-  color: #2c3e50 !important;
-  font-weight: 700;
+  color: var(--todomarket-dark) !important;
+  font-weight: var(--font-weight-bold) !important;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1)) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  border-left: 3px solid var(--todomarket-primary) !important;
 }
 
 /* Códigos y elementos técnicos */
 .legal-content-wrapper code {
-  background: #f1f3f4 !important;
+  background: linear-gradient(135deg, #f1f3f4, #e9ecef) !important;
+  color: var(--todomarket-secondary) !important;
+  padding: 4px 8px !important;
+  border-radius: var(--border-radius) !important;
+  font-family: 'Courier New', monospace !important;
+  font-weight: var(--font-weight-medium) !important;
+  border: 1px solid rgba(255, 165, 0, 0.2) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Tablas si existen */
+.legal-content-wrapper table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 25px 0 !important;
+  background: white !important;
+  border-radius: var(--border-radius) !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.legal-content-wrapper th,
+.legal-content-wrapper td {
+  padding: 15px !important;
+  text-align: left !important;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2) !important;
   color: #2c3e50 !important;
-  padding: 2px 6px;
-  border-radius: 4px;
+}
+
+.legal-content-wrapper th {
+  background: linear-gradient(135deg, var(--todomarket-primary), var(--todomarket-secondary)) !important;
+  color: var(--todomarket-dark) !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+/* Blockquotes si existen */
+.legal-content-wrapper blockquote {
+  background: rgba(255, 215, 0, 0.1) !important;
+  border-left: 5px solid var(--todomarket-primary) !important;
+  margin: 25px 0 !important;
+  padding: 20px 25px !important;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0 !important;
+  font-style: italic !important;
+  position: relative !important;
+}
+
+.legal-content-wrapper blockquote::before {
+  content: '"' !important;
+  font-size: 4rem !important;
+  color: var(--todomarket-secondary) !important;
+  position: absolute !important;
+  top: -10px !important;
+  left: 10px !important;
+  opacity: 0.3 !important;
 }
