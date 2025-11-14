@@ -15,8 +15,14 @@ RUN npm cache clean --force
 # Instalar dependencias
 RUN npm install --legacy-peer-deps --force --no-audit --no-fund
 
+
 # Copiar el resto del código
 COPY . .
+
+# Asegurar que archivos legales estén en public
+COPY public/privacy-policy.html public/
+COPY public/terms-of-service.html public/
+COPY public/data-deletion.html public/
 
 # Variables de entorno
 ENV NODE_ENV=production
