@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './../../../../assets/scss/style.scss';
+import '../../Legal/LegalStyles.css'; // Importar estilos unificados
 import Aux from "../../../../hoc/_Aux";
 
 class MinimarketLanding extends React.Component {
@@ -270,6 +271,7 @@ class MinimarketLanding extends React.Component {
         
         return (
             <Aux>
+            <div className="minimarket-landing">
                 {/* Navbar mejorado con logo SIN FONDO */}
                 <nav className="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
                     <div className="container">
@@ -689,10 +691,10 @@ class MinimarketLanding extends React.Component {
                     </div>
                 </section>
 
-                {/* Footer mejorado SIN FONDO EN LOGO */}
+                {/* Footer mejorado con enlaces legales */}
                 <footer className="bg-dark text-white py-5">
                     <div className="container">
-                        <div className="row align-items-center">
+                        <div className="row">
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center mb-3">
                                     <svg width="35" height="35" viewBox="0 0 100 100" style={{marginRight: '12px'}}>
@@ -703,16 +705,86 @@ class MinimarketLanding extends React.Component {
                                     </svg>
                                     <h4 className="logo-text mb-0 text-white">{minimarketData.nombre}</h4>
                                 </div>
-                                <p className="text-muted mb-1" style={{fontFamily: 'Poppins, sans-serif'}}>Tu supermercado de barrio de confianza</p>
-                                <small className="text-muted" style={{fontFamily: 'Poppins, sans-serif'}}>Delivery gratis • Productos frescos • Atención hasta la media Noche</small>
+                                <p className="text-muted mb-1" style={{fontFamily: 'var(--font-poppins)'}}>Tu supermercado de barrio de confianza</p>
+                                <small className="text-muted" style={{fontFamily: 'var(--font-poppins)'}}>Delivery gratis • Productos frescos • Atención hasta la medianoche</small>
+                                
+                                {/* Enlaces legales integrados */}
+                                <div className="legal-footer-links mt-4">
+                                    <h6 className="text-white mb-3" style={{fontFamily: 'var(--font-poppins)', fontWeight: 'var(--font-weight-semibold)'}}>
+                                        <i className="feather icon-shield mr-2"/>
+                                        Información Legal
+                                    </h6>
+                                    <div className="d-flex flex-wrap">
+                                        <NavLink to="/privacy-policy" className="legal-nav-button mb-2">
+                                            <i className="feather icon-lock mr-1"/>
+                                            Privacidad
+                                        </NavLink>
+                                        <NavLink to="/terms-of-service" className="legal-nav-button mb-2">
+                                            <i className="feather icon-file-text mr-1"/>
+                                            Términos
+                                        </NavLink>
+                                        <NavLink to="/data-deletion" className="legal-nav-button mb-2">
+                                            <i className="feather icon-trash-2 mr-1"/>
+                                            Eliminar Datos
+                                        </NavLink>
+                                    </div>
+                                </div>
                             </div>
                             <div className="col-md-6 text-md-right">
-                                <p className="mb-1" style={{fontFamily: 'Poppins, sans-serif'}}>&copy; 2025 {minimarketData.nombre}. Todos los derechos reservados.</p>
-                                <small className="text-muted" style={{fontFamily: 'Poppins, sans-serif'}}>Desarrollado con ❤️ para la comunidad chilena</small>
+                                <div className="mb-4">
+                                    <h6 className="text-white mb-3" style={{fontFamily: 'var(--font-poppins)', fontWeight: 'var(--font-weight-semibold)'}}>
+                                        <i className="feather icon-phone mr-2"/>
+                                        Contacto Rápido
+                                    </h6>
+                                    <div className="mb-3">
+                                        <a 
+                                            href={`https://wa.me/${minimarketData.whatsapp}?text=${encodeURIComponent("¡Hola TodoMarket! 🛒 Necesito información.")}`}
+                                            className="whatsapp-button btn-sm text-white"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                display: 'inline-block',
+                                                padding: '10px 20px',
+                                                borderRadius: '20px',
+                                                textDecoration: 'none',
+                                                marginBottom: '10px'
+                                            }}
+                                        >
+                                            <i className="feather icon-message-circle mr-2"/>
+                                            WhatsApp: {minimarketData.telefono}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a 
+                                            href={`mailto:${minimarketData.email}`}
+                                            className="text-light"
+                                            style={{
+                                                fontFamily: 'var(--font-poppins)',
+                                                textDecoration: 'none',
+                                                fontSize: '0.9rem'
+                                            }}
+                                        >
+                                            <i className="feather icon-mail mr-2" style={{color: 'var(--todomarket-primary)'}}/>
+                                            {minimarketData.email}
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div className="text-md-right">
+                                    <p className="mb-1" style={{fontFamily: 'var(--font-poppins)'}}>&copy; 2025 {minimarketData.nombre}. Todos los derechos reservados.</p>
+                                    <small className="text-muted" style={{fontFamily: 'var(--font-poppins)'}}>
+                                        Desarrollado con ❤️ para la comunidad chilena
+                                    </small>
+                                    <br/>
+                                    <small className="text-muted" style={{fontFamily: 'var(--font-poppins)', fontSize: '0.75rem'}}>
+                                        Cumplimos con las normativas chilenas de protección de datos
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </footer>
+            </div>
             </Aux>
         );
     }
