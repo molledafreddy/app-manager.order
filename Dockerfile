@@ -24,6 +24,10 @@ COPY public/privacy-policy.html public/
 COPY public/terms-of-service.html public/
 COPY public/data-deletion.html public/
 
+# AGREGAR ESTAS LÍNEAS - VARIABLES DE BUILD
+ARG REACT_APP_API_BASE=https://todomarketchile.cl
+ENV REACT_APP_API_BASE=$REACT_APP_API_BASE
+
 # Variables de entorno
 ENV NODE_ENV=production
 ENV PORT=3000
