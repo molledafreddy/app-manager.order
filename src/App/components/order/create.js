@@ -21,7 +21,7 @@ const OrderCreate = (props) => {
    
     const dispatch = useDispatch()
 
-    const providers = useSelector(state => state.provider.docs);
+    const providers = useSelector(state => state.provider);
     const orders = useSelector(state => state.orders.docs);
     const paymentTypes = useSelector(state => state.paymentTypes);
     const paymentHasEgressR = useSelector(state => state.paymentHasEgress);
@@ -73,64 +73,145 @@ const OrderCreate = (props) => {
         files: []
     });
 
-    useEffect( () => {
-        console.log('errorOrder', errorOrder)
-        // if (isLoadingOrder === false) {
-        //     Swal.close()
-        // }
-        if (errorOrder?.code !== undefined  && !validProcess) {
-            console.log('ingreso if errorOrder', errorOrder)
-            showAlert("Error en el proceso", errorOrder?.message, "error",4000);
-            setValidProcess(true);
-            setTimeout(() => {
-                setValidProcess(false);
-            }, 5000);
-        }
-        // console.log('statusCodeOrder', statusCodeOrder)
-        if (statusCodeOrder === '200' && errorOrder.length === 0) {
-            console.log('ingreso al redirect', statusCodeOrder)
-            Swal.close()
-            validRedirect()
-        }
-        titleButt()
-        if ((providers === undefined || providers?.length === 0) && (!flagProvider) ) {
-            dispatch(getProviders(dispatch,'provider'));
+    // useEffect( () => {
+    //     // console.log('errorOrder', errorOrder)
+    //     // if (isLoadingOrder === false) {
+    //     //     Swal.close()
+    //     // }
+    //     if (errorOrder?.code !== undefined  && !validProcess) {
+    //         console.log('ingreso if errorOrder', errorOrder)
+    //         showAlert("Error en el proceso", errorOrder?.message, "error",4000);
+    //         setValidProcess(true);
+    //         setTimeout(() => {
+    //             setValidProcess(false);
+    //         }, 5000);
+    //     }
+    //     // console.log('statusCodeOrder', statusCodeOrder)
+    //     if (statusCodeOrder === '200' && errorOrder.length === 0) {
+    //         console.log('ingreso al redirect', statusCodeOrder)
+    //         Swal.close()
+    //         validRedirect()
+    //     }
+    //     titleButt()
+    //     if ((providers === undefined || providers?.length === 0) && (!flagProvider) ) {
+    //         console.log('providers if', providers)
+    //         dispatch(getProviders(dispatch,'provider'));
+    //         setFlagProvider(true);
+    //     }
+    //     if (props.match.params._id) {
+    //         if ( orders === undefined || orders?.length === 0) {
+    //             formatDataUpdate();
+    //         } 
+    //         if (orders !== undefined || orders?.length > 0) {
+    //             formatData();
+    //         }  
+    //     }
+
+    //     if ((paymentTypes === undefined || paymentTypes.length === 0) && (!flagPaymentType)) {
+    //         dispatch(getPaymentTypes(dispatch,'payment-type'));
+    //         setFlagPaymentType(true)
+    //     }
+
+    //     if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
+    //         // formatPaymentContainer();
+    //         setTimeout(() => {
+    //             formatPaymentContainer();
+    //         }, 450);
+    //     }
+        
+    // }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, flagPaymentType, flagProvider, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+
+    useEffect(() => {
+        // Cargar providers si no existen
+        if ((providers === undefined || providers?.length === 0) && !flagProvider) {
+            dispatch(getProviders(dispatch,'provider'));  // Sin parámetros extra
             setFlagProvider(true);
         }
+        
+        // Cargar payment types si no existen
+        if ((paymentTypes === undefined || paymentTypes.length === 0) && !flagPaymentType) {
+            dispatch(getPaymentTypes(dispatch,'payment-type'));  // Sin parámetros extra
+            setFlagPaymentType(true);
+        }
+        
+        // Cargar datos de edición si es necesario
         if (props.match.params._id) {
-            if ( orders === undefined || orders?.length === 0) {
+            if (orders === undefined || orders?.length === 0) {
                 formatDataUpdate();
-            } 
-            if (orders !== undefined || orders?.length > 0) {
+            } else if (orders?.length > 0) {
                 formatData();
-            }  
+            }
         }
-
-        if ((paymentTypes === undefined || paymentTypes.length === 0) && (!flagPaymentType)) {
-            dispatch(getPaymentTypes(dispatch,'payment-type'));
-            setFlagPaymentType(true)
-        }
-
-        console.log('paymentHasEgressR', paymentHasEgressR)
-        console.log('paymentContainer', paymentContainer)
-
-        if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
-            // formatPaymentContainer();
+        
+        // Formatear contenedor de pagos
+        if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id) {
             setTimeout(() => {
                 formatPaymentContainer();
             }, 450);
         }
         
-    }, [dispatch, showLoading, orders, statusCodeOrder, errorOrder, flagPaymentType, flagProvider, paymentTypes, paymentHasEgressR, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+        // Cargar título del botón
+        titleButt();
+        
+    }, [flagProvider, flagPaymentType, orders, paymentHasEgressR, paymentTypes, props.match.params._id]);  // ← Dependencias simplificadas
+
+    // ✅ AGREGAR NUEVO useEffect para manejar éxito:
+    useEffect(() => {
+        if (statusCodeOrder === '200' && errorOrder.length === 0) {
+            // Cerrar modal de carga
+            Swal.close();
+            // Ejecutar redirección después de un delay corto
+            setTimeout(() => {
+                validRedirect();
+            }, 300);
+        }
+    }, [statusCodeOrder, errorOrder]);
+
+    // ✅ AGREGAR NUEVO useEffect para manejar errores:
+    useEffect(() => {
+        if (errorOrder?.code !== undefined && !validProcess) {
+            // Cerrar cualquier modal abierto
+            Swal.close();
+            
+            // Mostrar alerta de error
+            showAlert(
+                "Error en el proceso", 
+                errorOrder?.message || "Ocurrió un error inesperado", 
+                "error", 
+                4000
+            );
+            
+            setValidProcess(true);
+            
+            setTimeout(() => {
+                setValidProcess(false);
+            }, 5000);
+        }
+    }, [errorOrder, validProcess]);
 
     const validRedirect = () => {
-        console.log('validRedirect')
-        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",6500);
+        console.log('validRedirect ejecutándose');
+        
+        // Cerrar cualquier modal abierto
+        Swal.close();
+        
+        // Limpiar estados
         dispatch(updateCodeError(dispatch));
         dispatch(ClearPaymentHasEgress(dispatch));
-        props.history.push("/order");
-        return;
-    }
+        
+        // Mostrar éxito
+        showAlert(
+            "Transaccion exitosa", 
+            "El proceso se realizo con exito.", 
+            "success", 
+            3000  // Reducido de 6500
+        );
+        
+        // Redirigir después del mensaje
+        setTimeout(() => {
+            props.history.push("/order");
+        }, 3000);
+    };
 
     const formatPaymentContainer = async () => {
         let dataPayment = [];
@@ -149,7 +230,6 @@ const OrderCreate = (props) => {
     const formatDataUpdate = async () => {
         dispatch(getOrder(dispatch,'order', props.match.params._id));
         if ((orders !== undefined || orders?.length > 0)) {
-            console.log('formatDataUpdate', orders)
             const data = await orders.find(prov => prov._id === props.match.params._id);
 
             let filesD = [];
@@ -201,10 +281,8 @@ const OrderCreate = (props) => {
 
     const formatData = async () => {
         const data = await orders.find(prov => prov._id === props.match.params._id);
-        
         if (data._id !== undefined ) {
             // validDateFront(data);
-            console.log('data', data)
             let filesD = [];
             reset(formValues => ({
                 // ...formValues,
@@ -229,11 +307,23 @@ const OrderCreate = (props) => {
 
               }));
            
-            if ((data?.egress !== undefined) &&  validPaimentHas) {
+            if (
+                data?.egress !== undefined &&              // ✅ No es undefined
+                data.egress.length > 0 &&                  // ✅ No está vacío
+                data.egress[0]?._id !== undefined &&       // ✅ Tiene _id
+                validPaimentHas                             // ✅ Flag de validación
+            ) {
+                console.log('data for egress', data?.egress);
                 dispatch(getPaymentHasEgress(dispatch,'operation-bills/payment-has-egress', data?.egress[0]?._id));
                 setValidPaimentHas(false);
             }
-            if (data?.egress !== undefined && data?.egress[0]?.files.length > 0) {
+
+            if (
+                data?.egress !== undefined &&
+                data.egress.length > 0 &&                // ✅ CRÍTICO: Validar que NO esté vacío
+                data.egress[0]?.files &&                 // ✅ CRÍTICO: Validar que files exista
+                data.egress[0].files.length > 0          // ✅ CRÍTICO: Validar que files NO esté vacío
+            ) {
                 data.egress[0].files.forEach((element, index) => {
                     filesD.push({
                         id: index,
@@ -396,15 +486,20 @@ const OrderCreate = (props) => {
     }
 
     const handlerAmount = async e => {
-        numberFormatPositive(e);
-        setPaymentHasEgress({
+        const newPaymentHasEgress = {
             ...paymentHasEgress,
             [e.target.name]: e.target.value
-        })
-        if (paymentHasEgress.payments !== '' && paymentHasEgress.paymentAmount !== '' && paymentHasEgress.originMoney !== '' ) {
-            setButtomAmount(false);
+        };
+        // Actualizar estado
+        setPaymentHasEgress(newPaymentHasEgress);
+
+        // Verificar con el NUEVO objeto, no el estado anterior
+        if (newPaymentHasEgress.payments !== '' && 
+            newPaymentHasEgress.paymentAmount !== '' && 
+            newPaymentHasEgress.originMoney !== '') {
+            setButtomAmount(false);  // ✅ Activa el botón
         } else {
-            setButtomAmount(true);
+            setButtomAmount(true);   // Desactiva el botón
         }
     }
 
@@ -636,7 +731,6 @@ const OrderCreate = (props) => {
     // const watchEstimateReceptionDate = watch("estimateReceptionDate");
 
     const onSubmit = (dataInfo) => {
-        console.log('dataInfo', dataInfo.amount)
         if (dataInfo.status === 'solicitado' && (dataInfo.estimateReceptionDate === undefined )) {
             showAlert(
                 'validacion factura', 
@@ -703,13 +797,20 @@ const OrderCreate = (props) => {
 
     const showLoading = () => {
         Swal.fire({
-        title: 'En Proceso!',
-        html: 'Transaccion en Proceso.',
-        timerProgressBar: true,
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading() },
-        willClose: () => {} })
-    }
+            title: 'En Proceso!',
+            html: 'Transaccion en Proceso.',
+            icon: 'info',
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => { 
+                Swal.showLoading() 
+            },
+            willClose: () => {
+                // Limpia cualquier estado pendiente
+            }
+        });
+    };
 
     return (
         <Aux>

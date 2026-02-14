@@ -12,32 +12,48 @@ import  { LOADING_OPERATIONBILL,
 
 const OperationBillService = new operationBillService();
 
+const handleSessionError = (dispatch, error) => {
+    if (error?.response?.status === 401 || error?.response?.data?.error === 'SESSION_NO_VALIDA') {
+        dispatch(actionCreator(UPDATE_CODE_ERROR_OPERATIONBILL, "payload")('401'));
+        dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false));
+        
+        setTimeout(() => {
+            redirectNoLogin();
+        }, 500);
+        
+        return true;
+    }
+    return false;
+};
+
 export const getOperationBill = (dispatch, extens, _id) => {
-    return dispat => {
+    return (dispatch) => {
         dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
         OperationBillService.getOperationBillId(extens, _id).then(data => {
             dispatch(actionCreator(GET_OPERATIONBILL, "payload")(data))
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
-            dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+             if (handleSessionError(dispatch, error)) return;
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+        })
+        .finally(() => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
     }
 }
 
 export const getSearchOperationBills = (dispatch, extens, limit, page, search, data) => {
-    return dispat => {
+    return (dispatch) => {
         dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
         OperationBillService.getOperationBill(extens, limit, page, search, data.startDate || '', data.endDate || '').then(data => {
-            // console.log('OperationBillService', data)
-            dispatch(actionCreator(GET_ALL_OPERATIONBILL, "payload")(data))
-            dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
+            dispatch(actionCreator(GET_OPERATIONBILL, "payload")(data))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
-            dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+            if (handleSessionError(dispatch, error)) return;
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+        })
+        .finally(() => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
     }
@@ -46,57 +62,80 @@ export const getSearchOperationBills = (dispatch, extens, limit, page, search, d
 
 
 export const getOperationBills = (dispatch, extens) => {
-    return dispat => {
+    return (dispatch) => {
         dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
         OperationBillService.getOperationBills(extens).then(data => {
             dispatch(actionCreator(GET_ALL_OPERATIONBILL, "payload")(data))
-            dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
-            dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+            if (handleSessionError(dispatch, error)) return;
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+        })
+        .finally(() => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
     }
 }
 
 export const createOperationBills = (dispatch, extens, payload) => {
-    return dispat => {
+    return (dispatch) => {
         dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
         OperationBillService.createOperationBill(extens, payload).then(data => {
-            if (data?.status  === 200) {
-                console.log('ingreso no tiene error 200', data)
-                dispatch(actionCreator(CREATE_OPERATIONBILL, "payload")(data));
+            
+            if (data?.status === 200) {
+                console.log('📦 [createOperationBills] Response data:', data);
+                console.log('📦 [createOperationBills] Response payload:', payload);
+                dispatch(actionCreator(CREATE_OPERATIONBILL, "payload")(payload));
+                // dispatch(actionCreator(UPDATE_CODE_ERROR_OPERATIONBILL, "payload")('200'));
                 
-            } if (data?.status  === 400 && data?.statusText === "Bad Request") {
-                console.log('ingreso tiene error 400', data)
-                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(data));
-                redirectNoLogin();
+            } else if (data?.status === 400) {
+                console.log('⚠️ [createOperationBills] Error 400 - Bad Request');
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: 400, data: data }
+                }));
+                
+            } else if (data?.status === 401) {
+                console.log('⚠️ [createOperationBills] Error 401 - No autenticado');
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: 401, data: data }
+                }));
+                setTimeout(() => {
+                    redirectNoLogin();
+                }, 500);
+                
+            } else if (data?.status === 500) {
+                console.log('❌ [createOperationBills] Error 500 - Server error');
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: 500, data: data }
+                }));
+                dispatch(actionCreator(UPDATE_CODE_ERROR_OPERATIONBILL, "payload")('500'));
+                
             } else {
-                console.log('ingreso al else tiene error', data)
-                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(data))
+                console.log('❌ [createOperationBills] Error desconocido:', data?.status);
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: data?.status || 500, data: data }
+                }));
             }
-            dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
         .catch(error => {
-            console.log('datos error', error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
-            dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+            if (handleSessionError(dispatch, error)) return;
+                
+                // ✅ Otros errores
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error));
+                dispatch(actionCreator(UPDATE_CODE_ERROR_OPERATIONBILL, "payload")('500'));
+        })
+        .finally(() => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
     }
 }
 
 export const updateOperationBills = (dispatch, extens, payload, paymentContainer, id) => {
-    // console.log('llego la data', payload)
-    return dispat => {
+    return  (dispatch) => {
         dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
         OperationBillService.updateOperationBill(extens, payload, paymentContainer, id).then(async data => {
-            // dispatch(actionCreator(UPDATE_OPERATIONBILL, "payload")(data))
-            // dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
             
-            let result = await data.json();
-            // console.log('resultado valores', result[0])
+            let result = payload;
             if (data?.status  === 200) {
                 if (result[0] === "NOT_FOUND_DATA_PAYMENT_HAS_EGRESS") {
                     dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(result));
@@ -104,32 +143,44 @@ export const updateOperationBills = (dispatch, extens, payload, paymentContainer
                     dispatch(actionCreator(UPDATE_OPERATIONBILL, "payload")(result));
                 }
                 
-            } if (data?.status  === 400 && data?.statusText === "SESSION_NO_VALIDA") {
-                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(result));
+            } else if (data?.status  === 400) {
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: 400, data: result }
+                }));
+            } else if (data?.status  === 401) {
+                
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: 401, data: result }
+                }));
                 redirectNoLogin();
-            } if (data?.status  === 400 && data?.statusText === "Bad Request") {
-                console.log('ingreso redirectNoLogin')
-                // dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(result));
-                redirectNoLogin();
-            } if (data?.status  === 500) {
-                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(result))
+                
+            } else if (data?.status  === 500) {
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { status: 500, data: result }
+                }));
+            } else {
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")({
+                    response: { 
+                        status: data?.status || 500, 
+                        data: result 
+                    }
+                }));
             }
-            dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
+            dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(true))
         })
         .catch( async error => {
-            // let dataError = await  error
-            // error = error.trim(); // remove the unwanted whitespace
-            // let theOutput = JSON.parse(error);
-            console.log('llego por aca catch',  error)
-            if (error?.response?.data[0] === 'SESSION_NO_VALIDA') {redirectNoLogin();}
-            dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error))
+            if (handleSessionError(dispatch, error)) return;
+                dispatch(actionCreator(ERROR_OPERATIONBILL, "payload")(error));
+                dispatch(actionCreator(UPDATE_CODE_ERROR_OPERATIONBILL, "payload")('500'));
+        })
+        .finally(() => {
             dispatch(actionCreator(LOADING_OPERATIONBILL, "payload")(false))
         })
     }
 }
 
 export const updateCodeError = (dispatch) => {
-    return dispat => {
+    return (dispatch) => {
         dispatch(actionCreator(UPDATE_CODE_ERROR_OPERATIONBILL, "payload")(''));
     }
 }

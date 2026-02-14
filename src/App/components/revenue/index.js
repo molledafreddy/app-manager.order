@@ -599,8 +599,8 @@ const RevenueIndex = (props) => {
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.amountOther === undefined ? 0 : revenue?.amountOther)}</td>
                                         <td>{ new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(revenue?.cashFund === undefined ? 0 : revenue?.cashFund)}</td>
                                         <td >
-                                            <Badge className='badge_position text_tam' variant={`${revenue?.validAdmin === 'Verificado' ? 'success' : revenue?.validAdmin === 'con_error' ? 'danger' :  'warning'}`} >
-                                                {revenue?.validAdmin}            
+                                            <Badge className='badge_position text_tam' variant={`${revenue?.validAdmin === 'Verificado' ? 'success' : revenue?.validAdmin === 'con_error' ? 'danger' : 'warning'}`} >
+                                                {revenue?.validAdmin === undefined ? 'por_verificar' : revenue?.validAdmin === '' ? 'por_verificar' : revenue?.validAdmin}            
                                             </Badge>
                                         </td>
                                         {/* <td>{revenue?.usersAdmin}</td> */}
@@ -648,7 +648,7 @@ const RevenueIndex = (props) => {
                                             <th>Fecha Pedido</th>
                                             <th>Validacion Cierre</th>
                                             <th>Nota Validacion</th> 
-                                            {(roleUser === 'Admin' )  && (
+                                            {(roleUser === 'admin' )  && (
                                                 <th>Acciones</th>
                                             )}
                                         </tr>
@@ -664,12 +664,18 @@ const RevenueIndex = (props) => {
                                                 <td>{order?.receptionDate === undefined ? '' : order?.receptionDate === null ? '' : moment(order?.receptionDate).format("YYYY-MM-DD")}</td>
                                                 <td>{order?.orderDate === undefined ? '' : order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
                                                 <td>
-                                                    <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`} >
-                                                        {order?.validAdmin}            
+                                                    <Badge 
+                                                        className='badge_position text_tam' 
+                                                        variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`}
+                                                    >
+                                                        {order?.validAdmin === undefined || order?.validAdmin === null || order?.validAdmin === '' 
+                                                            ? 'por_verificar' 
+                                                            : order?.validAdmin
+                                                        }            
                                                     </Badge>
                                                 </td>
                                                 <td>{order?.noteValid}</td>
-                                                {(roleUser === 'Admin' )  && ( 
+                                                {(roleUser === 'admin' )  && ( 
                                                     <td>
                                                         <Button   variant="outline-warning" size="sm" onClick={() => handlerVieworder(order?._id)}>
                                                             <i className="feather icon-edit-1" />

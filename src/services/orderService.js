@@ -143,6 +143,7 @@ export default class orderService {
                 descriptionPayment: payload?.descriptionPayment,
                 descriptionLogistic: payload?.descriptionLogistic,
                 validAdmin: payload?.validAdmin,
+                validDate: payload?.validDate ? new Date(payload.validDate) : new Date(),
                 noteValid: payload?.noteValid
             })
             console.log('data', data)

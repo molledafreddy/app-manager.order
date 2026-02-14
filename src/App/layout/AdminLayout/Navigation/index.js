@@ -21,7 +21,7 @@ class Navigation extends Component {
 
     validRuoteuser() {
         const role = localStorage.getItem('role');
-        if (role !== "Admin") {
+        if (role !== "admin") {
             const filteredLibraries = navigation?.items[1]?.children?.filter((item) => item.id !== 'revenue-other' && item.id !== 'statistics')
             navigation.items[1].children = filteredLibraries
         }

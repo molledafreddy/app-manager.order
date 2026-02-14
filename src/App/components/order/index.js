@@ -15,7 +15,7 @@ import "../../../../src/styles/datepiker.css";
 
 
 const OrderIndex = (props) => {
-    const providers = useSelector(state => state.provider.docs)
+    const providers = useSelector(state => state.provider)
     const orders = useSelector(state => state.orders.docs)
     let totalPages = useSelector(state => state.orders.totalPages)
     let isLoadingOrder = useSelector(state => state.isLoadingOrder)
@@ -78,7 +78,7 @@ const OrderIndex = (props) => {
         } else {
             for (let number = 1; number <= totalPages; number++) {
                 if (number > 1 && flag === 0 && active > 1) {
-                    pages.push( <Pagination.Ellipsis /> );
+                    pages.push( <Pagination.Ellipsis key={`ellipsis-${number}`} /> );
                     flag = 1
                 }
                 if (number === 1) {
@@ -145,7 +145,7 @@ const OrderIndex = (props) => {
                     );
                     pages.push(
                         <Pagination.Item
-                            key={number}
+                            key={number-1}
                             active={number === active}
                             onClick={() => pagination(number)}
                         >
@@ -174,7 +174,7 @@ const OrderIndex = (props) => {
                         </Pagination.Item>
                     );
                 }
-                if (number ===  (totalPages - 1) && active !== totalPages) { pages.push( <Pagination.Ellipsis /> ); }
+                if (number ===  (totalPages - 1) && active !== totalPages) { pages.push( <Pagination.Ellipsis key={`ellipsis-${number}`} /> ); }
                 if (number === totalPages) {
                     pages.push(
                         <Pagination.Item
@@ -203,6 +203,7 @@ const OrderIndex = (props) => {
     const searchHandler = () => {
         validDateSearch();
         body.page = 1;
+        console.log('📝 [searchHandler] Buscando ordenes...', body);
         setBody({...body});
         showLoading()
         dispatch(getSearchOrder(dispatch,'order/search/detail', body));
@@ -280,7 +281,7 @@ const OrderIndex = (props) => {
     }
 
     const driverButtomCreate = async (e) => {
-        console.log('llego')
+        // console.log('llego')
         props.history.push("/order/create");
     }
 
@@ -410,11 +411,10 @@ const OrderIndex = (props) => {
                                             <Form.Control as="select" name="status" value={body?.status} onChange={handlerChangeSearch}>
                                                 <option  value="">todos</option>
                                                 {TypeStatus.map(status =>
-                                                    <option key={status?._id} value={status?._id}>{status?.type}</option>
+                                                    <option key={status?.id} value={status?.type}>{status?.type}</option>
                                                 )}
                                             </Form.Control>
                                         </Form.Group>
-                                        
                                     </Col>
                                     {(roleUser === 'Admin' && roleUser !== '' )  && (
                                         <Col md={{ span: 4, offset: 0 }}> 
@@ -472,8 +472,14 @@ const OrderIndex = (props) => {
                                 <td>{ order?.orderDate === undefined ? '': order?.orderDate === null ? '' : moment(order?.orderDate).format("YYYY-MM-DD")}</td>
                                 <td>{ order?.paymentDate === undefined ? '' : order?.paymentDate === null ? '' : moment(order?.paymentDate).format("YYYY-MM-DD")}</td>
                                 <td >
-                                    <Badge className='badge_position text_tam' variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`} >
-                                        {order?.validAdmin}            
+                                    <Badge 
+                                        className='badge_position text_tam' 
+                                        variant={`${order?.validAdmin === 'Verificado' ? 'success' : order?.validAdmin === 'con_error' ? 'danger' : 'warning'}`}
+                                    >
+                                        {order?.validAdmin === undefined || order?.validAdmin === null || order?.validAdmin === '' 
+                                            ? 'por_verificar' 
+                                            : order?.validAdmin
+                                        }            
                                     </Badge>
                                 </td>
                                 <td>

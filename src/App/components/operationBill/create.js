@@ -52,52 +52,98 @@ const OperationBillCreate = (props) => {
         files: []
     });
 
-    useEffect( () => {
+    useEffect(() => {
         titleButt()
-        console.log('errorOrder', errorOperationBill?.length)
-        if (errorOperationBill?.length > 0  && !validProcess) {
-            // console.log('ingreso if errorOrder', errorOperationBill)
-            showAlert("Error en el proceso", errorOperationBill?.message, "error",4000);
-            setValidProcess(true);
-            setTimeout(() => {
-                setValidProcess(false);
-            }, 5000);
-            dispatch(updateCodeError(dispatch));
-        }
-        console.log('statusCodeOrder', statusCodeOperationBill)
-        if (statusCodeOperationBill === '200' && errorOperationBill.length === 0) {
-            console.log('ingreso al redirect', statusCodeOperationBill)
-            Swal.close()
-            validRedirect()
-        }
-        if (props.match.params._id) {
-            if ( operationBills === undefined || operationBills?.length === 0) {
-                formatDataUpdate();
-            } 
-            if (operationBills !== undefined || operationBills?.length > 0) {
-                formatData();
-            }  
-        }
-
-        if ((paymentTypes === undefined || paymentTypes.length === 0) && (!flagPaymentType)) {
-            dispatch(getPaymentTypes(dispatch,'payment-type'));
+        
+        // Cargar payment types
+        if ((paymentTypes === undefined || paymentTypes.length === 0) && !flagPaymentType) {
+            dispatch(getPaymentTypes(dispatch, 'payment-type'));
             setFlagPaymentType(true);
         }
 
+        // Cargar datos para edición
+        if (props.match.params._id) {
+            if (operationBills === undefined || operationBills?.length === 0) {
+                formatDataUpdate();
+            } else if (operationBills?.length > 0) {
+                formatData();
+            }
+        }
+
+        // Formatear contenedor de pagos
         if (paymentHasEgressR.length > 0 && paymentContainer.length === 0 && props.match.params._id !== undefined) {
             setTimeout(() => {
                 formatPaymentContainer();
             }, 200);
         }
         
-    }, [dispatch, operationBills, isLoadingOperationBill, paymentTypes, flagPaymentType, paymentHasEgressR, statusCodeOperationBill, errorOperationBill, validRedirect, titleButt, formatData, formatPaymentContainer, formatDataUpdate]);
+    }, [dispatch, flagPaymentType, paymentTypes, paymentHasEgressR, props.match.params._id]);
+
+    useEffect(() => {
+        const isErrorEmpty = !errorOperationBill || Object.keys(errorOperationBill).length === 0;
+        
+        // ÉXITO 200
+        if (statusCodeOperationBill === '200' && isErrorEmpty) {
+            setTimeout(() => {
+                Swal.close();
+                setTimeout(() => {
+                    validRedirect();
+                }, 300);
+            }, 1000);
+        }
+    }, [statusCodeOperationBill, errorOperationBill]);
+
+    // ✅ NUEVO useEffect para manejar ERRORES (CRÍTICO):
+    useEffect(() => {
+    const hasError = errorOperationBill && 
+                     typeof errorOperationBill === 'object' && 
+                     Object.keys(errorOperationBill).length > 0;
+    
+    // Cuando hay error
+    if (hasError && !validProcess) {
+        // Cerrar modal de carga
+        Swal.close();
+        
+        // Mostrar alerta de error
+        setTimeout(() => {
+            showAlert(
+                "Error en el proceso", 
+                errorOperationBill?.message || errorOperationBill?.error || "Ocurrió un error inesperado", 
+                "error", 
+                4000
+            );
+        }, 300);
+        
+        setValidProcess(true);
+        
+        setTimeout(() => {
+            setValidProcess(false);
+            dispatch(updateCodeError(dispatch));
+        }, 5000);
+    }
+}, [errorOperationBill, validProcess, dispatch]);
 
     const validRedirect = () => {
-        showAlert( "Transaccion exitosa", "El proceso se realizo con exito.", "success",3500);
+        // Cerrar cualquier modal abierto
+        Swal.close();
+        
+        // Limpiar estado
         dispatch(updateCodeError(dispatch));
-        props.history.push("/operation-bill");
-        return;
-    }
+        setPaymentContainer([]);
+        
+        // Mostrar éxito
+        showAlert(
+            "Transaccion exitosa", 
+            "El proceso se realizo con exito.", 
+            "success", 
+            2000
+        );
+        
+        // Redirigir
+        setTimeout(() => {
+            props.history.push("/operation-bill");
+        }, 2500);
+    };
 
     const formatPaymentContainer = async () => {
         let dataPayment = [];
@@ -112,8 +158,6 @@ const OperationBillCreate = (props) => {
        
         setPaymentContainer(dataPayment);
         setValue("paymentHasEgress", dataPayment);
-        
-        console.log('lelgo por aca formatPaymentContainer', dataPayment)
     }
 
     const formatDataUpdate = async () => {
@@ -164,9 +208,7 @@ const OperationBillCreate = (props) => {
     const formatData = async () => {
         const data = await operationBills.find(prov => prov._id === props.match.params._id)
         let filesD = [];
-        // console.log('llego por aca', data)
         reset(formValues => ({
-            // ...formValues,
             _id: data._id,
             _idEgress: data?.egress[0]?._id,
             description: data?.description,
@@ -254,7 +296,6 @@ const OperationBillCreate = (props) => {
             // const dataFormat = new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP', minimumFractionDigits: 2}).format(value)
             // const dataFormat = new Intl.NumberFormat('es-CL', {style: 'currency', currency: 'CLP'}).format(value)
             body.amount = value; 
-            console.log('datos', value)
             setValue("paymentHasEgress", paymentContainer);
             setValue("amount", value);
             setBody({...body});
@@ -269,43 +310,38 @@ const OperationBillCreate = (props) => {
         const result = await setPaymentContainer((paymentContainer) =>
             paymentContainer.filter((data) => data.id !== id)
         );
-        // console.log('result', result)
         let value = 0;
         await paymentContainer.map(payment =>
             value += payment.id !== id ?  Number(payment.paymentAmount) : 0 
         )
         body.amount = value; 
         
-    //    setBody({...body})
         setBody(body)
         setValue("amount", value);
-        // console.log('paymentContainer', paymentContainer)
-        // setValue("paymentHasEgress", paymentContainer);
         setTimeout(() => {
             setValue("paymentHasEgress", paymentContainer);
-            console.log('paymentHasEgress', paymentContainer)
         }, 9000);
     }
    
     const typeOperationBills = [
-        { id:1, type: "salario" },
-        { id:2, type: "administrativo" },
-        { id:3, type: "contador" },
-        { id:4, type: "inversion" },
-        { id:5, type: "servicio_electrico" },
-        { id:6, type: "servicio_agua" },
-        { id:7, type: "gastos_comunes" },
-        { id:8, type: "alquiler" },
-        { id:9, type: "productos_limpieza" },
-        { id:10, type: "beneficios" },
-        { id:11, type: "materiales_contruccion" },
-        { id:12, type: "personal" },
-        { id:13, type: "implementos" },
-        { id:14, type: "remodelacion" },
-        { id:15, type: "publicidad" },
-        { id:16, type: "innovación" },
-        { id:17, type: "ganancia" },
-        { id:18, type: "otros" },
+        { _id:1, type: "salario" },
+        { _id:2, type: "administrativo" },
+        { _id:3, type: "contador" },
+        { _id:4, type: "inversion" },
+        { _id:5, type: "servicio_electrico" },
+        { _id:6, type: "servicio_agua" },
+        { _id:7, type: "gastos_comunes" },
+        { _id:8, type: "alquiler" },
+        { _id:9, type: "productos_limpieza" },
+        { _id:10, type: "beneficios" },
+        { _id:11, type: "materiales_construccion" },
+        { _id:12, type: "personal" },
+        { _id:13, type: "implementos" },
+        { _id:14, type: "remodelacion" },
+        { _id:15, type: "publicidad" },
+        { _id:16, type: "innovación" },
+        { _id:17, type: "ganancia" },
+        { _id:18, type: "otros" },
     ];
 
     const handlerChange = async e => {
@@ -323,7 +359,6 @@ const OperationBillCreate = (props) => {
             let THOUSANDS = ",";
             
             let value = await e.target.value.length>0? numberFormat(e.target.value, -1, THOUSANDS, DECIMALS, false): "";
-            // console.log('value', value)
             e.target.value  = await value;
         }
     }
@@ -456,7 +491,6 @@ const OperationBillCreate = (props) => {
         //check if the minus symbol is allowed so that if it exists add it to the final
         //result before being returned
         resultado = (minusSigned && hasminusSymbol)? "-"+resultado: resultado;
-        console.log('resultado', resultado)
         return resultado;
     }
 
@@ -545,21 +579,26 @@ const OperationBillCreate = (props) => {
         watch, 
         reset } = useForm({mode:  "onChange", reValidateMode: "onChange"});
     
-        const watchAmount = watch("amount");
+    const watchAmount = watch("amount");
+    
     const onSubmit = (dataInfo) => {
-        if (props.match.params._id) {
-            dispatch(updateOperationBills(dispatch,'operation-bills', dataInfo, paymentContainer, props.match.params._id))
-        } else {
-            console.log('inbgreso la else')
-            dispatch(createOperationBills(dispatch,'operation-bills', dataInfo));
-        }
+        // Mostrar modal PRIMERO
         showLoading();
+        
+        // Luego dispatch CON DELAY
+        setTimeout(() => {
+            if (props.match.params._id) {
+                dispatch(updateOperationBills(dispatch, 'operation-bills', dataInfo, paymentContainer, props.match.params._id));
+            } else {
+                dispatch(createOperationBills(dispatch, 'operation-bills', dataInfo));
+            }
+        }, 500);
     };
 
     const TypeOrigin = [
-        { id:1, type: "caja" },
-        { id:2, type: "caja chica" },
-        { id:3, type: "prestamo" },
+        { _id:1, type: "caja" },
+        { _id:2, type: "caja chica" },
+        { _id:3, type: "prestamo" },
     ];
 
     const showAlert = (title, text, icon, timer) => {
@@ -573,20 +612,26 @@ const OperationBillCreate = (props) => {
         })
     }
 
+    // Reemplazar showLoading (línea 600-606):
     const showLoading = () => {
-        Swal.fire({
-        title: 'En Proceso!',
-        html: 'Transaccion en Proceso.',
-        timerProgressBar: true,
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading() },
-        willClose: () => {} })
-    }
+        return Swal.fire({
+            title: 'En Proceso!',
+            html: 'Transaccion en Proceso.',
+            icon: 'info',
+            timerProgressBar: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: (modal) => { 
+                Swal.showLoading();
+            },
+            didClose: (modal) => {
+            }
+        });
+    };
 
     const download = async (originalImage, flag) => {
         let imageBlog = null;
         let  duplicateName = '';
-        console.log('flag', flag)
         if (flag) {
         const image = await fetch(originalImage);
         const nameSplit=originalImage.split("/");
@@ -663,7 +708,7 @@ const OperationBillCreate = (props) => {
                                             })}>
                                         <option value="" >selecciona...</option>
                                         {typeOperationBills.map(operationBill =>
-                                            <option key={operationBill?.id} value={operationBill?.type}>{operationBill?.type}</option>
+                                            <option key={operationBill?._id} value={operationBill?.type}>{operationBill?.type}</option>
                                         )}
                                         </Form.Control>
                                         {errors.type && <p>{errors.type.message}</p>}
@@ -697,7 +742,7 @@ const OperationBillCreate = (props) => {
                                                     >
                                                     <option key="-1" >selecciona...</option>
                                                     { TypeOrigin.map(origin =>
-                                                        <option key={origin?.id} value={origin?.type}>{origin?.type}</option>
+                                                        <option key={origin?._id} value={origin?.type}>{origin?.type}</option>
                                                     )}
                                                 </Form.Control>
                                             </Form.Group>

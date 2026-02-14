@@ -335,65 +335,136 @@ const StatisticsIndex = (props) => {
         dispatch(getSearchRevenuesStadistics(dispatch,'revenue/get-revenue-turn', 20, number,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
     }
 
-    const searchHandler = () => {
-        validDateSearch();
-        showLoading()
-        body.page = 1;
-        setBody({...body});
-        // dispatch(getSearchOrder(dispatch,'order/search/detail', body));
-        dispatch(getSearchEgress(dispatch,'egress/search', body));
-        dispatch(getSearchRevenuesStadistics(dispatch,'revenue/get-revenue-turn', 20, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
-        createItem()
-        createItemR()
-        validCashF()
-    }
+    // const searchHandler = () => {
+    //     validDateSearch();
+    //     showLoading()
+    //     body.page = 1;
+    //     setBody({...body});
+    //     console.log('body', body)
+    //     // dispatch(getSearchOrder(dispatch,'order/search/detail', body));
+    //     dispatch(getSearchEgress(dispatch,'egress/search', body));
+    //     dispatch(getSearchRevenuesStadistics(dispatch,'revenue/get-revenue-turn', 20, 1,  body.paymentDate.firstDate, body.paymentDate.endDate, ''));
+    //     createItem()
+    //     createItemR()
+    //     validCashF()
+    // }
+
+    // const validDateSearch = () => {
+    //     let paymentDate = {
+    //         firstDate: null,
+    //         endDate: null,
+    //     }
+    //     let date = {
+    //         // estimateReceptionDate: {
+    //         //     firstDate: null,
+    //         //     endDate: null,
+    //         // },
+    //         // receptionDate: {
+    //         //     firstDate: null,
+    //         //     endDate: null,
+    //         // },
+    //         paymentDate: {
+    //             firstDate: null,
+    //             endDate: null,
+    //         },
+    //         // orderDate: {
+    //         //     firstDate: null,
+    //         //     endDate: null,
+    //         // },
+    //     }
+    //     // providers
+    //     // if (estimateReceptionDateStart !== null && estimateReceptionDateEnd !== null) {
+    //     //     date.estimateReceptionDate.firstDate = moment(estimateReceptionDateStart).format('MM/DD/YYYY');
+    //     //     date.estimateReceptionDate.endDate = moment(estimateReceptionDateEnd).format('MM/DD/YYYY');
+    //     // }
+    //     console.log('paymentDateStart', paymentDateStart)
+    //     console.log('paymentDateEnd', paymentDateEnd)
+    //     if (paymentDateStart !== null && paymentDateEnd !== null) {
+    //         paymentDate.firstDate = moment(paymentDateStart).format('MM/DD/YYYY');
+    //         paymentDate.endDate = moment(paymentDateEnd).format('MM/DD/YYYY');
+    //     }
+    //     // if (receptionDateStart !== null && receptionDateEnd !== null) {
+    //     //     date.receptionDate.firstDate = moment(receptionDateStart).format('MM/DD/YYYY');
+    //     //     date.receptionDate.endDate = moment(receptionDateEnd).format('MM/DD/YYYY');
+    //     // }
+    //     // if (orderDateStart !== null && orderDateEnd !== null) {
+    //     //     date.orderDate.firstDate = moment(orderDateStart).format('MM/DD/YYYY');
+    //     //     date.orderDate.endDate = moment(orderDateEnd).format('MM/DD/YYYY');
+    //     // }  
+
+    //     body.paymentDate = paymentDate; 
+    //     setBody({...body});
+    //     return date;
+    // }
 
     const validDateSearch = () => {
-        let paymentDate = {
+        console.log('🔔 [validDateSearch] Validando fechas...');
+        console.log('  - paymentDateStart:', paymentDateStart);
+        console.log('  - paymentDateEnd:', paymentDateEnd);
+        
+        const paymentDate = {
             firstDate: null,
             endDate: null,
-        }
-        let date = {
-            // estimateReceptionDate: {
-            //     firstDate: null,
-            //     endDate: null,
-            // },
-            // receptionDate: {
-            //     firstDate: null,
-            //     endDate: null,
-            // },
-            paymentDate: {
-                firstDate: null,
-                endDate: null,
-            },
-            // orderDate: {
-            //     firstDate: null,
-            //     endDate: null,
-            // },
-        }
-        // providers
-        // if (estimateReceptionDateStart !== null && estimateReceptionDateEnd !== null) {
-        //     date.estimateReceptionDate.firstDate = moment(estimateReceptionDateStart).format('MM/DD/YYYY');
-        //     date.estimateReceptionDate.endDate = moment(estimateReceptionDateEnd).format('MM/DD/YYYY');
-        // }
-        console.log('paymentDateStart', paymentDateStart)
-        console.log('paymentDateEnd', paymentDateEnd)
+        };
+
         if (paymentDateStart !== null && paymentDateEnd !== null) {
             paymentDate.firstDate = moment(paymentDateStart).format('MM/DD/YYYY');
             paymentDate.endDate = moment(paymentDateEnd).format('MM/DD/YYYY');
+            
+            console.log('✅ [validDateSearch] Fechas formateadas:');
+            console.log('  - firstDate:', paymentDate.firstDate);
+            console.log('  - endDate:', paymentDate.endDate);
+        } else {
+            console.log('⚠️ [validDateSearch] Fechas incompletas');
         }
-        // if (receptionDateStart !== null && receptionDateEnd !== null) {
-        //     date.receptionDate.firstDate = moment(receptionDateStart).format('MM/DD/YYYY');
-        //     date.receptionDate.endDate = moment(receptionDateEnd).format('MM/DD/YYYY');
-        // }
-        // if (orderDateStart !== null && orderDateEnd !== null) {
-        //     date.orderDate.firstDate = moment(orderDateStart).format('MM/DD/YYYY');
-        //     date.orderDate.endDate = moment(orderDateEnd).format('MM/DD/YYYY');
-        // }  
 
-        body.paymentDate = paymentDate; 
-        setBody({...body});
-        return date;
+        return paymentDate;
+    }
+
+    const searchHandler = () => {
+        console.log('🔍 [searchHandler] Iniciando búsqueda...');
+        
+        // ✅ Obtener fechas sincronicamente
+        const validatedDates = validDateSearch();
+        
+        if (!validatedDates.firstDate || !validatedDates.endDate) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Rango incompleto',
+                text: 'Por favor, selecciona un rango de fechas válido'
+            });
+            return;
+        }
+        
+        // ✅ Crear nuevo body con fechas
+        const newBody = {
+            ...body,
+            page: 1,
+            paymentDate: validatedDates
+        };
+        
+        console.log('📦 [searchHandler] Body a enviar:', newBody);
+        
+        setBody(newBody);
+        setActive(1);
+        setActiveR(1);
+        showLoading();
+        
+        // ✅ Usar fechas formateadas directamente
+        dispatch(getSearchEgress(dispatch, 'egress/search', newBody));
+        dispatch(getSearchRevenuesStadistics(
+            dispatch,
+            'revenue/get-revenue-turn',
+            20,
+            1,
+            validatedDates.firstDate,
+            validatedDates.endDate,
+            ''
+        ));
+        
+        createItem();
+        createItemR();
+        validCashF();
     }
 
     useEffect(() => {
@@ -533,12 +604,15 @@ const StatisticsIndex = (props) => {
                                             isClearable={true}
                                         /> */}
                                         <DatePicker
-                                        className="form-control input_width"
-                                            selected={new Date()}
-                                            renderMonthContent={renderMonthContent}
-                                            showMonthYearPicker
-                                            dateFormat="MM/yyyy"
-                                            />
+                                            className="form-control input_width"
+                                            selectsRange={true}                        
+                                            startDate={paymentDateStart}               
+                                            endDate={paymentDateEnd}                   
+                                            onChange={(update) => {
+                                                setPaymentDateRange(update);
+                                            }}
+                                            isClearable={true}
+                                        />
                                     </Col>
                                     {/* <Col md={{ span: 4, offset: 0 }}> 
                                         <Form.Label>Fecha Recepcion</Form.Label>

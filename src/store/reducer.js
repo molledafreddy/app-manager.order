@@ -623,11 +623,18 @@ const reducer = (state = initialState, action) => {
                 errorOperationBill: []
             }
         case ERROR_OPERATIONBILL:
+            // return {
+            //     ...state,
+            //     statusCode: action.payload.status,
+            //     errorOperationBill: action.payload,
+            //     statusCodeOperationBill: '500',
+            // }
             return {
                 ...state,
-                statusCode: action.payload.status,
-                errorOperationBill: action.payload,
-                statusCodeOperationBill: '500',
+                statusCode: action.payload?.response?.status || action.payload?.status || 500,
+                errorOperationBill: action.payload?.response?.data || action.payload,
+                statusCodeOperationBill: String(action.payload?.response?.status || action.payload?.status || 500),
+                //                        ↑ Extraer correctamente el status, no hardcodeado
             }
         case GET_PAYMENTHASEGRESS:
             return {
